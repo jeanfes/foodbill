@@ -1,0 +1,183 @@
+.notFoundContainer {
+    position: relative;
+    background-image: (url('../../../assets/images/bgFooter.png'));
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: 100%;
+
+    .notFoundContent {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        align-self: stretch;
+        gap: 32px;
+
+        .notFoundAnimation {
+            position: absolute;
+            width: 403px;
+            height: 644px;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .notFoundTitle {
+            color: var(--colorBlack);
+            text-align: center;
+            font-family: Mansfield-SemiBold;
+            font-size: 48.83px;
+            font-style: normal;
+            line-height: 123%;
+        }
+
+        .notFoundSubtitle {
+            color: var(--colorIndigo);
+            text-align: center;
+            font-family: Mansfield-Bold;
+            font-size: 40px;
+            font-style: normal;
+            line-height: 123%;
+        }
+
+        .notFoundDescription {
+            color: var(--colorBlack);
+            text-align: center;
+            font-family: Mansfield-SemiBold;
+            font-size: 25px;
+            font-style: normal;
+            line-height: 123%;
+        }
+
+        .notFoundButton {
+            svg {
+                transform: rotate(-90deg);
+            }
+        }
+    }
+
+    .footer {
+        border-top: 1px solid #ffffff00;
+        background: var(--backgroundGlass);
+        background-blend-mode: overlay, normal;
+        box-shadow: 0px 0px 14px 2px rgba(0, 0, 0, 0.10);
+        backdrop-filter: blur(35px);
+        display: flex;
+        padding: 16px;
+        flex-direction: column;
+        align-items: center;
+        align-self: stretch;
+
+        .footerHeader {
+            display: flex;
+            padding: 8px 0px;
+            justify-content: space-between;
+            align-items: center;
+            align-self: stretch;
+            border-bottom: 1px solid var(--colorGrey);
+
+            img {
+                max-width: 150px;
+                object-fit: contain;
+            }
+
+            p {
+                color: var(--colorGrey);
+                font-family: Mansfield;
+                text-align: left;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 150%;
+            }
+        }
+
+        .footerBody {
+            display: flex;
+            padding: 8px 0px;
+            border-top: 0.818px var(--colorBlack);
+            justify-content: space-between;
+            align-items: center;
+            align-self: stretch;
+            gap: 8px;
+
+            .footerContact {
+                color: var(--colorGreyDark);
+                font-family: Mansfield-SemiBold;
+                text-align: left;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 150%;
+            }
+
+            .footerSuggestion {
+                display: none;
+                color: var(--colorGrey);
+                font-family: Mansfield;
+                text-align: left;
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 150%;
+            }
+
+            .socialMedia {
+                display: flex;
+                align-items: center;
+                gap: 8.18px;
+
+                .socialMediaItem {
+                    display: flex;
+                    align-items: center;
+                    border-radius: 10px;
+                    background: var(--colorWhite);
+                    padding: 8px;
+                    gap: 8.18px;
+
+                    a {
+                        display: flex;
+                        align-items: center;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .notFoundContainer {
+        .footer {
+            .footerHeader {
+                padding-bottom: 16px;
+
+                p {
+                    display: none;
+                }
+            }
+
+            .footerBody {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                padding-top: 16px;
+
+                .footerContact {
+                    display: none;
+                }
+
+                .footerSuggestion {
+                    display: block;
+                }
+            }
+        }
+    }
+}
