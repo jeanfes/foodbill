@@ -1,4 +1,3 @@
-import { endpointsPrizma } from "@/utilities/endpoints";
 import { useAuthStore } from "@/store/authStore";
 import type { User } from "@/interfaces/user";
 import { useFetch } from "@/hooks/useFetch";
@@ -39,7 +38,7 @@ export const useLogin = () => {
                 password: values.password,
             };
             const response = await fetchData({
-                endpoint: endpointsPrizma.auth.login,
+                endpoint: "",
                 method: "POST",
                 body,
             });
