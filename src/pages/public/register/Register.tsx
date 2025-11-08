@@ -3,6 +3,7 @@ import LogoTransparent from "../../../assets/images/logoTransparent.png"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Link } from "react-router-dom"
 import { useState } from "react"
 
@@ -63,9 +64,8 @@ export default function Register() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
@@ -75,9 +75,8 @@ export default function Register() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}

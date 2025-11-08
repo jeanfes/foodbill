@@ -1,29 +1,22 @@
-import { useEffect, useMemo, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-import { useNavigate } from "react-router-dom";
+import type { UserRole } from "@/interfaces/role";
 
 interface RoleRouteProps {
-    componentsByRole?: Record<string, React.ReactElement>;
+    children: React.ReactNode;
+    allowedRoles: UserRole[];
+    fallbackPath?: string;
 }
 
-const RoleRoute = ({ componentsByRole }: RoleRouteProps) => {
-    const [isValid, setIsValid] = useState(true);
-    const navigate = useNavigate();
-    const { user } = useAuthStore();
+const RoleRoute = ({ children, allowedRoles, fallbackPath = "/not-found" }: RoleRouteProps) => {
+    const user = useAuthStore((state) => state.user);
+    const userRole = user?.profile?.role?.name;
 
-    const userRole = useMemo(() => user?.profile?.role?.name?.toUpperCase(), [user]);
+    if (!userRole || !allowedRoles.includes(userRole)) {
+        return <Navigate to={fallbackPath} replace />;
+    }
 
-    useEffect(() => {
-        if (!componentsByRole || !userRole || !(userRole in componentsByRole)) {
-            navigate("/not-found");
-        } else {
-            setIsValid(false);
-        }
-    }, [componentsByRole, userRole, navigate]);
-
-    if (isValid) return null;
-
-    return userRole && componentsByRole?.[userRole] ? componentsByRole[userRole] : null;
+    return <>{children}</>;
 };
 
 export default RoleRoute;

@@ -22,13 +22,23 @@ interface HeaderProps {
 
 export const Header = ({ title, subtitle }: HeaderProps) => {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+  const userName = user?.profile
+    ? `${user.profile.name} ${user.profile.last_name}`
+    : "Usuario";
+
+  const userRole = user?.profile?.role?.name || "Sin rol";
+
+  const initials = user?.profile
+    ? `${user.profile.name.charAt(0)}${user.profile.last_name.charAt(0)}`.toUpperCase()
+    : "U";
 
   return (
     <header className="h-16 bg-transparent flex items-center justify-between px-6">
@@ -80,12 +90,12 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-3 h-10 px-3">
               <div className="text-right hidden lg:flex flex-col justify-center leading-none">
-                <p className="text-sm font-medium truncate">Orlando Laurentius</p>
-                <p className="text-xs text-muted-foreground">Admin</p>
+                <p className="text-sm font-medium truncate max-w-32">{userName}</p>
+                <p className="text-xs text-muted-foreground capitalize">{userRole.toLowerCase()}</p>
               </div>
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/abstract-geometric-shapes.png" alt="Orlando Laurentius" />
-                <AvatarFallback className="bg-primary text-primary-foreground">OL</AvatarFallback>
+                <AvatarImage src={user?.profile?.photo || ""} alt={userName} />
+                <AvatarFallback className="bg-primary text-primary-foreground">{initials}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>

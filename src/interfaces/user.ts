@@ -1,10 +1,12 @@
+import { UserRole } from "./role";
+
 interface Role {
     id: number;
-    name: "DOCENTE" | "ESTUDIANTE";
+    name: UserRole;
 }
 
 export interface User {
-    id: string,
+    id: string;
     profile: {
         id: number;
         identification_type: string;
@@ -16,7 +18,7 @@ export interface User {
         photo: string;
         privacy_policy: boolean;
         data_treatment: boolean;
-    }
+    };
     token: string;
     identification_number: string;
 }

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import LogoTransparent from "../../../assets/images/logoTransparent.png"
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
+import { PasswordInput } from "../../../components/ui/password-input"
 import { Label } from "../../../components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card"
 import {
@@ -12,21 +13,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select"
+import { useLogin } from "./hooks/useLogin"
 
 const Login = () => {
   const [dependencia, setDependencia] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
   const navigate = useNavigate()
+  const { loginUser, loading, error } = useLogin()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    console.log("Login attempt:", { dependencia, email, password })
-    setIsLoading(false)
-    navigate("/home")
+    setErrorMessage("")
+
+    const result = await loginUser({
+      identification_number: username,
+      password: password,
+      dependencia: dependencia,
+    })
+
+    if (result.success) {
+      navigate("/home")
+    } else {
+      setErrorMessage(result.message || "Error al iniciar sesión")
+    }
   }
 
 
@@ -42,9 +53,14 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {(errorMessage || error) && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <p className="text-sm text-destructive text-center">{errorMessage || error}</p>
+              </div>
+            )}
             <div className="w-full space-y-2">
               <Label htmlFor="dependencia">Dependencia</Label>
-              <Select value={dependencia} onValueChange={setDependencia} disabled={isLoading}>
+              <Select value={dependencia} onValueChange={setDependencia} disabled={loading}>
                 <SelectTrigger id="dependencia">
                   <SelectValue placeholder="Selecciona una dependencia" />
                 </SelectTrigger>
@@ -58,15 +74,15 @@ const Login = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
+              <Label htmlFor="username">Usuario</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="orlando@foodbill.com"
-                value={email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="admin"
+                value={username}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -76,18 +92,17 @@ const Login = () => {
                   ¿Olvidaste la contraseña?
                 </Link>
               </div>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 required
-                disabled={isLoading}
+                disabled={loading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
           </form>
         </CardContent>

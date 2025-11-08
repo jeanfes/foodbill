@@ -1,19 +1,30 @@
+import { BestSellingProducts } from "./components/best-selling-products"
+import { CashRegisterTable } from "./components/cash-register-table"
+import { DateFilter } from "./components/date-filter"
+import { KpiCards } from "./components/kpi-cards"
+import { RecentActivity } from "./components/recent-activity"
+import { RevenueExpenseChart } from "./components/revenue-expense-chart"
+import { SalesByDayChart } from "./components/sales-by-day-chart"
+import { TopProductsChart } from "./components/top-products-chart"
+
 const Home = () => {
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-lg border border-border">
-                    <p className="text-sm text-muted-foreground mb-2">Total de pedidos</p>
-                    <p className="text-3xl font-bold">48,652</p>
+            <DateFilter />
+            <KpiCards />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <RevenueExpenseChart />
+                <SalesByDayChart />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <TopProductsChart />
+                <CashRegisterTable />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                    <BestSellingProducts />
                 </div>
-                <div className="bg-white p-6 rounded-lg border border-border">
-                    <p className="text-sm text-muted-foreground mb-2">Total de clientes</p>
-                    <p className="text-3xl font-bold">1248</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg border border-border">
-                    <p className="text-sm text-muted-foreground mb-2">Ingresos totales</p>
-                    <p className="text-3xl font-bold">$215,860</p>
-                </div>
+                <RecentActivity />
             </div>
         </div>
     )

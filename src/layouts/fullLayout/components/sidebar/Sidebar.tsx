@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { cn } from "@/lib/utils"
 import {
     ShoppingBag,
@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Link, useLocation } from "react-router-dom"
 import LogoTransparent from "../../../../assets/images/logoTransparent.png"
+import { usePermissions } from "@/hooks/usePermissions"
+import { Permission } from "@/interfaces/role"
 
 interface NavigationItem {
     name: string
@@ -20,15 +22,16 @@ interface NavigationItem {
     icon: any
     hasDropdown?: boolean
     badge?: string | number
+    requiredPermission?: Permission
 }
 
 const navigationItems: NavigationItem[] = [
-    { name: "Home", href: "/home", icon: Home },
-    { name: "Orders", href: "/orders", icon: ShoppingBag },
-    { name: "Calendar", href: "/calendar", icon: Calendar },
-    { name: "Menu", href: "/menu", icon: Salad },
-    { name: "Inventory", href: "/inventory", icon: Package, hasDropdown: true },
-    { name: "Reviews", href: "/reviews", icon: Star },
+    { name: "Home", href: "/home", icon: Home, requiredPermission: Permission.VIEW_DASHBOARD },
+    { name: "Orders", href: "/orders", icon: ShoppingBag, requiredPermission: Permission.VIEW_ORDERS },
+    { name: "Calendar", href: "/calendar", icon: Calendar, requiredPermission: Permission.VIEW_CALENDAR },
+    { name: "Menu", href: "/menu", icon: Salad, requiredPermission: Permission.VIEW_MENU },
+    { name: "Inventory", href: "/inventory", icon: Package, hasDropdown: true, requiredPermission: Permission.VIEW_INVENTORY },
+    { name: "Reviews", href: "/reviews", icon: Star, requiredPermission: Permission.VIEW_REVIEWS },
 ]
 
 interface SidebarProps {
@@ -40,6 +43,14 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     const location = useLocation()
     const pathname = location.pathname
     const [expandedItems, setExpandedItems] = useState<string[]>([])
+    const { hasPermission } = usePermissions()
+
+    const filteredNavigationItems = useMemo(() => {
+        return navigationItems.filter((item) => {
+            if (!item.requiredPermission) return true
+            return hasPermission(item.requiredPermission)
+        })
+    }, [hasPermission])
 
     const toggleExpanded = (name: string) =>
         setExpandedItems((prev) =>
@@ -69,7 +80,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             </div>
 
             <nav className="p-4 space-y-2">
-                {navigationItems.map((item) => {
+                {filteredNavigationItems.map((item) => {
                     const Icon = item.icon
                     const isActive = pathname === item.href
                     const isExpanded = expandedItems.includes(item.name)
