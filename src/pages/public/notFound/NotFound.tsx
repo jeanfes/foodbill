@@ -2,8 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import LogoTransparent from "@/assets/images/logoTransparent.png";
 import NotFoundIcon from "@/assets/icons/NotFoundIcon";
+import { useAuthStore } from "@/store/authStore";
 
 const NotFound: React.FC = () => {
+    const isAuth = useAuthStore((state) => state.isAuth);
+    const homeRoute = isAuth ? "/home" : "/login";
+    const buttonText = isAuth ? "Volver al inicio" : "Ir al login";
+
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-6">
             <main className="max-w-4xl w-full bg-white/70 dark:bg-[#0b1220]/60 backdrop-blur-md rounded-2xl shadow-lg p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
@@ -21,8 +26,8 @@ const NotFound: React.FC = () => {
                     </p>
 
                     <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                        <Link to="/login" className="inline-flex items-center justify-center px-5 py-3 rounded-md bg-primary text-white font-medium shadow hover:bg-primary/90">
-                            Volver al inicio
+                        <Link to={homeRoute} className="inline-flex items-center justify-center px-5 py-3 rounded-md bg-primary text-white font-medium shadow hover:bg-primary/90">
+                            {buttonText}
                         </Link>
                         <a href="mailto:soporte@tudominio.com" className="inline-flex items-center justify-center px-5 py-3 rounded-md border border-transparent bg-white text-primary font-medium shadow hover:bg-gray-50">
                             Contactar soporte
