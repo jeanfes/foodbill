@@ -104,7 +104,6 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate("/perfil")}>Perfil</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSettingsOpen(true)}>Ajustes</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/facturacion")}>Facturación</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Cerrar sesión</DropdownMenuItem>
           </DropdownMenuContent>

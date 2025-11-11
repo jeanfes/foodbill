@@ -10,6 +10,7 @@ import NotFound from "@/pages/public/notFound/NotFound";
 import FullLayout from "../layouts/fullLayout/FullLayout";
 import Home from "@/pages/private/home/Home";
 import { Permission } from "@/interfaces/role";
+import ClientsPage from "@/pages/private/records/clients/ClientsPage.tsx";
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -54,6 +55,14 @@ const AppRoutes = () => {
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_DASHBOARD}>
               <Home />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/records/clients",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_CLIENTS}>
+              <ClientsPage />
             </PermissionRoute>
           ),
         },
