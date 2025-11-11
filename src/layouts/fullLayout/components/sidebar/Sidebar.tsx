@@ -1,14 +1,14 @@
 import { useState, useMemo } from "react"
 import { cn } from "@/lib/utils"
 import {
-    ShoppingBag,
-    Calendar,
-    Package,
-    Star,
     ChevronDown,
     Home,
     LayoutPanelLeft,
-    Salad,
+    Settings,
+    BarChart3,
+    Boxes,
+    Archive,
+    Shield,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useLocation } from "react-router-dom"
@@ -23,15 +23,77 @@ interface NavigationItem {
     hasDropdown?: boolean
     badge?: string | number
     requiredPermission?: Permission
+    children?: Array<{
+        name: string
+        href: string
+        badge?: string | number
+        requiredPermission?: Permission
+    }>
 }
+
 
 const navigationItems: NavigationItem[] = [
     { name: "Home", href: "/home", icon: Home, requiredPermission: Permission.VIEW_DASHBOARD },
-    { name: "Orders", href: "/orders", icon: ShoppingBag, requiredPermission: Permission.VIEW_ORDERS },
-    { name: "Calendar", href: "/calendar", icon: Calendar, requiredPermission: Permission.VIEW_CALENDAR },
-    { name: "Menu", href: "/menu", icon: Salad, requiredPermission: Permission.VIEW_MENU },
-    { name: "Inventory", href: "/inventory", icon: Package, hasDropdown: true, requiredPermission: Permission.VIEW_INVENTORY },
-    { name: "Reviews", href: "/reviews", icon: Star, requiredPermission: Permission.VIEW_REVIEWS },
+    {
+        name: "Registros",
+        href: "/records/clients",
+        icon: Archive,
+        hasDropdown: true,
+        children: [
+            { name: "Clientes", href: "/records/clients" },
+            { name: "Productos", href: "/records/products" },
+            { name: "Bodegas", href: "/records/warehouses" },
+            { name: "Categorías", href: "/records/categories" },
+            { name: "Cajas", href: "/records/registers" },
+            { name: "Mesas", href: "/records/tables" },
+        ],
+    },
+
+    {
+        name: "Movimientos",
+        href: "/movements/inventory",
+        icon: Boxes,
+        hasDropdown: true,
+        children: [
+            { name: "Inventario", href: "/movements/inventory" },
+            { name: "Facturación (POS)", href: "/movements/pos" },
+            { name: "Gastos", href: "/movements/expenses" },
+            { name: "Anulaciones", href: "/movements/voids" },
+        ],
+    },
+    {
+        name: "Informes",
+        href: "/reports/sales",
+        icon: BarChart3,
+        hasDropdown: true,
+        children: [
+            { name: "Ventas", href: "/reports/sales" },
+            { name: "Cuadre de caja", href: "/reports/cash-closing" },
+            { name: "Gastos", href: "/reports/expenses" },
+        ],
+    },
+    {
+        name: "Configuración",
+        href: "/settings/tables",
+        icon: Settings,
+        hasDropdown: true,
+        children: [
+            { name: "Mesas", href: "/settings/tables" },
+            { name: "Caja", href: "/settings/cash-register" },
+            { name: "Menú", href: "/settings/menu" },
+            { name: "Roles", href: "/settings/roles" },
+        ],
+    },
+    {
+        name: "Seguridad",
+        href: "/security/users",
+        icon: Shield,
+        hasDropdown: true,
+        children: [
+            { name: "Usuarios", href: "/security/users" },
+            { name: "Cambiar contraseña", href: "/security/change-password" },
+        ],
+    },
 ]
 
 interface SidebarProps {
@@ -46,10 +108,23 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     const { hasPermission } = usePermissions()
 
     const filteredNavigationItems = useMemo(() => {
-        return navigationItems.filter((item) => {
-            if (!item.requiredPermission) return true
-            return hasPermission(item.requiredPermission)
-        })
+        return navigationItems
+            .map((item) => {
+                if (item.requiredPermission && !hasPermission(item.requiredPermission)) return null
+
+                if (item.children && item.children.length > 0) {
+                    const filteredChildren = item.children.filter((child) => {
+                        if (!child.requiredPermission) return true
+                        return hasPermission(child.requiredPermission)
+                    })
+
+                    if (filteredChildren.length === 0) return null
+                    return { ...item, children: filteredChildren }
+                }
+
+                return item
+            })
+            .filter(Boolean) as NavigationItem[]
     }, [hasPermission])
 
     const toggleExpanded = (name: string) =>
@@ -82,21 +157,26 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             <nav className="p-4 space-y-2">
                 {filteredNavigationItems.map((item) => {
                     const Icon = item.icon
-                    const isActive = pathname === item.href
+                    const hasChildren = !!item.children && item.children.length > 0
+                    const isSectionActive = hasChildren
+                        ? item.children!.some((c) => pathname.startsWith(c.href))
+                        : pathname === item.href
                     const isExpanded = expandedItems.includes(item.name)
 
                     return (
                         <div key={item.name} className="relative">
-                            <div className={cn(
-                                "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-300",
-                                isActive && isOpen ? "opacity-100" : "opacity-0"
-                            )} />
+                            <div
+                                className={cn(
+                                    "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-300",
+                                    isSectionActive && isOpen ? "opacity-100" : "opacity-0",
+                                )}
+                            />
 
                             <Link
                                 to={item.href}
                                 className={cn(
                                     "flex items-center gap-3 px-2.5 py-3.5 rounded-2xl transition-all duration-300 relative group",
-                                    isActive
+                                    isSectionActive
                                         ? isOpen
                                             ? "bg-primary/10 text-primary"
                                             : "bg-primary text-white"
@@ -110,7 +190,12 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                     }
                                 }}
                             >
-                                <Icon className={cn("w-5 h-5 shrink-0 transition-colors duration-300", isActive ? (isOpen ? "text-primary" : "text-white") : undefined)} />
+                                <Icon
+                                    className={cn(
+                                        "w-5 h-5 shrink-0 transition-colors duration-300",
+                                        isSectionActive ? (isOpen ? "text-primary" : "text-white") : undefined,
+                                    )}
+                                />
                                 {isOpen && (
                                     <>
                                         <span className="flex-1 text-sm font-bold">{item.name}</span>
@@ -135,6 +220,40 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                     </span>
                                 )}
                             </Link>
+
+                            {isOpen && hasChildren && (
+                                <div
+                                    className={cn(
+                                        "pl-9 pr-2 grid transition-all duration-300",
+                                        isExpanded ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0",
+                                    )}
+                                >
+                                    <div className="overflow-hidden space-y-1">
+                                        {item.children!.map((child) => {
+                                            const childActive = pathname === child.href
+                                            return (
+                                                <Link
+                                                    key={child.name}
+                                                    to={child.href}
+                                                    className={cn(
+                                                        "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-colors",
+                                                        childActive
+                                                            ? "bg-primary/10 text-primary"
+                                                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                                                    )}
+                                                >
+                                                    <span className="truncate">{child.name}</span>
+                                                    {child.badge && (
+                                                        <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                                            {child.badge}
+                                                        </span>
+                                                    )}
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )
                 })}
