@@ -71,11 +71,11 @@
   --primary: oklch(0.26 0.04 200);
   --primary-foreground: oklch(0.99 0.005 200);
   --secondary: oklch(0.68 0.08 95);
-  --secondary-foreground: oklch(0.18 0.02 200);
+  --secondary-foreground: oklch(0.99 0.005 200);
   --muted: oklch(0.96 0.005 200);
   --muted-foreground: oklch(0.55 0.02 200);
   --accent: oklch(0.68 0.08 95);
-  --accent-foreground: oklch(0.18 0.02 200);
+  --accent-foreground: oklch(0.99 0.005 200);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.92 0.005 200);
@@ -180,5 +180,37 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+}
+
+/* Utilidades de contraste: cuando el fondo en hover usa accent/secondary, forzar contenido blanco */
+@layer utilities {
+  /* En modo claro: usar foreground blanco (ya definido en *_foreground) para contrastar.
+     En modo oscuro: cuando accent/secondary son tonos medios, ponemos texto en foreground general (var(--foreground)) si el color base es claro, y blanco si es medio. */
+  .hover\:bg-accent:hover,
+  .hover\:bg-secondary:hover {
+    color: var(--accent-foreground) !important;
+  }
+  .hover\:bg-accent:hover > *,
+  .hover\:bg-secondary:hover > * {
+    color: var(--accent-foreground) !important;
+  }
+  .hover\:bg-accent:hover svg,
+  .hover\:bg-secondary:hover svg {
+    color: var(--accent-foreground) !important;
+  }
+
+  /* Soporte para variantes group-hover si se usan bg-accent/bg-secondary dentro de grupos */
+  .group:hover .group-hover\:bg-accent,
+  .group:hover .group-hover\:bg-secondary {
+    color: var(--accent-foreground) !important;
+  }
+  .group:hover .group-hover\:bg-accent > *,
+  .group:hover .group-hover\:bg-secondary > * {
+    color: var(--accent-foreground) !important;
+  }
+  .group:hover .group-hover\:bg-accent svg,
+  .group:hover .group-hover\:bg-secondary svg {
+    color: var(--accent-foreground) !important;
   }
 }

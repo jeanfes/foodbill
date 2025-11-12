@@ -31,29 +31,29 @@
         }
 
         .notFoundTitle {
-            color: var(--colorBlack);
+            color: var(--color-primary);
             text-align: center;
-            font-family: Mansfield-SemiBold;
+            font-family: Mansfield, sans-serif;
+            font-weight: 800;
             font-size: 48.83px;
-            font-style: normal;
             line-height: 123%;
         }
 
         .notFoundSubtitle {
-            color: var(--colorIndigo);
+            color: var(--color-foreground);
             text-align: center;
-            font-family: Mansfield-Bold;
+            font-family: Mansfield, sans-serif;
+            font-weight: 700;
             font-size: 40px;
-            font-style: normal;
             line-height: 123%;
         }
 
         .notFoundDescription {
-            color: var(--colorBlack);
+            color: var(--color-muted-foreground);
             text-align: center;
-            font-family: Mansfield-SemiBold;
+            font-family: Mansfield, sans-serif;
+            font-weight: 600;
             font-size: 25px;
-            font-style: normal;
             line-height: 123%;
         }
 
@@ -66,7 +66,7 @@
 
     .footer {
         border-top: 1px solid #ffffff00;
-        background: var(--backgroundGlass);
+        background: color-mix(in oklab, var(--color-card), transparent 20%);
         background-blend-mode: overlay, normal;
         box-shadow: 0px 0px 14px 2px rgba(0, 0, 0, 0.10);
         backdrop-filter: blur(35px);
@@ -82,7 +82,7 @@
             justify-content: space-between;
             align-items: center;
             align-self: stretch;
-            border-bottom: 1px solid var(--colorGrey);
+            border-bottom: 1px solid var(--color-border);
 
             img {
                 max-width: 150px;
@@ -90,8 +90,8 @@
             }
 
             p {
-                color: var(--colorGrey);
-                font-family: Mansfield;
+                color: var(--color-muted-foreground);
+                font-family: Mansfield, sans-serif;
                 text-align: left;
                 font-size: 12px;
                 font-style: normal;
@@ -103,15 +103,15 @@
         .footerBody {
             display: flex;
             padding: 8px 0px;
-            border-top: 0.818px var(--colorBlack);
+            border-top: 0.818px var(--color-border);
             justify-content: space-between;
             align-items: center;
             align-self: stretch;
             gap: 8px;
 
             .footerContact {
-                color: var(--colorGreyDark);
-                font-family: Mansfield-SemiBold;
+                color: var(--color-foreground);
+                font-family: Mansfield, sans-serif;
                 text-align: left;
                 font-size: 12px;
                 font-style: normal;
@@ -121,8 +121,8 @@
 
             .footerSuggestion {
                 display: none;
-                color: var(--colorGrey);
-                font-family: Mansfield;
+                color: var(--color-muted-foreground);
+                font-family: Mansfield, sans-serif;
                 text-align: left;
                 font-size: 12px;
                 font-style: normal;
@@ -139,7 +139,7 @@
                     display: flex;
                     align-items: center;
                     border-radius: 10px;
-                    background: var(--colorWhite);
+                    background: var(--color-card);
                     padding: 8px;
                     gap: 8.18px;
 

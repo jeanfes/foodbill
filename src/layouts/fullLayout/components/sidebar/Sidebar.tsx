@@ -180,7 +180,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                         ? isOpen
                                             ? "bg-primary/10 text-primary"
                                             : "bg-primary text-white"
-                                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                                        : "text-muted-foreground hover:bg-accent hover:text-white",
                                     !isOpen && "justify-center",
                                 )}
                                 onClick={(e) => {
@@ -193,21 +193,27 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                 <Icon
                                     className={cn(
                                         "w-5 h-5 shrink-0 transition-colors duration-300",
+                                        !isSectionActive && "group-hover:text-white",
                                         isSectionActive ? (isOpen ? "text-primary" : "text-white") : undefined,
                                     )}
                                 />
                                 {isOpen && (
                                     <>
-                                        <span className="flex-1 text-sm font-bold">{item.name}</span>
+                                        <span className={cn(
+                                            "flex-1 text-sm font-bold transition-colors",
+                                            !isSectionActive && "group-hover:text-white"
+                                        )}>{item.name}</span>
                                         {item.badge && (
-                                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
-                                                {item.badge}
-                                            </span>
+                                            <span className={cn(
+                                                "bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full transition-colors",
+                                                !isSectionActive && "group-hover:text-white"
+                                            )}>{item.badge}</span>
                                         )}
                                         {item.hasDropdown && (
                                             <ChevronDown
                                                 className={cn(
                                                     "w-4 h-4 transition-transform duration-300",
+                                                    !isSectionActive && "group-hover:text-white",
                                                     isExpanded && "rotate-180",
                                                 )}
                                             />
@@ -236,17 +242,21 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                                     key={child.name}
                                                     to={child.href}
                                                     className={cn(
-                                                        "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-colors",
+                                                        "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-colors group",
                                                         childActive
                                                             ? "bg-primary/10 text-primary"
-                                                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                                                            : "text-muted-foreground hover:bg-accent hover:text-white",
                                                     )}
                                                 >
-                                                    <span className="truncate">{child.name}</span>
+                                                    <span className={cn(
+                                                        "truncate transition-colors",
+                                                        !childActive && "group-hover:text-white"
+                                                    )}>{child.name}</span>
                                                     {child.badge && (
-                                                        <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                                                            {child.badge}
-                                                        </span>
+                                                        <span className={cn(
+                                                            "bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors",
+                                                            !childActive && "group-hover:text-white"
+                                                        )}>{child.badge}</span>
                                                     )}
                                                 </Link>
                                             )
