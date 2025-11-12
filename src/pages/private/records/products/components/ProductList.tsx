@@ -1,6 +1,6 @@
-import type { Product } from '../../../../../lib/mockData/products';
-import { Card } from '../../../../../components/ui/card';
-import { Button } from '../../../../../components/ui/button';
+import type { Product } from '@/interfaces/product';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 interface ProductListProps {
@@ -18,13 +18,19 @@ export function ProductList({ products, onSelect }: ProductListProps) {
                     whileHover={{ scale: 1.03 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                 >
-                    <Card className="flex flex-col h-full">
-                        <div className="h-32 flex items-center justify-center bg-muted rounded-t">
-                            {product.imageUrl ? (
-                                <img src={product.imageUrl} alt={product.name} className="h-20 w-20 object-cover rounded" />
-                            ) : (
-                                <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center text-2xl text-gray-400">📦</div>
-                            )}
+                    <Card className="flex flex-col h-full p-0">
+                        <div className="h-32 flex items-center justify-center bg-muted rounded-t overflow-hidden">
+                            <img
+                                src={product.imageUrl || `https://placehold.co/600x400?text=${encodeURIComponent(product.name)}`}
+                                alt={product.name}
+                                className="h-32 w-full object-cover"
+                                loading="lazy"
+                                onError={(e) => {
+                                    const target = e.currentTarget as HTMLImageElement;
+                                    target.onerror = null;
+                                    target.src = `https://placehold.co/600x400?text=${encodeURIComponent(product.name)}`;
+                                }}
+                            />
                         </div>
                         <div className="flex-1 p-3 flex flex-col gap-1">
                             <div className="font-semibold truncate" title={product.name}>{product.name}</div>

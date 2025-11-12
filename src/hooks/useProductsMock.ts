@@ -1,5 +1,7 @@
 import { useCallback, useEffect,  useRef, useState } from 'react';
-import {  loadProductsFromStorage, saveProductsToStorage, type Product } from '../lib/mockData/products';
+import {  loadProductsFromStorage, saveProductsToStorage } from '@/lib/mockData/products';
+import type { Product, ProductsUIPreferences } from '@/interfaces/product';
+import { STORAGE_KEYS } from '@/lib/storageKeys';
 
 export interface FilterParams {
   search?: string;
@@ -19,6 +21,14 @@ export interface FilterParams {
 export function useProductsMock() {
   const [products, setProducts] = useState<Product[]>(() => loadProductsFromStorage());
   const isFirst = useRef(true);
+  const [prefs, setPrefs] = useState<ProductsUIPreferences>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.PRODUCTS_PREFS);
+      return raw ? (JSON.parse(raw) as ProductsUIPreferences) : {};
+    } catch {
+      return {} as ProductsUIPreferences;
+    }
+  });
 
   // Persistencia en localStorage
   useEffect(() => {
@@ -26,46 +36,57 @@ export function useProductsMock() {
     isFirst.current = false;
   }, [products]);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS_PREFS, JSON.stringify(prefs));
+  }, [prefs]);
+
   // Filtrado y búsqueda
   const filteredProducts = useCallback((params: FilterParams = {}) => {
+    const effective = {
+      ...prefs.lastFilters,
+      sortBy: prefs.sortBy,
+      sortDir: prefs.sortDir,
+      pageSize: prefs.pageSize,
+      ...params,
+    } as FilterParams;
     let data = [...products];
-    if (params.search) {
-      const q = params.search.toLowerCase();
+    if (effective.search) {
+      const q = effective.search.toLowerCase();
       data = data.filter(p =>
         p.name.toLowerCase().includes(q) || (p.sku && p.sku.includes(q))
       );
     }
-    if (params.categoryIds && params.categoryIds.length > 0) {
-      data = data.filter(p => p.categoryId && params.categoryIds!.includes(p.categoryId));
+    if (effective.categoryIds && effective.categoryIds.length > 0) {
+      data = data.filter(p => p.categoryId && effective.categoryIds!.includes(p.categoryId));
     }
-    if (params.status && params.status !== 'all') {
-      data = data.filter(p => p.status === params.status);
+    if (effective.status && effective.status !== 'all') {
+      data = data.filter(p => p.status === effective.status);
     }
-    if (params.trackInventory !== undefined) {
-      data = data.filter(p => p.trackInventory === params.trackInventory);
+    if (effective.trackInventory !== undefined) {
+      data = data.filter(p => p.trackInventory === effective.trackInventory);
     }
-    if (params.stockLowOnly) {
+    if (effective.stockLowOnly) {
       data = data.filter(p => {
         if (!p.trackInventory) return false;
         const total = (p.stockByWarehouse || []).reduce((a, w) => a + w.stock, 0);
         return p.minStock !== undefined && total <= p.minStock;
       });
     }
-    if (params.priceMin !== undefined) {
-      data = data.filter(p => p.price >= params.priceMin!);
+    if (effective.priceMin !== undefined) {
+      data = data.filter(p => p.price >= effective.priceMin!);
     }
-    if (params.priceMax !== undefined) {
-      data = data.filter(p => p.price <= params.priceMax!);
+    if (effective.priceMax !== undefined) {
+      data = data.filter(p => p.price <= effective.priceMax!);
     }
-    if (params.tags && params.tags.length > 0) {
-      data = data.filter(p => p.tags && p.tags.some(t => params.tags!.includes(t)));
+    if (effective.tags && effective.tags.length > 0) {
+      data = data.filter(p => p.tags && p.tags.some(t => effective.tags!.includes(t)));
     }
     // Sorting
-    if (params.sortBy) {
+    if (effective.sortBy) {
       data.sort((a, b) => {
-        const dir = params.sortDir === 'desc' ? -1 : 1;
-        const av = a[params.sortBy!];
-        const bv = b[params.sortBy!];
+        const dir = effective.sortDir === 'desc' ? -1 : 1;
+        const av = a[effective.sortBy!];
+        const bv = b[effective.sortBy!];
         if (av === undefined) return 1;
         if (bv === undefined) return -1;
         if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
@@ -73,9 +94,9 @@ export function useProductsMock() {
       });
     }
     // Paginación
-    if (params.pageSize && params.page !== undefined) {
-      const start = params.page * params.pageSize;
-      data = data.slice(start, start + params.pageSize);
+    if (effective.pageSize && effective.page !== undefined) {
+      const start = effective.page * effective.pageSize;
+      data = data.slice(start, start + effective.pageSize);
     }
     return data;
   }, [products]);
@@ -154,6 +175,8 @@ export function useProductsMock() {
   return {
     products,
     filteredProducts,
+    preferences: prefs,
+    setPreferences: setPrefs,
     createProduct,
     updateProduct,
     softDeleteProduct,

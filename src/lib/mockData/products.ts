@@ -6,49 +6,8 @@
 
 
 
-/**
- * Representa un producto en el sistema.
- * @property id - UUID único
- * @property sku - Código SKU/PLU/barcode (opcional, único si existe)
- * @property name - Nombre del producto (requerido, min 2 chars)
- * @property description - Descripción (opcional)
- * @property categoryId - ID de categoría (opcional)
- * @property categoryName - Nombre de la categoría (opcional)
- * @property price - Precio de venta (requerido, >= 0.01)
- * @property cost - Costo (opcional, visible solo si permiso showCost)
- * @property trackInventory - Si gestiona inventario
- * @property stockByWarehouse - Array de stock por bodega
- * @property minStock - Stock mínimo para alerta de bajo stock (opcional)
- * @property isComposite - Si es producto compuesto/receta
- * @property recipe - Ingredientes (si isComposite)
- * @property tags - Etiquetas (opcional)
- * @property imageUrl - URL de imagen (opcional)
- * @property status - 'active' | 'inactive'
- * @property visibility - Visibilidad en POS (opcional)
- * @property createdAt - Fecha creación (ISO)
- * @property updatedAt - Fecha actualización (ISO)
- */
-export interface Product {
-  id: string;
-  sku?: string;
-  name: string;
-  description?: string;
-  categoryId?: string;
-  categoryName?: string;
-  price: number;
-  cost?: number;
-  trackInventory: boolean;
-  stockByWarehouse?: { warehouseId: string; warehouseName?: string; stock: number }[];
-  minStock?: number;
-  isComposite?: boolean;
-  recipe?: { productId: string; qty: number }[];
-  tags?: string[];
-  imageUrl?: string;
-  status: 'active' | 'inactive';
-  visibility?: { active: boolean; startTime?: string; endTime?: string; days?: string[] };
-  createdAt?: string;
-  updatedAt?: string;
-}
+import type { Product } from "@/interfaces/product";
+import { STORAGE_KEYS } from "@/lib/storageKeys";
 
 /**
  * Validaciones básicas:
@@ -65,7 +24,21 @@ export interface Product {
  */
 export function getInitialMockProducts(): Product[] {
   const now = new Date().toISOString();
-  return [
+  const tagForCategory = (name?: string) => {
+    switch (name) {
+      case 'Platos':
+        return 'food';
+      case 'Bebidas':
+        return 'drink';
+      case 'Postres':
+        return 'dessert';
+      case 'Snacks':
+        return 'snack';
+      default:
+        return 'restaurant';
+    }
+  };
+  const base: Product[] = [
     {
       id: 'p-1',
       sku: '1001',
@@ -81,7 +54,7 @@ export function getInitialMockProducts(): Product[] {
         { warehouseId: 'w-1', warehouseName: 'Cocina', stock: 25 }
       ],
       minStock: 5,
-      imageUrl: '/images/burger.jpg',
+  imageUrl: `https://loremflickr.com/600/400/${tagForCategory('Platos')}?lock=1`,
       tags: ['popular'],
       createdAt: now,
       updatedAt: now
@@ -101,7 +74,7 @@ export function getInitialMockProducts(): Product[] {
         { warehouseId: 'w-2', warehouseName: 'Barra', stock: 10 }
       ],
       minStock: 10,
-      imageUrl: '/images/coke.jpg',
+  imageUrl: `https://loremflickr.com/600/400/${tagForCategory('Bebidas')}?lock=2`,
       tags: [],
       createdAt: now,
       updatedAt: now
@@ -119,19 +92,56 @@ export function getInitialMockProducts(): Product[] {
       trackInventory: false,
       stockByWarehouse: [],
   minStock: undefined,
-  imageUrl: undefined,
+  imageUrl: `https://loremflickr.com/600/400/${tagForCategory('Servicios')}?lock=3`,
       tags: ['corporativo'],
       createdAt: now,
       updatedAt: now
     },
-    // ...27 productos más variados (se agregarán en la siguiente iteración)...
   ];
+
+  // Generar productos adicionales variados hasta ~30
+  const categories = [
+    { id: 'c-1', name: 'Platos' },
+    { id: 'c-2', name: 'Bebidas' },
+    { id: 'c-3', name: 'Servicios' },
+    { id: 'c-4', name: 'Postres' },
+    { id: 'c-5', name: 'Snacks' },
+  ];
+  const tags = ["popular", "vegano", "sin_gluten", "nuevo", "promo"];
+  for (let i = 4; i <= 30; i++) {
+    const c = categories[i % categories.length];
+    const price = Number((Math.random() * 50 + 2).toFixed(2));
+    const track = i % 3 !== 0; // algunos sin inventario
+    const minStock = track ? (i % 5 === 0 ? 20 : 5) : undefined;
+    const stock = track ? (i % 6 === 0 ? 3 : Math.floor(Math.random() * 40) + 1) : 0; // algunos bajos
+    base.push({
+      id: `p-${i}`,
+      sku: `${1000 + i}`,
+      name: `${c.name} ${i}`,
+      description: `Producto ${i} de categoría ${c.name}`,
+      categoryId: c.id,
+      categoryName: c.name,
+      price,
+      cost: Math.random() > 0.5 ? Number((price * 0.5).toFixed(2)) : undefined,
+      status: i % 11 === 0 ? 'inactive' : 'active',
+      trackInventory: track,
+      stockByWarehouse: track ? [{ warehouseId: 'w-1', warehouseName: 'General', stock }] : [],
+      minStock,
+  imageUrl: `https://loremflickr.com/600/400/${tagForCategory(c.name)}?lock=${i}`,
+      tags: Math.random() > 0.6 ? [tags[i % tags.length]] : [],
+      createdAt: now,
+      updatedAt: now,
+      isComposite: i % 7 === 0,
+      recipe: i % 7 === 0 ? [{ productId: 'p-1', qty: 1 }, { productId: 'p-2', qty: 2 }] : undefined,
+    });
+  }
+  return base;
 }
 
 /**
  * Helpers para persistencia en localStorage
  */
-const STORAGE_KEY = 'mock_products_v1';
+const STORAGE_KEY = STORAGE_KEYS.PRODUCTS;
 
 export function loadProductsFromStorage(): Product[] {
   const raw = localStorage.getItem(STORAGE_KEY);

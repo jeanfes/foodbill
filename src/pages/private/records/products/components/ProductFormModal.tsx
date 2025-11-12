@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import type { Product } from '../../../../../lib/mockData/products';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '../../../../../components/ui/dialog';
-import { Button } from '../../../../../components/ui/button';
+import type { Product } from '@/interfaces/product';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -65,9 +68,9 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                     <DialogTitle>{initial ? 'Editar producto' : 'Nuevo producto'}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                    <input
+                    <Input
                         name="name"
-                        className="input input-bordered"
+                        className=""
                         placeholder="Nombre"
                         value={form.name}
                         onChange={handleChange}
@@ -75,17 +78,17 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                         minLength={2}
                         aria-label="Nombre"
                     />
-                    <input
+                    <Input
                         name="sku"
-                        className="input input-bordered"
+                        className=""
                         placeholder="SKU (opcional)"
                         value={form.sku}
                         onChange={handleChange}
                         aria-label="SKU"
                     />
-                    <input
+                    <Input
                         name="price"
-                        className="input input-bordered"
+                        className=""
                         placeholder="Precio"
                         type="number"
                         min={0.01}
@@ -95,32 +98,32 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                         aria-label="Precio"
                         required
                     />
-                    <input
+                    <Input
                         name="categoryName"
-                        className="input input-bordered"
+                        className=""
                         placeholder="Categoría"
                         value={form.categoryName}
                         onChange={handleChange}
                         aria-label="Categoría"
                     />
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="trackInventory"
+                    <div className="flex items-center gap-2">
+                        <Checkbox
+                            id="trackInventory"
                             checked={form.trackInventory}
-                            onChange={handleChange}
+                            onCheckedChange={(v) => setForm(f => ({ ...f, trackInventory: !!v }))}
                             aria-label="Gestiona inventario"
-                        /> Gestiona inventario
-                    </label>
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="isComposite"
+                        />
+                        <Label htmlFor="trackInventory" className="cursor-pointer">Gestiona inventario</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Checkbox
+                            id="isComposite"
                             checked={form.isComposite}
-                            onChange={handleChange}
+                            onCheckedChange={(v) => setForm(f => ({ ...f, isComposite: !!v }))}
                             aria-label="Es compuesto"
-                        /> Es compuesto
-                    </label>
+                        />
+                        <Label htmlFor="isComposite" className="cursor-pointer">Es compuesto</Label>
+                    </div>
                     {error && <div className="text-destructive text-sm">{error}</div>}
                     <DialogFooter>
                         <Button type="submit">Guardar</Button>

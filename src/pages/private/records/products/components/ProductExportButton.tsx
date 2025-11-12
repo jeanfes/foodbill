@@ -1,5 +1,5 @@
-import { Button } from '../../../../../components/ui/button';
-import type { Product } from '../../../../../lib/mockData/products';
+import { Button } from '@/components/ui/button';
+import type { Product } from '@/interfaces/product';
 
 interface ProductExportButtonProps {
     products: Product[];
