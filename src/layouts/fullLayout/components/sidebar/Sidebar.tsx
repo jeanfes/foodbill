@@ -41,7 +41,7 @@ const navigationItems: NavigationItem[] = [
         hasDropdown: true,
         children: [
             { name: "Clientes", href: "/records/clients" },
-            { name: "Productos", href: "/records/products" },
+            { name: "Productos", href: "/records/products", requiredPermission: Permission.VIEW_PRODUCTS },
             { name: "Bodegas", href: "/records/warehouses" },
             { name: "Categorías", href: "/records/categories" },
             { name: "Cajas", href: "/records/registers" },

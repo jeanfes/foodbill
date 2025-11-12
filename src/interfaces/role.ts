@@ -24,7 +24,7 @@ export const Permission = {
   CREATE_INVENTORY: "CREATE_INVENTORY",
   UPDATE_INVENTORY: "UPDATE_INVENTORY",
   DELETE_INVENTORY: "DELETE_INVENTORY",
-  // Clients (Registros)
+  VIEW_PRODUCTS: "VIEW_PRODUCTS",
   VIEW_CLIENTS: "VIEW_CLIENTS",
   CREATE_CLIENTS: "CREATE_CLIENTS",
   UPDATE_CLIENTS: "UPDATE_CLIENTS",
@@ -72,6 +72,7 @@ export const rolePermissionsConfig: RolePermissions[] = [
       Permission.DELETE_MENU,
       Permission.VIEW_INVENTORY,
       Permission.UPDATE_INVENTORY,
+      Permission.VIEW_PRODUCTS,
       // Clients
       Permission.VIEW_CLIENTS,
       Permission.CREATE_CLIENTS,
@@ -96,6 +97,7 @@ export const rolePermissionsConfig: RolePermissions[] = [
       Permission.UPDATE_ORDERS,
       Permission.VIEW_MENU,
       Permission.VIEW_INVENTORY,
+      Permission.VIEW_PRODUCTS,
       // Clients
       Permission.VIEW_CLIENTS,
       Permission.CREATE_CLIENTS,

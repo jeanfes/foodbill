@@ -11,6 +11,7 @@ import FullLayout from "../layouts/fullLayout/FullLayout";
 import Home from "@/pages/private/home/Home";
 import { Permission } from "@/interfaces/role";
 import ClientsPage from "@/pages/private/records/clients/ClientsPage.tsx";
+import ProductsPage from "@/pages/private/records/products/ProductsPage.tsx";
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -63,6 +64,14 @@ const AppRoutes = () => {
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_CLIENTS}>
               <ClientsPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/records/products",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_PRODUCTS}>
+              <ProductsPage />
             </PermissionRoute>
           ),
         },
