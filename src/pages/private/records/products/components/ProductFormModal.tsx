@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -78,18 +78,18 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                     <DialogTitle>{initial ? 'Editar producto' : 'Nuevo producto'}</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nombre</FormLabel>
+                                        <FormLabel className="text-sm mb-1.5 block">Nombre</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Nombre del producto" aria-label="Nombre" {...field} />
+                                            <Input placeholder="Nombre del producto" aria-label="Nombre" className="h-10" {...field} />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
@@ -99,24 +99,24 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                                 name="sku"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>SKU (opcional)</FormLabel>
+                                        <FormLabel className="text-sm mb-1.5 block">SKU (opcional)</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="SKU" aria-label="SKU" {...field} />
+                                            <Input placeholder="SKU" aria-label="SKU" className="h-10" {...field} />
                                         </FormControl>
-                                        <FormDescription>Usa un código único para facilitar búsquedas.</FormDescription>
-                                        <FormMessage />
+                                        <p className="text-xs text-muted-foreground mt-1">Usa un código único para facilitar búsquedas.</p>
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="price"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Precio (COP)</FormLabel>
+                                        <FormLabel className="text-sm mb-1.5 block">Precio (COP)</FormLabel>
                                         <FormControl>
                                             <NumberInput
                                                 value={Number(field.value) || 0}
@@ -131,9 +131,10 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                                                 suffix=" COP"
                                                 placeholder="0"
                                                 aria-label="Precio (COP)"
+                                                className="h-10"
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
@@ -143,19 +144,19 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                                 name="categoryName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Categoría</FormLabel>
+                                        <FormLabel className="text-sm mb-1.5 block">Categoría</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Ej: Bebidas, Postres" aria-label="Categoría" {...field} />
+                                            <Input placeholder="Ej: Bebidas, Postres" aria-label="Categoría" className="h-10" {...field} />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <div className="text-sm font-medium text-muted-foreground">Inventario</div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <div className="text-sm font-medium text-muted-foreground mb-3">Inventario</div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <FormField
                                     control={form.control}
                                     name="trackInventory"
@@ -170,9 +171,9 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                                                         aria-label="Gestiona inventario"
                                                     />
                                                 </FormControl>
-                                                <Label htmlFor="trackInventory" className="cursor-pointer">Gestiona inventario</Label>
+                                                <Label htmlFor="trackInventory" className="cursor-pointer text-sm">Gestiona inventario</Label>
                                             </div>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
@@ -191,9 +192,9 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                                                         aria-label="Es compuesto"
                                                     />
                                                 </FormControl>
-                                                <Label htmlFor="isComposite" className="cursor-pointer">Es compuesto</Label>
+                                                <Label htmlFor="isComposite" className="cursor-pointer text-sm">Es compuesto</Label>
                                             </div>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
@@ -204,21 +205,20 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
                                     control={form.control}
                                     name="minStock"
                                     render={({ field }) => (
-                                        <FormItem className="w-full">
-                                            <div className="flex flex-col items-start">
-                                                <FormLabel>Stock mínimo</FormLabel>
-                                                <FormControl>
-                                                    <NumberInput
-                                                        value={Number(field.value) || 0}
-                                                        onValueChange={(v) => field.onChange(v ?? 0)}
-                                                        decimalScale={0}
-                                                        min={0}
-                                                        placeholder="0"
-                                                    />
-                                                </FormControl>
-                                            </div>
-                                            <FormDescription>Alerta cuando el stock esté por debajo.</FormDescription>
-                                            <FormMessage />
+                                        <FormItem className="w-full mt-4">
+                                            <FormLabel className="text-sm mb-1.5 block">Stock mínimo</FormLabel>
+                                            <FormControl>
+                                                <NumberInput
+                                                    value={Number(field.value) || 0}
+                                                    onValueChange={(v) => field.onChange(v ?? 0)}
+                                                    decimalScale={0}
+                                                    min={0}
+                                                    placeholder="0"
+                                                    className="h-10"
+                                                />
+                                            </FormControl>
+                                            <p className="text-xs text-muted-foreground mt-1">Alerta cuando el stock esté por debajo.</p>
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
@@ -227,9 +227,9 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
 
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="button" variant="ghost">Cancelar</Button>
+                                <Button type="button" variant="ghost" className="h-9">Cancelar</Button>
                             </DialogClose>
-                            <Button type="submit" disabled={form.formState.isSubmitting}>
+                            <Button type="submit" disabled={form.formState.isSubmitting} className="h-9">
                                 {form.formState.isSubmitting ? 'Guardando...' : 'Guardar'}
                             </Button>
                         </DialogFooter>

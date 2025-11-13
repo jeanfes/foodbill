@@ -41,7 +41,7 @@ export function WarehouseFormDialog({ open, onOpenChange, onSubmit, initial, use
 
     const submit = (values: WarehouseFormValues) => {
         if (!initial && usedCodes.includes(values.code)) {
-            // simple visual validation
+
             alert("El código ya existe, elige otro.");
             return;
         }
@@ -60,12 +60,12 @@ export function WarehouseFormDialog({ open, onOpenChange, onSubmit, initial, use
                         <div>
                             <Label htmlFor="name" className="text-sm mb-1.5 block">Nombre</Label>
                             <Input className="h-10" id="name" placeholder="Bodega Principal" aria-label="Nombre" {...register("name")} />
-                            {errors.name && <p className="text-sm text-destructive mt-1">{errors.name.message}</p>}
+                            {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
                         </div>
                         <div>
                             <Label htmlFor="code" className="text-sm mb-1.5 block">Código</Label>
                             <Input className="h-10" id="code" placeholder="BOD-001" aria-label="Código" {...register("code")} />
-                            {errors.code && <p className="text-sm text-destructive mt-1">{errors.code.message}</p>}
+                            {errors.code && <p className="text-xs text-destructive mt-1">{errors.code.message}</p>}
                         </div>
                     </div>
 
@@ -78,7 +78,7 @@ export function WarehouseFormDialog({ open, onOpenChange, onSubmit, initial, use
                         <div>
                             <Label htmlFor="location" className="text-sm mb-1.5 block">Ubicación</Label>
                             <Input className="h-10" id="location" placeholder="Sede Norte" aria-label="Ubicación" {...register("location")} />
-                            {errors.location && <p className="text-sm text-destructive mt-1">{errors.location.message}</p>}
+                            {errors.location && <p className="text-xs text-destructive mt-1">{errors.location.message}</p>}
                         </div>
                         <div>
                             <Label htmlFor="status" className="text-sm mb-1.5 block">Estado</Label>
@@ -97,14 +97,14 @@ export function WarehouseFormDialog({ open, onOpenChange, onSubmit, initial, use
                                     </Select>
                                 )}
                             />
-                            {errors.status && <p className="text-sm text-destructive mt-1">{errors.status.message}</p>}
+                            {errors.status && <p className="text-xs text-destructive mt-1">{errors.status.message}</p>}
                         </div>
                     </div>
 
                     <div>
                         <Label htmlFor="manager" className="text-sm mb-1.5 block">Responsable</Label>
                         <Input className="h-10" id="manager" placeholder="Nombre del responsable" aria-label="Responsable" {...register("manager")} />
-                        {errors.manager && <p className="text-sm text-destructive mt-1">{errors.manager.message}</p>}
+                        {errors.manager && <p className="text-xs text-destructive mt-1">{errors.manager.message}</p>}
                     </div>
 
                     <DialogFooter>

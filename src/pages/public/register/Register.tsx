@@ -58,12 +58,12 @@ export default function Register() {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel htmlFor="email" className="text-sm mb-1.5">Correo electrónico</FormLabel>
+                  <FormItem>
+                    <FormLabel htmlFor="email" className="text-sm mb-1.5 block">Correo electrónico</FormLabel>
                     <FormControl>
                       <Input className="h-10" id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -71,12 +71,12 @@ export default function Register() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel htmlFor="password" className="text-sm mb-1.5">Contraseña</FormLabel>
+                  <FormItem>
+                    <FormLabel htmlFor="password" className="text-sm mb-1.5 block">Contraseña</FormLabel>
                     <FormControl>
                       <PasswordInput className="h-10" id="password" placeholder="••••••••" disabled={isLoading} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -84,12 +84,12 @@ export default function Register() {
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel htmlFor="confirmPassword" className="text-sm mb-1.5">Confirmar contraseña</FormLabel>
+                  <FormItem>
+                    <FormLabel htmlFor="confirmPassword" className="text-sm mb-1.5 block">Confirmar contraseña</FormLabel>
                     <FormControl>
                       <PasswordInput className="h-10" id="confirmPassword" placeholder="••••••••" disabled={isLoading} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />

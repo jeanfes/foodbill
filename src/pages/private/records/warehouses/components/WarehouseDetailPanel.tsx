@@ -33,7 +33,7 @@ export function WarehouseDetailPanel({ warehouse, stocks, movements, onEdit, onT
                 const prefs = JSON.parse(saved);
                 if (prefs.tab) setTab(prefs.tab);
                 if (prefs.showLowStockOnly !== undefined) setShowLowStockOnly(prefs.showLowStockOnly);
-            } catch { /* ignore */ }
+            } catch { }
         }
     }, []);
 

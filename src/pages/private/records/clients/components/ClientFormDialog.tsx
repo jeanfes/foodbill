@@ -55,12 +55,10 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
         notes: z.string().optional().or(z.literal("")),
         tags: z.string().optional().or(z.literal("")),
     }).superRefine((val, ctx) => {
-        // Al menos teléfono o email
         if (!val.phone && !val.email) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Debe proporcionar al menos un teléfono o email", path: ["phone"] });
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Debe proporcionar al menos un teléfono o email", path: ["email"] });
         }
-        // Si corporativo, exigir NIT y razón social
         if (val.type === "Corporativo") {
             if (!val.document?.trim()) {
                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: "El NIT es obligatorio para clientes corporativos", path: ["document"] });
@@ -117,7 +115,6 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                 setLoading(false);
             });
         } else if (open && !clientId) {
-            // Reset form para crear nuevo
             form.reset({
                 documentType: "",
                 document: "",
@@ -138,7 +135,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
     }, [open, clientId]);
 
     const checkDuplicates = async () => {
-        if (isEdit) return []; // No buscar duplicados al editar
+        if (isEdit) return [];
 
         const { data } = await clientsService.list();
         const duplicates: PotentialDuplicate[] = [];
@@ -178,8 +175,6 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
     };
 
     const handleSubmit = async (values: FormData) => {
-
-        // Buscar duplicados antes de guardar
         const duplicates = await checkDuplicates();
         if (duplicates.length > 0 && !showDuplicateWarning) {
             setPotentialDuplicates(duplicates);
@@ -211,10 +206,8 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
             }
 
             onOpenChange(false);
-            // TODO: Mostrar notificación de éxito y recargar lista
         } catch (error) {
             console.error("Error guardando cliente:", error);
-            // TODO: Mostrar notificación de error
         } finally {
             setSaving(false);
         }
@@ -266,17 +259,16 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                         )}
 
                         <Form {...form}>
-                            <div className="space-y-4">
-                                {/* Tipo de cliente */}
+                            <div className="space-y-5">
                                 <FormField
                                     control={form.control}
                                     name="type"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <FormLabel htmlFor="type">Tipo de cliente *</FormLabel>
+                                        <FormItem>
+                                            <FormLabel htmlFor="type" className="text-sm mb-1.5 block">Tipo de cliente *</FormLabel>
                                             <FormControl>
                                                 <Select value={field.value as any} onValueChange={field.onChange}>
-                                                    <SelectTrigger id="type">
+                                                    <SelectTrigger id="type" className="h-10">
                                                         <SelectValue placeholder="Seleccionar tipo" />
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -286,22 +278,21 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                                     </SelectContent>
                                                 </Select>
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
 
-                                {/* Documento */}
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
                                         name="documentType"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="documentType">Tipo documento</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="documentType" className="text-sm mb-1.5 block">Tipo documento</FormLabel>
                                                 <FormControl>
                                                     <Select value={field.value} onValueChange={field.onChange}>
-                                                        <SelectTrigger id="documentType">
+                                                        <SelectTrigger id="documentType" className="h-10">
                                                             <SelectValue placeholder="Tipo" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -313,7 +304,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
@@ -321,29 +312,28 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                         control={form.control}
                                         name="document"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="document">Número {form.watch("type") === "Corporativo" && "*"}</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="document" className="text-sm mb-1.5 block">Número {form.watch("type") === "Corporativo" && "*"}</FormLabel>
                                                 <FormControl>
-                                                    <Input id="document" placeholder="Número documento" {...field} />
+                                                    <Input id="document" placeholder="Número documento" className="h-10" {...field} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
                                 </div>
 
-                                {/* Nombre completo / Razón social */}
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 gap-4">
                                     <FormField
                                         control={form.control}
                                         name="fullName"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="fullName">Nombre completo *</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="fullName" className="text-sm mb-1.5 block">Nombre completo *</FormLabel>
                                                 <FormControl>
-                                                    <Input id="fullName" placeholder="Juan Pérez" {...field} />
+                                                    <Input id="fullName" placeholder="Juan Pérez" className="h-10" {...field} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
@@ -352,30 +342,29 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                             control={form.control}
                                             name="companyName"
                                             render={({ field }) => (
-                                                <FormItem className="space-y-2">
-                                                    <FormLabel htmlFor="companyName">Razón social *</FormLabel>
+                                                <FormItem>
+                                                    <FormLabel htmlFor="companyName" className="text-sm mb-1.5 block">Razón social *</FormLabel>
                                                     <FormControl>
-                                                        <Input id="companyName" placeholder="Empresa XYZ SAS" {...field} />
+                                                        <Input id="companyName" placeholder="Empresa XYZ SAS" className="h-10" {...field} />
                                                     </FormControl>
-                                                    <FormMessage />
+                                                    <FormMessage className="text-xs" />
                                                 </FormItem>
                                             )}
                                         />
                                     )}
                                 </div>
 
-                                {/* Contacto */}
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
                                         name="phone"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="phone">Teléfono *</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="phone" className="text-sm mb-1.5 block">Teléfono *</FormLabel>
                                                 <FormControl>
-                                                    <Input id="phone" placeholder="3001234567" {...field} />
+                                                    <Input id="phone" placeholder="3001234567" className="h-10" {...field} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
@@ -383,12 +372,12 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                         control={form.control}
                                         name="phone2"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="phone2">Teléfono 2</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="phone2" className="text-sm mb-1.5 block">Teléfono 2</FormLabel>
                                                 <FormControl>
-                                                    <Input id="phone2" placeholder="6012345678" {...field} />
+                                                    <Input id="phone2" placeholder="6012345678" className="h-10" {...field} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
@@ -398,28 +387,27 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                     control={form.control}
                                     name="email"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <FormLabel htmlFor="email">Email *</FormLabel>
+                                        <FormItem>
+                                            <FormLabel htmlFor="email" className="text-sm mb-1.5 block">Email *</FormLabel>
                                             <FormControl>
-                                                <Input id="email" type="email" placeholder="correo@ejemplo.com" {...field} />
+                                                <Input id="email" type="email" placeholder="correo@ejemplo.com" className="h-10" {...field} />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
 
-                                {/* Dirección */}
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 gap-4">
                                     <FormField
                                         control={form.control}
                                         name="address"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="address">Dirección</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="address" className="text-sm mb-1.5 block">Dirección</FormLabel>
                                                 <FormControl>
-                                                    <Input id="address" placeholder="Calle 123 #45-67" {...field} />
+                                                    <Input id="address" placeholder="Calle 123 #45-67" className="h-10" {...field} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
@@ -427,44 +415,42 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                                         control={form.control}
                                         name="neighborhood"
                                         render={({ field }) => (
-                                            <FormItem className="space-y-2">
-                                                <FormLabel htmlFor="neighborhood">Barrio</FormLabel>
+                                            <FormItem>
+                                                <FormLabel htmlFor="neighborhood" className="text-sm mb-1.5 block">Barrio</FormLabel>
                                                 <FormControl>
-                                                    <Input id="neighborhood" placeholder="Centro" {...field} />
+                                                    <Input id="neighborhood" placeholder="Centro" className="h-10" {...field} />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage className="text-xs" />
                                             </FormItem>
                                         )}
                                     />
                                 </div>
 
-                                {/* Etiquetas */}
                                 <FormField
                                     control={form.control}
                                     name="tags"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <FormLabel htmlFor="tags">Etiquetas</FormLabel>
+                                        <FormItem>
+                                            <FormLabel htmlFor="tags" className="text-sm mb-1.5 block">Etiquetas</FormLabel>
                                             <FormControl>
-                                                <Input id="tags" placeholder="VIP, Mayorista (separadas por coma)" {...field} />
+                                                <Input id="tags" placeholder="VIP, Mayorista (separadas por coma)" className="h-10" {...field} />
                                             </FormControl>
-                                            <p className="text-xs text-muted-foreground">Separa las etiquetas con comas</p>
-                                            <FormMessage />
+                                            <p className="text-xs text-muted-foreground mt-1">Separa las etiquetas con comas</p>
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
 
-                                {/* Notas */}
                                 <FormField
                                     control={form.control}
                                     name="notes"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-2">
-                                            <FormLabel htmlFor="notes">Notas internas</FormLabel>
+                                        <FormItem>
+                                            <FormLabel htmlFor="notes" className="text-sm mb-1.5 block">Notas internas</FormLabel>
                                             <FormControl>
                                                 <Textarea id="notes" placeholder="Observaciones sobre el cliente..." rows={3} {...field} />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
@@ -481,6 +467,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                             onOpenChange(false);
                         }}
                         disabled={saving}
+                        className="h-9"
                     >
                         Cancelar
                     </Button>
@@ -489,12 +476,13 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                             variant="outline"
                             onClick={() => setShowDuplicateWarning(false)}
                             disabled={saving}
+                            className="h-9"
                         >
                             Revisar
                         </Button>
                     )}
                     <Can permission={isEdit ? Permission.UPDATE_CLIENTS : Permission.CREATE_CLIENTS}>
-                        <Button onClick={form.handleSubmit(handleSubmit)} disabled={loading || saving}>
+                        <Button onClick={form.handleSubmit(handleSubmit)} disabled={loading || saving} className="h-9">
                             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {isEdit ? "Guardar cambios" : "Crear cliente"}
                         </Button>

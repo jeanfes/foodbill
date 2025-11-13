@@ -40,7 +40,7 @@ export function WarehouseList({ warehouses, stocks, selectedId, onSelect, onCrea
                 const prefs = JSON.parse(saved);
                 if (prefs.statusFilter) setStatusFilter(prefs.statusFilter);
                 if (prefs.viewMode) setViewMode(prefs.viewMode);
-            } catch { /* ignore */ }
+            } catch { }
         }
     }, []);
 

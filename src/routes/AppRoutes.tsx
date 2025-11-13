@@ -12,6 +12,7 @@ import Home from "@/pages/private/home/Home";
 import { Permission } from "@/interfaces/role";
 import ClientsPage from "@/pages/private/records/clients/ClientsPage.tsx";
 import ProductsPage from "@/pages/private/records/products/ProductsPage.tsx";
+import CategoriesPage from "@/pages/private/records/categories/CategoriesPage.tsx";
 import WarehousesPage from "@/pages/private/records/warehouses/WarehousesPage.tsx";
 
 const AppRoutes = () => {
@@ -73,6 +74,14 @@ const AppRoutes = () => {
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_PRODUCTS}>
               <ProductsPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/records/categories",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_CATEGORIES}>
+              <CategoriesPage />
             </PermissionRoute>
           ),
         },

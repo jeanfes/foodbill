@@ -42,7 +42,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                             </DialogHeader>
 
                             <div className="space-y-6 mt-4">
-                                {/* Galería de imágenes */}
                                 <div className="space-y-2">
                                     <motion.div
                                         className="relative aspect-video rounded-lg overflow-hidden bg-muted"
@@ -132,7 +131,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                     </div>
                                 </div>
 
-                                {/* Tags */}
                                 {product.tags && product.tags.length > 0 && (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -149,7 +147,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                     </div>
                                 )}
 
-                                {/* Descripción */}
                                 {product.description && (
                                     <div className="space-y-2">
                                         <h4 className="font-semibold">Descripción</h4>
@@ -172,7 +169,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                     </div>
                                 )}
 
-                                {/* Receta (si es compuesto) */}
                                 {product.isComposite && product.recipe && product.recipe.length > 0 && (
                                     <div className="space-y-2">
                                         <h4 className="font-semibold">Receta / Ingredientes</h4>

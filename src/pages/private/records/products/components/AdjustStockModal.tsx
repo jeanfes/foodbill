@@ -70,17 +70,17 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                     <DialogTitle className="text-xl">Ajustar Stock - {product.name}</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="warehouseId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Bodega</FormLabel>
+                                        <FormLabel className="text-sm mb-1.5 block">Bodega</FormLabel>
                                         <FormControl>
                                             <Select value={field.value} onValueChange={field.onChange}>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="h-10">
                                                     <SelectValue placeholder="Selecciona bodega" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -92,7 +92,7 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                                                 </SelectContent>
                                             </Select>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
@@ -102,7 +102,7 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                                 name="quantity"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Cantidad </FormLabel>
+                                        <FormLabel className="text-sm mb-1.5 block">Cantidad</FormLabel>
                                         <FormControl>
                                             <NumberInput
                                                 value={Number(field.value) || 0}
@@ -110,10 +110,11 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                                                 decimalScale={0}
                                                 fixedDecimalScale={false}
                                                 placeholder="Ej: +10 o -5"
+                                                className="h-10"
                                             />
                                         </FormControl>
-                                        <FormMessage />
-                                        <p className="text-xs text-muted-foreground">Usa números positivos para agregar o negativos para restar</p>
+                                        <FormMessage className="text-xs" />
+                                        <p className="text-xs text-muted-foreground mt-1">Usa números positivos para agregar o negativos para restar</p>
                                     </FormItem>
                                 )}
                             />
@@ -124,18 +125,18 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                             name="reason"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Motivo (opcional)</FormLabel>
+                                    <FormLabel className="text-sm mb-1.5 block">Motivo (opcional)</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="Ej: Compra, Venta, Ajuste de inventario" />
+                                        <Input {...field} placeholder="Ej: Compra, Venta, Ajuste de inventario" className="h-10" />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-xs" />
                                 </FormItem>
                             )}
                         />
 
                         <DialogFooter className="gap-2 sm:gap-3">
-                            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-                            <Button type="submit">Ajustar Stock</Button>
+                            <Button type="button" variant="ghost" onClick={onClose} className="h-9">Cancelar</Button>
+                            <Button type="submit" className="h-9">Ajustar Stock</Button>
                         </DialogFooter>
                     </form>
                 </Form>

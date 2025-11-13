@@ -86,12 +86,12 @@ export default function ForgotPasswordForm() {
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel htmlFor="email" className="text-sm mb-1.5">Correo electrónico</FormLabel>
+                  <FormItem>
+                    <FormLabel htmlFor="email" className="text-sm mb-1.5 block">Correo electrónico</FormLabel>
                     <FormControl>
                       <Input className="h-10" id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />

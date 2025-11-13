@@ -18,7 +18,7 @@ export const useLogin = () => {
         setError(null);
 
         try {
-            // Usar el servicio de autenticación local
+
             const response = await AuthService.login({
                 username: values.identification_number,
                 password: values.password,

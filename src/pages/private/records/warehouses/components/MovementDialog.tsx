@@ -52,7 +52,7 @@ export function MovementDialog({ open, onOpenChange, onSubmit, typeDefault = "IN
             productName: product?.name ?? v.productName,
             quantity: v.quantity,
             note: v.note,
-            warehouseId: "", // se completará por el contenedor
+            warehouseId: "",
             toWarehouseId: isTransfer ? v.toWarehouseId : undefined,
         });
     };
@@ -85,7 +85,7 @@ export function MovementDialog({ open, onOpenChange, onSubmit, typeDefault = "IN
                                     </Select>
                                 )}
                             />
-                            {errors.type && <p className="text-sm text-destructive mt-1">{errors.type.message}</p>}
+                            {errors.type && <p className="text-xs text-destructive mt-1">{errors.type.message}</p>}
                         </div>
 
                         {isTransfer && (
@@ -130,7 +130,7 @@ export function MovementDialog({ open, onOpenChange, onSubmit, typeDefault = "IN
                                     </Select>
                                 )}
                             />
-                            {errors.productId && <p className="text-sm text-destructive mt-1">{errors.productId.message}</p>}
+                            {errors.productId && <p className="text-xs text-destructive mt-1">{errors.productId.message}</p>}
                         </div>
                         <div>
                             <Label className="text-sm mb-1.5 block">Cantidad</Label>
@@ -141,7 +141,7 @@ export function MovementDialog({ open, onOpenChange, onSubmit, typeDefault = "IN
                                     <Input className="h-10" type="number" min={0.01} step={0.01} value={field.value} onChange={e => field.onChange(Number(e.target.value))} />
                                 )}
                             />
-                            {errors.quantity && <p className="text-sm text-destructive mt-1">{errors.quantity.message}</p>}
+                            {errors.quantity && <p className="text-xs text-destructive mt-1">{errors.quantity.message}</p>}
                         </div>
                     </div>
 

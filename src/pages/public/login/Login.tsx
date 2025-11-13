@@ -72,15 +72,15 @@ const Login = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {(errorMessage || error) && (
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive text-center">{errorMessage || error}</p>
+                  <p className="text-xs text-destructive text-center">{errorMessage || error}</p>
                 </div>
               )}
               <FormField
                 control={form.control}
                 name="dependencia"
                 render={({ field }) => (
-                  <FormItem className="w-full space-y-2">
-                    <FormLabel className="text-sm mb-1.5">Dependencia</FormLabel>
+                  <FormItem className="w-full">
+                    <FormLabel className="text-sm mb-1.5 block">Dependencia</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
                         <SelectTrigger id="dependencia" className="h-10">
@@ -95,7 +95,7 @@ const Login = () => {
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -104,12 +104,12 @@ const Login = () => {
                 control={form.control}
                 name="username"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel htmlFor="username" className="text-sm mb-1.5">Usuario</FormLabel>
+                  <FormItem>
+                    <FormLabel htmlFor="username" className="text-sm mb-1.5 block">Usuario</FormLabel>
                     <FormControl>
                       <Input className="h-10" id="username" type="text" placeholder="admin" disabled={loading} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
@@ -118,8 +118,8 @@ const Login = () => {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <div className="flex items-center justify-between">
+                  <FormItem>
+                    <div className="flex items-center justify-between mb-1.5">
                       <FormLabel htmlFor="password" className="text-sm">Contraseña</FormLabel>
                       <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                         ¿Olvidaste la contraseña?
@@ -128,7 +128,7 @@ const Login = () => {
                     <FormControl>
                       <PasswordInput className="h-10" id="password" placeholder="••••••••" disabled={loading} {...field} />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />

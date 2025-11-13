@@ -158,7 +158,6 @@ const ClientDetailDialog = ({ clientId, onOpenChange, onEdit }: Props) => {
                         </div>
                     </div>
 
-                    {/* Etiquetas */}
                     {client.tags && client.tags.length > 0 && (
                         <>
                             <Separator />
@@ -173,7 +172,6 @@ const ClientDetailDialog = ({ clientId, onOpenChange, onEdit }: Props) => {
                         </>
                     )}
 
-                    {/* Notas */}
                     {client.notes && (
                         <>
                             <Separator />

@@ -28,7 +28,7 @@ export interface Client {
     documentType: "CC" | "NIT" | "CE" | "PP" | "Otro";
     document: string;
     fullName: string;
-    companyName?: string; // Para corporativos
+    companyName?: string;
     email?: string;
     phone?: string;
     phone2?: string;
@@ -55,7 +55,7 @@ const ClientsPage = () => {
 
     return (
         <div className="space-y-4">
-            {/* Título y barra de acciones con animación (igual que Productos) */}
+
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -83,7 +83,7 @@ const ClientsPage = () => {
                 </div>
             </motion.div>
 
-            {/* Búsqueda global */}
+
             <Card className="p-4">
                 <div className="flex gap-2">
                     <Input
@@ -96,13 +96,10 @@ const ClientsPage = () => {
                 </div>
             </Card>
 
-            {/* Filtros colapsables */}
             <ClientsFilters />
 
-            {/* KPIs */}
             <ClientsKpis />
 
-            {/* Tabla principal */}
             <Card className="p-0 overflow-hidden">
                 <ClientsTable
                     onOpenDetail={(id: string) => setShowDetailId(id)}
@@ -110,7 +107,6 @@ const ClientsPage = () => {
                 />
             </Card>
 
-            {/* Diálogos */}
             <ClientDetailDialog
                 clientId={showDetailId}
                 onOpenChange={setShowDetailId}
