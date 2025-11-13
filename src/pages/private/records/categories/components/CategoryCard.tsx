@@ -27,8 +27,7 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
             transition={{ type: "spring", stiffness: 300 }}
         >
             <Card className="relative overflow-hidden hover:shadow-md transition-all duration-300 group py-1">
-                <div className="p-6">
-
+                <div className="p-4">
                     <div className="flex items-start justify-between mb-4">
                         <div className={`h-14 w-14 rounded-xl ${category.color} flex items-center justify-center`}>
                             <IconComponent className="h-7 w-7" />
@@ -62,8 +61,6 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
                             </DropdownMenu>
                         </Can>
                     </div>
-
-
                     <div className="space-y-1 mb-3">
                         <h3 className="text-lg font-semibold truncate" title={category.name}>
                             {category.name}
