@@ -15,10 +15,10 @@ export function ProductList({ products, onSelect }: ProductListProps) {
             {products.map(product => (
                 <motion.div
                     key={product.id}
-                    whileHover={{ scale: 1.03 }}
+                    whileHover={{ y: -2 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                 >
-                    <Card className="flex flex-col h-full p-0">
+                    <Card className="flex flex-col h-full p-0 hover:shadow-md transition-shadow duration-300">
                         <div className="h-32 flex items-center justify-center bg-muted rounded-t-lg overflow-hidden">
                             <img
                                 src={product.imageUrl || `https://placehold.co/600x400?text=${encodeURIComponent(product.name)}`}

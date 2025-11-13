@@ -22,7 +22,7 @@ const Login = () => {
   const schema = z.object({
     dependencia: z.string().min(1, "Selecciona una dependencia"),
     username: z.string().min(1, "Usuario requerido"),
-    password: z.string().min(6, "Mínimo 6 caracteres"),
+    password: z.string().min(4, "Mínimo 4 caracteres"),
   })
 
   type FormValues = z.infer<typeof schema>
@@ -69,7 +69,7 @@ const Login = () => {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {(errorMessage || error) && (
                 <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
                   <p className="text-sm text-destructive text-center">{errorMessage || error}</p>
@@ -80,10 +80,10 @@ const Login = () => {
                 name="dependencia"
                 render={({ field }) => (
                   <FormItem className="w-full space-y-2">
-                    <FormLabel>Dependencia</FormLabel>
+                    <FormLabel className="text-sm mb-1.5">Dependencia</FormLabel>
                     <FormControl>
                       <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
-                        <SelectTrigger id="dependencia">
+                        <SelectTrigger id="dependencia" className="h-10">
                           <SelectValue placeholder="Selecciona una dependencia" />
                         </SelectTrigger>
                         <SelectContent>
@@ -105,9 +105,9 @@ const Login = () => {
                 name="username"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel htmlFor="username">Usuario</FormLabel>
+                    <FormLabel htmlFor="username" className="text-sm mb-1.5">Usuario</FormLabel>
                     <FormControl>
-                      <Input id="username" type="text" placeholder="admin" disabled={loading} {...field} />
+                      <Input className="h-10" id="username" type="text" placeholder="admin" disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -120,19 +120,19 @@ const Login = () => {
                 render={({ field }) => (
                   <FormItem className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <FormLabel htmlFor="password">Contraseña</FormLabel>
+                      <FormLabel htmlFor="password" className="text-sm">Contraseña</FormLabel>
                       <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                         ¿Olvidaste la contraseña?
                       </Link>
                     </div>
                     <FormControl>
-                      <PasswordInput id="password" placeholder="••••••••" disabled={loading} {...field} />
+                      <PasswordInput className="h-10" id="password" placeholder="••••••••" disabled={loading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full h-9" disabled={loading}>
                 {loading ? "Iniciando sesión..." : "Iniciar sesión"}
               </Button>
             </form>

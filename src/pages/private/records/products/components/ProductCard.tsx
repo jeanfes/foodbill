@@ -19,16 +19,16 @@ export function ProductCard({ product, onView, onEdit, onAdjustStock }: ProductC
 
     return (
         <motion.div
-            whileHover={{ y: -4, scale: 1.01 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+            whileHover={{ y: -2 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 28 }}
             className="group h-full"
         >
-            <Card className="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300 p-0">
+            <Card className="overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow duration-300 p-0">
                 <div className="relative w-full bg-muted overflow-hidden aspect-video">
                     <img
                         src={product.imageUrl || `https://placehold.co/600x400?text=${encodeURIComponent(product.name)}`}
                         alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-cover transition-transform duration-300"
                         loading="lazy"
                         onError={(e) => {
                             const target = e.currentTarget as HTMLImageElement;

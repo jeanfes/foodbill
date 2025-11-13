@@ -13,8 +13,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 export default function Register() {
   const schema = z.object({
     email: z.string().email("Correo inválido"),
-    password: z.string().min(6, "Mínimo 6 caracteres"),
-    confirmPassword: z.string().min(6, "Mínimo 6 caracteres"),
+    password: z.string().min(6, "Mínimo 4 caracteres"),
+    confirmPassword: z.string().min(6, "Mínimo 4 caracteres"),
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Las contraseñas no coinciden",
     path: ["confirmPassword"],
@@ -53,15 +53,15 @@ export default function Register() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel htmlFor="email">Correo electrónico</FormLabel>
+                    <FormLabel htmlFor="email" className="text-sm mb-1.5">Correo electrónico</FormLabel>
                     <FormControl>
-                      <Input id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
+                      <Input className="h-10" id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -72,9 +72,9 @@ export default function Register() {
                 name="password"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel htmlFor="password">Contraseña</FormLabel>
+                    <FormLabel htmlFor="password" className="text-sm mb-1.5">Contraseña</FormLabel>
                     <FormControl>
-                      <PasswordInput id="password" placeholder="••••••••" disabled={isLoading} {...field} />
+                      <PasswordInput className="h-10" id="password" placeholder="••••••••" disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -85,15 +85,15 @@ export default function Register() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel htmlFor="confirmPassword">Confirmar contraseña</FormLabel>
+                    <FormLabel htmlFor="confirmPassword" className="text-sm mb-1.5">Confirmar contraseña</FormLabel>
                     <FormControl>
-                      <PasswordInput id="confirmPassword" placeholder="••••••••" disabled={isLoading} {...field} />
+                      <PasswordInput className="h-10" id="confirmPassword" placeholder="••••••••" disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-9" disabled={isLoading}>
                 {isLoading ? "Creando cuenta..." : "Crear cuenta"}
               </Button>
             </form>

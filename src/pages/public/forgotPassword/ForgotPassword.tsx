@@ -81,21 +81,21 @@ export default function ForgotPasswordForm() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel htmlFor="email">Correo electrónico</FormLabel>
+                    <FormLabel htmlFor="email" className="text-sm mb-1.5">Correo electrónico</FormLabel>
                     <FormControl>
-                      <Input id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
+                      <Input className="h-10" id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full h-9" disabled={isLoading}>
                 {isLoading ? "Enviando..." : "Enviar enlace"}
               </Button>
             </form>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,8 +55,12 @@ const ClientsPage = () => {
 
     return (
         <div className="space-y-4">
-            {/* Título y barra de acciones */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            {/* Título y barra de acciones con animación (igual que Productos) */}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+            >
                 <div>
                     <h1 className="text-2xl font-bold">Clientes</h1>
                     <p className="text-sm text-muted-foreground">Gestiona tu base de clientes y su información</p>
@@ -76,7 +81,7 @@ const ClientsPage = () => {
                         </Button>
                     </Can>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Búsqueda global */}
             <Card className="p-4">
