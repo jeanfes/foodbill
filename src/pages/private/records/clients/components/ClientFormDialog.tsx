@@ -1,16 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+// Mantener Label solo si es necesario en otros lugares del archivo
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Permission } from "@/interfaces/role";
 import { Can } from "@/components/Can";
 import { clientsService } from "@/services/clientsService";
-import { AlertCircle, Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import type { Client, ClientType } from "../ClientsPage";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 interface Props {
     open: boolean;
@@ -18,24 +22,7 @@ interface Props {
     clientId?: string;
 }
 
-interface FormData {
-    documentType: "CC" | "NIT" | "CE" | "PP" | "Otro" | "";
-    document: string;
-    fullName: string;
-    companyName: string;
-    email: string;
-    phone: string;
-    phone2: string;
-    address: string;
-    neighborhood: string;
-    type: ClientType | "";
-    notes: string;
-    tags: string;
-}
-
-interface FormErrors {
-    [key: string]: string;
-}
+// El tipo del formulario se define después del esquema
 
 interface PotentialDuplicate {
     id: string;
@@ -49,22 +36,59 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
     const isEdit = !!clientId;
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [errors, setErrors] = useState<FormErrors>({});
+    const schema = useMemo(() => z.object({
+        documentType: z.enum(["CC", "NIT", "CE", "PP", "Otro", ""]).default(""),
+        document: z.string().optional().or(z.literal("")),
+        fullName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+        companyName: z.string().optional().or(z.literal("")),
+        email: z.string().email("Email inválido").optional().or(z.literal("")),
+        phone: z.string().optional().or(z.literal(""))
+            .refine((val) => {
+                if (!val) return true;
+                const cleaned = val.replace(/\D/g, "");
+                return cleaned.length >= 7 && cleaned.length <= 15;
+            }, "Teléfono inválido (7-15 dígitos)"),
+        phone2: z.string().optional().or(z.literal("")),
+        address: z.string().optional().or(z.literal("")),
+        neighborhood: z.string().optional().or(z.literal("")),
+        type: z.custom<ClientType | "">().default("") as z.ZodType<ClientType | "">,
+        notes: z.string().optional().or(z.literal("")),
+        tags: z.string().optional().or(z.literal("")),
+    }).superRefine((val, ctx) => {
+        // Al menos teléfono o email
+        if (!val.phone && !val.email) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Debe proporcionar al menos un teléfono o email", path: ["phone"] });
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Debe proporcionar al menos un teléfono o email", path: ["email"] });
+        }
+        // Si corporativo, exigir NIT y razón social
+        if (val.type === "Corporativo") {
+            if (!val.document?.trim()) {
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "El NIT es obligatorio para clientes corporativos", path: ["document"] });
+            }
+            if (!val.companyName?.trim()) {
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "La razón social es obligatoria para clientes corporativos", path: ["companyName"] });
+            }
+        }
+    }), []);
+    type FormData = z.infer<typeof schema>;
     const [potentialDuplicates, setPotentialDuplicates] = useState<PotentialDuplicate[]>([]);
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
-    const [form, setForm] = useState<FormData>({
-        documentType: "",
-        document: "",
-        fullName: "",
-        companyName: "",
-        email: "",
-        phone: "",
-        phone2: "",
-        address: "",
-        neighborhood: "",
-        type: "",
-        notes: "",
-        tags: "",
+    const form = useForm<FormData>({
+        resolver: zodResolver(schema) as any,
+        defaultValues: {
+            documentType: "",
+            document: "",
+            fullName: "",
+            companyName: "",
+            email: "",
+            phone: "",
+            phone2: "",
+            address: "",
+            neighborhood: "",
+            type: "Particular",
+            notes: "",
+            tags: "",
+        }
     });
 
     useEffect(() => {
@@ -72,7 +96,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
             setLoading(true);
             clientsService.get(clientId).then(client => {
                 if (client) {
-                    setForm({
+                    form.reset({
                         documentType: client.documentType,
                         document: client.document,
                         fullName: client.fullName,
@@ -91,7 +115,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
             });
         } else if (open && !clientId) {
             // Reset form para crear nuevo
-            setForm({
+            form.reset({
                 documentType: "",
                 document: "",
                 fullName: "",
@@ -105,71 +129,10 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                 notes: "",
                 tags: "",
             });
-            setErrors({});
             setPotentialDuplicates([]);
             setShowDuplicateWarning(false);
         }
     }, [open, clientId]);
-
-    const update = (field: keyof FormData, value: string) => {
-        setForm(f => ({ ...f, [field]: value }));
-        // Limpiar error del campo al editar
-        if (errors[field]) {
-            setErrors(e => ({ ...e, [field]: "" }));
-        }
-    };
-
-    const validateEmail = (email: string): boolean => {
-        if (!email) return true; // Email es opcional
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email.toLowerCase());
-    };
-
-    const validatePhone = (phone: string): boolean => {
-        if (!phone) return true; // Teléfono es opcional si hay email
-        const cleaned = phone.replace(/\D/g, "");
-        return cleaned.length >= 7 && cleaned.length <= 15;
-    };
-
-    const validateForm = (): boolean => {
-        const newErrors: FormErrors = {};
-
-        // Nombre obligatorio
-        if (!form.fullName.trim()) {
-            newErrors.fullName = "El nombre es obligatorio";
-        } else if (form.fullName.trim().length < 2) {
-            newErrors.fullName = "El nombre debe tener al menos 2 caracteres";
-        }
-
-        // Al menos teléfono o email
-        if (!form.phone && !form.email) {
-            newErrors.phone = "Debe proporcionar al menos un teléfono o email";
-            newErrors.email = "Debe proporcionar al menos un teléfono o email";
-        }
-
-        // Validar email si se proporciona
-        if (form.email && !validateEmail(form.email)) {
-            newErrors.email = "Email inválido";
-        }
-
-        // Validar teléfono si se proporciona
-        if (form.phone && !validatePhone(form.phone)) {
-            newErrors.phone = "Teléfono inválido (7-15 dígitos)";
-        }
-
-        // Si es corporativo, exigir NIT y razón social
-        if (form.type === "Corporativo") {
-            if (!form.document.trim()) {
-                newErrors.document = "El NIT es obligatorio para clientes corporativos";
-            }
-            if (!form.companyName.trim()) {
-                newErrors.companyName = "La razón social es obligatoria para clientes corporativos";
-            }
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
 
     const checkDuplicates = async () => {
         if (isEdit) return []; // No buscar duplicados al editar
@@ -177,22 +140,23 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
         const { data } = await clientsService.list();
         const duplicates: PotentialDuplicate[] = [];
 
+        const values = form.getValues();
         data.forEach((client: Client) => {
             const reasons: string[] = [];
 
-            if (form.fullName && client.fullName.toLowerCase() === form.fullName.toLowerCase()) {
+            if (values.fullName && client.fullName.toLowerCase() === values.fullName.toLowerCase()) {
                 reasons.push("mismo nombre");
             }
 
-            if (form.document && client.document === form.document) {
+            if (values.document && client.document === values.document) {
                 reasons.push("mismo documento");
             }
 
-            if (form.phone && client.phone === form.phone) {
+            if (values.phone && client.phone === values.phone) {
                 reasons.push("mismo teléfono");
             }
 
-            if (form.email && client.email?.toLowerCase() === form.email.toLowerCase()) {
+            if (values.email && client.email?.toLowerCase() === values.email.toLowerCase()) {
                 reasons.push("mismo email");
             }
 
@@ -210,8 +174,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
         return duplicates;
     };
 
-    const handleSubmit = async () => {
-        if (!validateForm()) return;
+    const handleSubmit = async (values: FormData) => {
 
         // Buscar duplicados antes de guardar
         const duplicates = await checkDuplicates();
@@ -224,18 +187,18 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
         setSaving(true);
         try {
             const payload = {
-                documentType: form.documentType || "Otro",
-                document: form.document,
-                fullName: form.fullName.trim(),
-                companyName: form.companyName.trim() || undefined,
-                email: form.email.trim().toLowerCase() || undefined,
-                phone: form.phone.trim() || undefined,
-                phone2: form.phone2.trim() || undefined,
-                address: form.address.trim() || undefined,
-                neighborhood: form.neighborhood.trim() || undefined,
-                type: (form.type || "Particular") as ClientType,
-                notes: form.notes.trim() || undefined,
-                tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+                documentType: values.documentType || "Otro",
+                document: values.document,
+                fullName: values.fullName.trim(),
+                companyName: values.companyName?.trim() || undefined,
+                email: values.email?.trim().toLowerCase() || undefined,
+                phone: values.phone?.trim() || undefined,
+                phone2: values.phone2?.trim() || undefined,
+                address: values.address?.trim() || undefined,
+                neighborhood: values.neighborhood?.trim() || undefined,
+                type: (values.type || "Particular") as ClientType,
+                notes: values.notes?.trim() || undefined,
+                tags: values.tags ? values.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : [],
             };
 
             if (isEdit && clientId) {
@@ -299,187 +262,211 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                             </div>
                         )}
 
-                        <div className="space-y-4">
-                            {/* Tipo de cliente */}
-                            <div className="space-y-2">
-                                <Label htmlFor="type">Tipo de cliente *</Label>
-                                <Select value={form.type} onValueChange={(v) => update("type", v)}>
-                                    <SelectTrigger id="type">
-                                        <SelectValue placeholder="Seleccionar tipo" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Particular">Particular</SelectItem>
-                                        <SelectItem value="Frecuente">Frecuente</SelectItem>
-                                        <SelectItem value="Corporativo">Corporativo</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {/* Documento */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-2">
-                                    <Label htmlFor="documentType">Tipo documento</Label>
-                                    <Select value={form.documentType} onValueChange={(v) => update("documentType", v)}>
-                                        <SelectTrigger id="documentType">
-                                            <SelectValue placeholder="Tipo" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="CC">CC</SelectItem>
-                                            <SelectItem value="NIT">NIT</SelectItem>
-                                            <SelectItem value="CE">CE</SelectItem>
-                                            <SelectItem value="PP">Pasaporte</SelectItem>
-                                            <SelectItem value="Otro">Otro</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="document">
-                                        Número {form.type === "Corporativo" && "*"}
-                                    </Label>
-                                    <Input
-                                        id="document"
-                                        value={form.document}
-                                        onChange={e => update("document", e.target.value)}
-                                        placeholder="Número documento"
-                                    />
-                                    {errors.document && (
-                                        <p className="text-sm text-red-600 flex items-center gap-1">
-                                            <AlertCircle className="h-3 w-3" />
-                                            {errors.document}
-                                        </p>
+                        <Form {...form}>
+                            <div className="space-y-4">
+                                {/* Tipo de cliente */}
+                                <FormField
+                                    control={form.control}
+                                    name="type"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel htmlFor="type">Tipo de cliente *</FormLabel>
+                                            <FormControl>
+                                                <Select value={field.value as any} onValueChange={field.onChange}>
+                                                    <SelectTrigger id="type">
+                                                        <SelectValue placeholder="Seleccionar tipo" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Particular">Particular</SelectItem>
+                                                        <SelectItem value="Frecuente">Frecuente</SelectItem>
+                                                        <SelectItem value="Corporativo">Corporativo</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                </div>
-                            </div>
+                                />
 
-                            {/* Nombre completo / Razón social */}
-                            <div className="grid grid-cols-1 gap-3">
-                                <div className="space-y-2">
-                                    <Label htmlFor="fullName">Nombre completo *</Label>
-                                    <Input
-                                        id="fullName"
-                                        value={form.fullName}
-                                        onChange={e => update("fullName", e.target.value)}
-                                        placeholder="Juan Pérez"
-                                    />
-                                    {errors.fullName && (
-                                        <p className="text-sm text-red-600 flex items-center gap-1">
-                                            <AlertCircle className="h-3 w-3" />
-                                            {errors.fullName}
-                                        </p>
-                                    )}
-                                </div>
-                                {form.type === "Corporativo" && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="companyName">Razón social *</Label>
-                                        <Input
-                                            id="companyName"
-                                            value={form.companyName}
-                                            onChange={e => update("companyName", e.target.value)}
-                                            placeholder="Empresa XYZ SAS"
-                                        />
-                                        {errors.companyName && (
-                                            <p className="text-sm text-red-600 flex items-center gap-1">
-                                                <AlertCircle className="h-3 w-3" />
-                                                {errors.companyName}
-                                            </p>
+                                {/* Documento */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="documentType"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="documentType">Tipo documento</FormLabel>
+                                                <FormControl>
+                                                    <Select value={field.value} onValueChange={field.onChange}>
+                                                        <SelectTrigger id="documentType">
+                                                            <SelectValue placeholder="Tipo" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="CC">CC</SelectItem>
+                                                            <SelectItem value="NIT">NIT</SelectItem>
+                                                            <SelectItem value="CE">CE</SelectItem>
+                                                            <SelectItem value="PP">Pasaporte</SelectItem>
+                                                            <SelectItem value="Otro">Otro</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
                                         )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Contacto */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">Teléfono *</Label>
-                                    <Input
-                                        id="phone"
-                                        value={form.phone}
-                                        onChange={e => update("phone", e.target.value)}
-                                        placeholder="3001234567"
                                     />
-                                    {errors.phone && (
-                                        <p className="text-sm text-red-600 flex items-center gap-1">
-                                            <AlertCircle className="h-3 w-3" />
-                                            {errors.phone}
-                                        </p>
+                                    <FormField
+                                        control={form.control}
+                                        name="document"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="document">Número {form.watch("type") === "Corporativo" && "*"}</FormLabel>
+                                                <FormControl>
+                                                    <Input id="document" placeholder="Número documento" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Nombre completo / Razón social */}
+                                <div className="grid grid-cols-1 gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="fullName"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="fullName">Nombre completo *</FormLabel>
+                                                <FormControl>
+                                                    <Input id="fullName" placeholder="Juan Pérez" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    {form.watch("type") === "Corporativo" && (
+                                        <FormField
+                                            control={form.control}
+                                            name="companyName"
+                                            render={({ field }) => (
+                                                <FormItem className="space-y-2">
+                                                    <FormLabel htmlFor="companyName">Razón social *</FormLabel>
+                                                    <FormControl>
+                                                        <Input id="companyName" placeholder="Empresa XYZ SAS" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     )}
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone2">Teléfono 2</Label>
-                                    <Input
-                                        id="phone2"
-                                        value={form.phone2}
-                                        onChange={e => update("phone2", e.target.value)}
-                                        placeholder="6012345678"
+
+                                {/* Contacto */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="phone"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="phone">Teléfono *</FormLabel>
+                                                <FormControl>
+                                                    <Input id="phone" placeholder="3001234567" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="phone2"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="phone2">Teléfono 2</FormLabel>
+                                                <FormControl>
+                                                    <Input id="phone2" placeholder="6012345678" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
-                            </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email *</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={form.email}
-                                    onChange={e => update("email", e.target.value)}
-                                    placeholder="correo@ejemplo.com"
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel htmlFor="email">Email *</FormLabel>
+                                            <FormControl>
+                                                <Input id="email" type="email" placeholder="correo@ejemplo.com" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
-                                {errors.email && (
-                                    <p className="text-sm text-red-600 flex items-center gap-1">
-                                        <AlertCircle className="h-3 w-3" />
-                                        {errors.email}
-                                    </p>
-                                )}
-                            </div>
 
-                            {/* Dirección */}
-                            <div className="grid grid-cols-1 gap-3">
-                                <div className="space-y-2">
-                                    <Label htmlFor="address">Dirección</Label>
-                                    <Input
-                                        id="address"
-                                        value={form.address}
-                                        onChange={e => update("address", e.target.value)}
-                                        placeholder="Calle 123 #45-67"
+                                {/* Dirección */}
+                                <div className="grid grid-cols-1 gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="address"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="address">Dirección</FormLabel>
+                                                <FormControl>
+                                                    <Input id="address" placeholder="Calle 123 #45-67" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="neighborhood"
+                                        render={({ field }) => (
+                                            <FormItem className="space-y-2">
+                                                <FormLabel htmlFor="neighborhood">Barrio</FormLabel>
+                                                <FormControl>
+                                                    <Input id="neighborhood" placeholder="Centro" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="neighborhood">Barrio</Label>
-                                    <Input
-                                        id="neighborhood"
-                                        value={form.neighborhood}
-                                        onChange={e => update("neighborhood", e.target.value)}
-                                        placeholder="Centro"
-                                    />
-                                </div>
-                            </div>
 
-                            {/* Etiquetas */}
-                            <div className="space-y-2">
-                                <Label htmlFor="tags">Etiquetas</Label>
-                                <Input
-                                    id="tags"
-                                    value={form.tags}
-                                    onChange={e => update("tags", e.target.value)}
-                                    placeholder="VIP, Mayorista (separadas por coma)"
+                                {/* Etiquetas */}
+                                <FormField
+                                    control={form.control}
+                                    name="tags"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel htmlFor="tags">Etiquetas</FormLabel>
+                                            <FormControl>
+                                                <Input id="tags" placeholder="VIP, Mayorista (separadas por coma)" {...field} />
+                                            </FormControl>
+                                            <p className="text-xs text-muted-foreground">Separa las etiquetas con comas</p>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
-                                <p className="text-xs text-muted-foreground">
-                                    Separa las etiquetas con comas
-                                </p>
-                            </div>
 
-                            {/* Notas */}
-                            <div className="space-y-2">
-                                <Label htmlFor="notes">Notas internas</Label>
-                                <Textarea
-                                    id="notes"
-                                    value={form.notes}
-                                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => update("notes", e.target.value)}
-                                    placeholder="Observaciones sobre el cliente..."
-                                    rows={3}
+                                {/* Notas */}
+                                <FormField
+                                    control={form.control}
+                                    name="notes"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel htmlFor="notes">Notas internas</FormLabel>
+                                            <FormControl>
+                                                <Textarea id="notes" placeholder="Observaciones sobre el cliente..." rows={3} {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                             </div>
-                        </div>
+                        </Form>
                     </>
                 )}
 
@@ -504,7 +491,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                         </Button>
                     )}
                     <Can permission={isEdit ? Permission.UPDATE_CLIENTS : Permission.CREATE_CLIENTS}>
-                        <Button onClick={handleSubmit} disabled={loading || saving}>
+                        <Button onClick={form.handleSubmit(handleSubmit)} disabled={loading || saving}>
                             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {isEdit ? "Guardar cambios" : "Crear cliente"}
                         </Button>

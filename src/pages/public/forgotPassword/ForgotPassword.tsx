@@ -1,22 +1,32 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { UtensilsCrossed, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Link } from "react-router-dom"
 import LogoTransparent from "../../../assets/images/logoTransparent.png"
 
 export default function ForgotPasswordForm() {
-  const [email, setEmail] = useState("")
+  const schema = z.object({
+    email: z.string().email("Correo inválido"),
+  })
+  type FormValues = z.infer<typeof schema>
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema) as any,
+    defaultValues: { email: "" },
+  })
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (values: FormValues) => {
     setIsLoading(true)
     await new Promise((resolve) => setTimeout(resolve, 1500))
-    console.log("Password reset request for:", email)
+    console.log("Password reset request for:", values.email)
     setIsSubmitted(true)
     setIsLoading(false)
   }
@@ -30,7 +40,7 @@ export default function ForgotPasswordForm() {
           </div>
           <CardTitle className="text-2xl font-bold text-balance">Revisa tu correo</CardTitle>
           <CardDescription className="text-balance">
-            Hemos enviado un enlace para restablecer la contraseña a <strong>{email}</strong>
+            Hemos enviado un enlace para restablecer la contraseña a <strong>{form.getValues("email")}</strong>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -67,23 +77,26 @@ export default function ForgotPasswordForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="orlando@reztro.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel htmlFor="email">Correo electrónico</FormLabel>
+                    <FormControl>
+                      <Input id="email" type="email" placeholder="orlando@reztro.com" disabled={isLoading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Enviando..." : "Enviar enlace"}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Enviando..." : "Enviar enlace"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <Link to="/login" className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-2">

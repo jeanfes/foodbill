@@ -168,7 +168,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             <div
                                 className={cn(
                                     "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-300",
-                                    isSectionActive && isOpen ? "opacity-100" : "opacity-0",
+                                    isSectionActive && isOpen && !hasChildren ? "opacity-100" : "opacity-0",
                                 )}
                             />
 
@@ -236,29 +236,36 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                 >
                                     <div className="overflow-hidden space-y-1">
                                         {item.children!.map((child) => {
-                                            const childActive = pathname === child.href
+                                            const childActive = pathname.startsWith(child.href)
                                             return (
-                                                <Link
-                                                    key={child.name}
-                                                    to={child.href}
-                                                    className={cn(
-                                                        "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-colors group",
-                                                        childActive
-                                                            ? "bg-primary/10 text-primary"
-                                                            : "text-muted-foreground hover:bg-accent hover:text-white",
-                                                    )}
-                                                >
-                                                    <span className={cn(
-                                                        "truncate transition-colors",
-                                                        !childActive && "group-hover:text-white"
-                                                    )}>{child.name}</span>
-                                                    {child.badge && (
+                                                <div key={child.name} className="relative">
+                                                    <div
+                                                        className={cn(
+                                                            "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-300",
+                                                            childActive ? "opacity-100" : "opacity-0",
+                                                        )}
+                                                    />
+                                                    <Link
+                                                        to={child.href}
+                                                        className={cn(
+                                                            "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-colors group",
+                                                            childActive
+                                                                ? "bg-primary/10 text-primary"
+                                                                : "text-muted-foreground hover:bg-accent hover:text-white",
+                                                        )}
+                                                    >
                                                         <span className={cn(
-                                                            "bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors",
+                                                            "truncate transition-colors",
                                                             !childActive && "group-hover:text-white"
-                                                        )}>{child.badge}</span>
-                                                    )}
-                                                </Link>
+                                                        )}>{child.name}</span>
+                                                        {child.badge && (
+                                                            <span className={cn(
+                                                                "bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full transition-colors",
+                                                                !childActive && "group-hover:text-white"
+                                                            )}>{child.badge}</span>
+                                                        )}
+                                                    </Link>
+                                                </div>
                                             )
                                         })}
                                     </div>

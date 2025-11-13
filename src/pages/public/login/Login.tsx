@@ -1,10 +1,9 @@
-import React, { useState } from "react"
+import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import LogoTransparent from "../../../assets/images/logoTransparent.png"
 import { Button } from "../../../components/ui/button"
 import { Input } from "../../../components/ui/input"
 import { PasswordInput } from "../../../components/ui/password-input"
-import { Label } from "../../../components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card"
 import {
   Select,
@@ -13,26 +12,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../../components/ui/form"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useLogin } from "./hooks/useLogin"
 
 const Login = () => {
-  const [dependencia, setDependencia] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [errorMessage, setErrorMessage] = useState("")
+  const schema = z.object({
+    dependencia: z.string().min(1, "Selecciona una dependencia"),
+    username: z.string().min(1, "Usuario requerido"),
+    password: z.string().min(6, "Mínimo 6 caracteres"),
+  })
+
+  type FormValues = z.infer<typeof schema>
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema) as any,
+    defaultValues: {
+      dependencia: "",
+      username: "",
+      password: "",
+    },
+    mode: "onSubmit",
+  })
+  const [errorMessage, setErrorMessage] = React.useState("")
   const navigate = useNavigate()
   const { loginUser, loading, error } = useLogin()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (values: FormValues) => {
     setErrorMessage("")
-
     const result = await loginUser({
-      identification_number: username,
-      password: password,
-      dependencia: dependencia,
+      identification_number: values.username,
+      password: values.password,
+      dependencia: values.dependencia,
     })
-
     if (result.success) {
       navigate("/home")
     } else {
@@ -52,59 +66,75 @@ const Login = () => {
           <CardDescription className="text-balance">Inicia sesión en tu cuenta para continuar</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {(errorMessage || error) && (
-              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                <p className="text-sm text-destructive text-center">{errorMessage || error}</p>
-              </div>
-            )}
-            <div className="w-full space-y-2">
-              <Label htmlFor="dependencia">Dependencia</Label>
-              <Select value={dependencia} onValueChange={setDependencia} disabled={loading}>
-                <SelectTrigger id="dependencia">
-                  <SelectValue placeholder="Selecciona una dependencia" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cocina">Cocina</SelectItem>
-                  <SelectItem value="meseros">Meseros</SelectItem>
-                  <SelectItem value="bar">Bar</SelectItem>
-                  <SelectItem value="administracion">Administración</SelectItem>
-                  <SelectItem value="gerencia">Gerencia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="username">Usuario</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="admin"
-                value={username}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                required
-                disabled={loading}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {(errorMessage || error) && (
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <p className="text-sm text-destructive text-center">{errorMessage || error}</p>
+                </div>
+              )}
+              <FormField
+                control={form.control}
+                name="dependencia"
+                render={({ field }) => (
+                  <FormItem className="w-full space-y-2">
+                    <FormLabel>Dependencia</FormLabel>
+                    <FormControl>
+                      <Select value={field.value} onValueChange={field.onChange} disabled={loading}>
+                        <SelectTrigger id="dependencia">
+                          <SelectValue placeholder="Selecciona una dependencia" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cocina">Cocina</SelectItem>
+                          <SelectItem value="meseros">Meseros</SelectItem>
+                          <SelectItem value="bar">Bar</SelectItem>
+                          <SelectItem value="administracion">Administración</SelectItem>
+                          <SelectItem value="gerencia">Gerencia</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Contraseña</Label>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                  ¿Olvidaste la contraseña?
-                </Link>
-              </div>
-              <PasswordInput
-                id="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                required
-                disabled={loading}
+
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel htmlFor="username">Usuario</FormLabel>
+                    <FormControl>
+                      <Input id="username" type="text" placeholder="admin" disabled={loading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
-            </Button>
-          </form>
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <FormLabel htmlFor="password">Contraseña</FormLabel>
+                      <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                        ¿Olvidaste la contraseña?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <PasswordInput id="password" placeholder="••••••••" disabled={loading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">

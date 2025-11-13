@@ -19,11 +19,11 @@ export function ProductList({ products, onSelect }: ProductListProps) {
                     transition={{ type: 'spring', stiffness: 300 }}
                 >
                     <Card className="flex flex-col h-full p-0">
-                        <div className="h-32 flex items-center justify-center bg-muted rounded-t overflow-hidden">
+                        <div className="h-32 flex items-center justify-center bg-muted rounded-t-lg overflow-hidden">
                             <img
                                 src={product.imageUrl || `https://placehold.co/600x400?text=${encodeURIComponent(product.name)}`}
                                 alt={product.name}
-                                className="h-32 w-full object-cover"
+                                className="h-32 w-full object-cover rounded-t-lg"
                                 loading="lazy"
                                 onError={(e) => {
                                     const target = e.currentTarget as HTMLImageElement;

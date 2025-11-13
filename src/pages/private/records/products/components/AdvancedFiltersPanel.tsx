@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+// import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
@@ -125,31 +126,33 @@ export function AdvancedFiltersPanel({ filters, onFiltersChange, onApply, onClea
 
                             <div className="space-y-2">
                                 <Label>Precio mínimo</Label>
-                                <Input
-                                    type="number"
-                                    placeholder="Min"
-                                    value={filters.priceMin || ''}
-                                    onChange={(e) => {
-                                        onFiltersChange({
-                                            ...filters,
-                                            priceMin: e.target.value ? Number(e.target.value) : undefined
-                                        });
-                                    }}
+                                <NumberInput
+                                    value={filters.priceMin}
+                                    onValueChange={(v) => onFiltersChange({ ...filters, priceMin: v ?? undefined })}
+                                    thousandSeparator="."
+                                    decimalSeparator=","
+                                    decimalScale={0}
+                                    min={0}
+                                    stepper={100}
+                                    prefix="$ "
+                                    suffix=" COP"
+                                    placeholder="Min (COP)"
                                 />
                             </div>
 
                             <div className="space-y-2">
                                 <Label>Precio máximo</Label>
-                                <Input
-                                    type="number"
-                                    placeholder="Max"
-                                    value={filters.priceMax || ''}
-                                    onChange={(e) => {
-                                        onFiltersChange({
-                                            ...filters,
-                                            priceMax: e.target.value ? Number(e.target.value) : undefined
-                                        });
-                                    }}
+                                <NumberInput
+                                    value={filters.priceMax}
+                                    onValueChange={(v) => onFiltersChange({ ...filters, priceMax: v ?? undefined })}
+                                    thousandSeparator="."
+                                    decimalSeparator=","
+                                    decimalScale={0}
+                                    min={0}
+                                    stepper={100}
+                                    prefix="$ "
+                                    suffix=" COP"
+                                    placeholder="Max (COP)"
                                 />
                             </div>
                         </div>

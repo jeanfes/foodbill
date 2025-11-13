@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import type { Product } from '@/interfaces/product';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { NumberInput } from '@/components/ui/number-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 interface AdjustStockModalProps {
     product: Product | null;
@@ -14,43 +18,43 @@ interface AdjustStockModalProps {
 }
 
 export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustStockModalProps) {
-    const [selectedWarehouse, setSelectedWarehouse] = useState<string>('');
-    const [quantity, setQuantity] = useState<string>('0');
-    const [reason, setReason] = useState<string>('');
-    const [error, setError] = useState<string | null>(null);
+    const schema = useMemo(() => z.object({
+        warehouseId: z.string().min(1, 'Selecciona una bodega'),
+        quantity: z.coerce.number().int().refine(v => !isNaN(v), 'Cantidad inválida').refine(v => v !== 0, 'La cantidad no puede ser 0'),
+        reason: z.string().optional().or(z.literal('')),
+    }), []);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!product || !selectedWarehouse) {
-            setError('Selecciona una bodega');
-            return;
+    type FormValues = z.infer<typeof schema>;
+
+    const form = useForm<FormValues>({
+        resolver: zodResolver(schema) as any,
+        defaultValues: {
+            warehouseId: '',
+            quantity: 0,
+            reason: '',
         }
+    });
 
-        const qty = Number(quantity);
-        if (isNaN(qty)) {
-            setError('Cantidad inválida');
-            return;
-        }
+    const submit = (values: FormValues) => {
+        if (!product) return;
 
-        const warehouse = product.stockByWarehouse?.find(w => w.warehouseId === selectedWarehouse);
+        const warehouse = product.stockByWarehouse?.find(w => w.warehouseId === values.warehouseId);
         const currentStock = warehouse?.stock || 0;
+        const qty = Number(values.quantity);
 
         if (currentStock + qty < 0) {
-            setError(`Stock insuficiente. Stock actual: ${currentStock}`);
+            form.setError('quantity', { type: 'validate', message: `Stock insuficiente. Stock actual: ${currentStock}` });
             return;
         }
 
         onAdjust({
             productId: product.id,
-            warehouseId: selectedWarehouse,
+            warehouseId: values.warehouseId,
             qty,
-            reason
+            reason: values.reason || undefined,
         });
 
-        setQuantity('0');
-        setReason('');
-        setSelectedWarehouse('');
-        setError(null);
+        form.reset();
         onClose();
     };
 
@@ -62,51 +66,76 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                 <DialogHeader>
                     <DialogTitle className="text-xl">Ajustar Stock - {product.name}</DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                            <Label>Bodega</Label>
-                            <Select value={selectedWarehouse} onValueChange={setSelectedWarehouse}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona bodega" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {product.stockByWarehouse?.map((w) => (
-                                        <SelectItem key={w.warehouseId} value={w.warehouseId}>
-                                            {w.warehouseName || w.warehouseId} (Stock: {w.stock})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Cantidad (+ agregar / - restar)</Label>
-                            <Input
-                                type="number"
-                                value={quantity}
-                                onChange={(e) => setQuantity(e.target.value)}
-                                placeholder="Ej: +10 o -5"
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <FormField
+                                control={form.control}
+                                name="warehouseId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Bodega</FormLabel>
+                                        <FormControl>
+                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Selecciona bodega" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {product.stockByWarehouse?.map((w) => (
+                                                        <SelectItem key={w.warehouseId} value={w.warehouseId}>
+                                                            {w.warehouseName || w.warehouseId} (Stock: {w.stock})
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                            <p className="text-xs text-muted-foreground">Usa números positivos para agregar o negativos para restar</p>
+
+                            <FormField
+                                control={form.control}
+                                name="quantity"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Cantidad (+ agregar / - restar)</FormLabel>
+                                        <FormControl>
+                                            <NumberInput
+                                                value={Number(field.value) || 0}
+                                                onValueChange={(v) => field.onChange(v ?? 0)}
+                                                decimalScale={0}
+                                                fixedDecimalScale={false}
+                                                placeholder="Ej: +10 o -5"
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                        <p className="text-xs text-muted-foreground">Usa números positivos para agregar o negativos para restar</p>
+                                    </FormItem>
+                                )}
+                            />
                         </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <Label>Motivo (opcional)</Label>
-                        <Input
-                            value={reason}
-                            onChange={(e) => setReason(e.target.value)}
-                            placeholder="Ej: Compra, Venta, Ajuste de inventario"
+                        <FormField
+                            control={form.control}
+                            name="reason"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Motivo (opcional)</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="Ej: Compra, Venta, Ajuste de inventario" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    {error && <div className="text-destructive text-sm">{error}</div>}
-
-                    <DialogFooter className="gap-2 sm:gap-3">
-                        <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
-                        <Button type="submit">Ajustar Stock</Button>
-                    </DialogFooter>
-                </form>
+                        <DialogFooter className="gap-2 sm:gap-3">
+                            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
+                            <Button type="submit">Ajustar Stock</Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );
