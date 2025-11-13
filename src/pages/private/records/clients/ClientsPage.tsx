@@ -82,31 +82,23 @@ const ClientsPage = () => {
                     </Can>
                 </div>
             </motion.div>
-
-
-            <Card className="p-4">
-                <div className="flex gap-2">
-                    <Input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Buscar por nombre, documento o teléfono..."
-                        className="flex-1"
-                    />
-                    <Button>Buscar</Button>
-                </div>
-            </Card>
-
+            <div className="flex gap-2">
+                <Input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Buscar por nombre, documento o teléfono..."
+                    className="flex-1"
+                />
+                <Button>Buscar</Button>
+            </div>
             <ClientsFilters />
-
             <ClientsKpis />
-
             <Card className="p-0 overflow-hidden">
                 <ClientsTable
                     onOpenDetail={(id: string) => setShowDetailId(id)}
                     onEdit={(id: string) => { setEditClientId(id); setShowFormOpen(true); }}
                 />
             </Card>
-
             <ClientDetailDialog
                 clientId={showDetailId}
                 onOpenChange={setShowDetailId}

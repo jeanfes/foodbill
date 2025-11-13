@@ -89,8 +89,6 @@ export default function CategoriesPage() {
                         Organiza y clasifica tus productos en categorías
                     </p>
                 </div>
-
-
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -109,8 +107,6 @@ export default function CategoriesPage() {
                     </Can>
                 </div>
             </motion.div>
-
-
             {filteredCategories.length > 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -159,16 +155,12 @@ export default function CategoriesPage() {
                     </Can>
                 </motion.div>
             )}
-
-
             <CategoryFormDialog
                 open={formOpen}
                 onOpenChange={setFormOpen}
                 onSubmit={handleSubmit}
                 initial={editing}
             />
-
-
             {deleteTarget && (
                 <ConfirmDialog
                     open={!!deleteTarget}

@@ -20,11 +20,11 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            whileHover={{ y: -2 }}
-            transition={{ type: "spring", stiffness: 300 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            whileHover={{ y: -1, boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
         >
             <Card className="relative overflow-hidden hover:shadow-md transition-all duration-300 group py-1">
                 <div className="p-4">
@@ -44,16 +44,19 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => onEdit(category)}>
-                                        <Edit className="h-4 w-4 mr-2" />
+                                    <DropdownMenuItem
+                                        onClick={() => onEdit(category)}
+                                        className="group"
+                                    >
+                                        <Edit className="h-4 w-4 mr-2 group-hover:text-white" />
                                         Editar
                                     </DropdownMenuItem>
                                     <Can permission={Permission.DELETE_CATEGORIES}>
                                         <DropdownMenuItem
                                             onClick={() => onDelete(category)}
-                                            className="text-destructive focus:text-destructive"
+                                            className="text-destructive focus:text-destructive group"
                                         >
-                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            <Trash2 className="h-4 w-4 mr-2 group-hover:text-destructive" />
                                             Eliminar
                                         </DropdownMenuItem>
                                     </Can>

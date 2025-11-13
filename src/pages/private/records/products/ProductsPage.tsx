@@ -3,7 +3,6 @@ import { useProductsMock } from '@/hooks/useProductsMock';
 import type { Product } from '@/interfaces/product';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { ProductList } from './components/ProductList';
 import { ProductGrid } from './components/ProductGrid';
 import { ProductDetailDrawer } from './components/ProductDetailDrawer';
@@ -46,7 +45,6 @@ export default function ProductsPage() {
     const [showForm, setShowForm] = useState(false);
     const [showImport, setShowImport] = useState(false);
 
-    // View mode with localStorage persistence
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
         const saved = localStorage.getItem('products_view_mode');
         return (saved as ViewMode) || 'grid';
@@ -56,7 +54,6 @@ export default function ProductsPage() {
         localStorage.setItem('products_view_mode', viewMode);
     }, [viewMode]);
 
-    // Filters state
     const [filters, setFilters] = useState<FiltersState>(() => ({
         search: preferences.lastFilters?.search || '',
         categoryIds: preferences.lastFilters?.categoryIds || [],
@@ -97,9 +94,6 @@ export default function ProductsPage() {
         });
     };
 
-    // Panel de filtros auto-contenido (control interno)
-
-    // Apply filters to get filtered products
     const filtered = filteredProducts({
         search: filters.search,
         categoryIds: filters.categoryIds.length > 0 ? filters.categoryIds : undefined,
@@ -155,35 +149,27 @@ export default function ProductsPage() {
                     <ProductExportButton products={filtered} onExport={exportProductsCSV} />
                 </div>
             </motion.div>
-
-            {/* Buscador (estilo similar a Clientes) */}
-            <Card className="p-4">
-                <div className="flex gap-2">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                            className="pl-10"
-                            placeholder="Buscar por nombre, SKU o categoría..."
-                            value={filters.search}
-                            onChange={e => setFilters({ ...filters, search: e.target.value })}
-                            aria-label="Buscar producto"
-                        />
-                    </div>
-                    <Button onClick={() => setPreferences({ ...preferences, lastFilters: { ...filters } })}>
-                        Buscar
-                    </Button>
+            <div className="flex gap-2">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                        className="pl-10"
+                        placeholder="Buscar por nombre, SKU o categoría..."
+                        value={filters.search}
+                        onChange={e => setFilters({ ...filters, search: e.target.value })}
+                        aria-label="Buscar producto"
+                    />
                 </div>
-            </Card>
-
-            {/* Filters Panel */}
+                <Button onClick={() => setPreferences({ ...preferences, lastFilters: { ...filters } })}>
+                    Buscar
+                </Button>
+            </div>
             <AdvancedFiltersPanel
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
                 onApply={handleApplyFilters}
                 onClear={handleClearFilters}
             />
-
-            {/* Toggle de vista */}
             <div className="flex justify-end gap-2">
                 <Button
                     variant={viewMode === 'grid' ? 'default' : 'outline'}
@@ -202,8 +188,6 @@ export default function ProductsPage() {
                     <Table className="w-4 h-4" />
                 </Button>
             </div>
-
-            {/* Products Display */}
             <motion.div
                 key={`${viewMode}-${filtered.map(p => p.id).join(',')}`}
                 initial={{ opacity: 0 }}
@@ -221,8 +205,6 @@ export default function ProductsPage() {
                     <ProductList products={filtered} onSelect={setSelected} />
                 )}
             </motion.div>
-
-            {/* Modals and Drawers */}
             <ProductDetailDrawer product={selected} onClose={() => setSelected(null)} />
 
             <ProductFormModal
@@ -234,13 +216,11 @@ export default function ProductsPage() {
                 }}
                 onSave={editingProduct ? handleUpdateProduct : handleCreateProduct}
             />
-
             <ProductImportModal
                 open={showImport}
                 onClose={() => setShowImport(false)}
                 onImport={importProducts}
             />
-
             <AdjustStockModal
                 product={adjustingProduct}
                 open={!!adjustingProduct}
