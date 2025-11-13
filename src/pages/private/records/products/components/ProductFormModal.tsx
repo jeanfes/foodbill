@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 
 interface ProductFormModalProps {
     open: boolean;
@@ -26,6 +26,7 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
         categoryName: z.string().optional().or(z.literal('')),
         trackInventory: z.boolean(),
         isComposite: z.boolean(),
+        minStock: z.coerce.number().int().min(0, 'Debe ser 0 o mayor').optional().or(z.literal(0 as unknown as number)),
     }), []);
 
     type FormValues = z.infer<typeof schema>;
@@ -33,6 +34,9 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
     const form = useForm<FormValues>({
         // Tipos del resolver con zod v4 pueden ser estrictos; casteamos para evitar fricciones.
         resolver: zodResolver(schema) as any,
+        mode: 'onBlur',
+        reValidateMode: 'onBlur',
+        criteriaMode: 'firstError',
         defaultValues: {
             name: initial?.name || '',
             price: initial?.price || 0,
@@ -40,6 +44,7 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
             trackInventory: initial?.trackInventory ?? true,
             isComposite: initial?.isComposite || false,
             sku: initial?.sku || '',
+            minStock: initial?.minStock ?? 0,
         }
     });
 
@@ -52,7 +57,7 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
             status: initial?.status || 'active',
             trackInventory: !!values.trackInventory,
             stockByWarehouse: initial?.stockByWarehouse || [],
-            minStock: initial?.minStock,
+            minStock: typeof (values as any).minStock === 'number' ? (values as any).minStock : initial?.minStock,
             isComposite: !!values.isComposite,
             recipe: initial?.recipe || [],
             tags: initial?.tags || [],
@@ -68,128 +73,165 @@ export function ProductFormModal({ open, onClose, onSave, initial }: ProductForm
 
     return (
         <Dialog open={open} onOpenChange={(v: boolean) => { if (!v) onClose(); }}>
-            <DialogContent>
+            <DialogContent className="max-w-xl">
                 <DialogHeader>
                     <DialogTitle>{initial ? 'Editar producto' : 'Nuevo producto'}</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-3">
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nombre</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Nombre" aria-label="Nombre" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="sku"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>SKU (opcional)</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="SKU (opcional)" aria-label="SKU" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="price"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Precio (COP)</FormLabel>
-                                    <FormControl>
-                                        <NumberInput
-                                            value={Number(field.value) || 0}
-                                            onValueChange={(v) => field.onChange(v ?? 0)}
-                                            thousandSeparator="."
-                                            decimalSeparator=","
-                                            decimalScale={0}
-                                            fixedDecimalScale={false}
-                                            min={0}
-                                            stepper={100}
-                                            prefix="$ "
-                                            suffix=" COP"
-                                            placeholder="Precio (COP)"
-                                            aria-label="Precio (COP)"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="categoryName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Categoría</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Categoría" aria-label="Categoría" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="trackInventory"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="flex items-center gap-2">
+                    <form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nombre</FormLabel>
                                         <FormControl>
-                                            <Checkbox
-                                                id="trackInventory"
-                                                checked={!!field.value}
-                                                onCheckedChange={(v) => field.onChange(!!v)}
-                                                aria-label="Gestiona inventario"
+                                            <Input placeholder="Nombre del producto" aria-label="Nombre" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="sku"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>SKU (opcional)</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="SKU" aria-label="SKU" {...field} />
+                                        </FormControl>
+                                        <FormDescription>Usa un código único para facilitar búsquedas.</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <FormField
+                                control={form.control}
+                                name="price"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Precio (COP)</FormLabel>
+                                        <FormControl>
+                                            <NumberInput
+                                                value={Number(field.value) || 0}
+                                                onValueChange={(v) => field.onChange(v ?? 0)}
+                                                thousandSeparator="."
+                                                decimalSeparator=","
+                                                decimalScale={0}
+                                                fixedDecimalScale={false}
+                                                min={0}
+                                                stepper={100}
+                                                prefix="$ "
+                                                suffix=" COP"
+                                                placeholder="0"
+                                                aria-label="Precio (COP)"
                                             />
                                         </FormControl>
-                                        <Label htmlFor="trackInventory" className="cursor-pointer">Gestiona inventario</Label>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name="isComposite"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <div className="flex items-center gap-2">
+                            <FormField
+                                control={form.control}
+                                name="categoryName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Categoría</FormLabel>
                                         <FormControl>
-                                            <Checkbox
-                                                id="isComposite"
-                                                checked={!!field.value}
-                                                onCheckedChange={(v) => field.onChange(!!v)}
-                                                aria-label="Es compuesto"
-                                            />
+                                            <Input placeholder="Ej: Bebidas, Postres" aria-label="Categoría" {...field} />
                                         </FormControl>
-                                        <Label htmlFor="isComposite" className="cursor-pointer">Es compuesto</Label>
-                                    </div>
-                                    <FormMessage />
-                                </FormItem>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="text-sm font-medium text-muted-foreground">Inventario</div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <FormField
+                                    control={form.control}
+                                    name="trackInventory"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <div className="flex items-center gap-2 h-10">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        id="trackInventory"
+                                                        checked={!!field.value}
+                                                        onCheckedChange={(v) => field.onChange(!!v)}
+                                                        aria-label="Gestiona inventario"
+                                                    />
+                                                </FormControl>
+                                                <Label htmlFor="trackInventory" className="cursor-pointer">Gestiona inventario</Label>
+                                            </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="isComposite"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <div className="flex items-center gap-2 h-10">
+                                                <FormControl>
+                                                    <Checkbox
+                                                        id="isComposite"
+                                                        checked={!!field.value}
+                                                        onCheckedChange={(v) => field.onChange(!!v)}
+                                                        aria-label="Es compuesto"
+                                                    />
+                                                </FormControl>
+                                                <Label htmlFor="isComposite" className="cursor-pointer">Es compuesto</Label>
+                                            </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            {form.watch('trackInventory') && (
+                                <FormField
+                                    control={form.control}
+                                    name="minStock"
+                                    render={({ field }) => (
+                                        <FormItem className="w-full">
+                                            <div className="flex flex-col items-start">
+                                                <FormLabel>Stock mínimo</FormLabel>
+                                                <FormControl>
+                                                    <NumberInput
+                                                        value={Number(field.value) || 0}
+                                                        onValueChange={(v) => field.onChange(v ?? 0)}
+                                                        decimalScale={0}
+                                                        min={0}
+                                                        placeholder="0"
+                                                    />
+                                                </FormControl>
+                                            </div>
+                                            <FormDescription>Alerta cuando el stock esté por debajo.</FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             )}
-                        />
+                        </div>
 
                         <DialogFooter>
-                            <Button type="submit">Guardar</Button>
                             <DialogClose asChild>
                                 <Button type="button" variant="ghost">Cancelar</Button>
                             </DialogClose>
+                            <Button type="submit" disabled={form.formState.isSubmitting}>
+                                {form.formState.isSubmitting ? 'Guardando...' : 'Guardar'}
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

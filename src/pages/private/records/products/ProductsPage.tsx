@@ -206,7 +206,7 @@ export default function ProductsPage() {
 
             {/* Products Display */}
             <motion.div
-                key={viewMode}
+                key={`${viewMode}-${filtered.map(p => p.id).join(',')}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}

@@ -18,6 +18,9 @@ export default function ForgotPasswordForm() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema) as any,
+    mode: "onBlur",
+    reValidateMode: "onBlur",
+    criteriaMode: "firstError",
     defaultValues: { email: "" },
   })
   const [isLoading, setIsLoading] = useState(false)

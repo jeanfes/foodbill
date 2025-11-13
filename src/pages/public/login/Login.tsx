@@ -29,12 +29,14 @@ const Login = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema) as any,
+    mode: "onBlur",
+    reValidateMode: "onBlur",
+    criteriaMode: "firstError",
     defaultValues: {
       dependencia: "",
       username: "",
       password: "",
     },
-    mode: "onSubmit",
   })
   const [errorMessage, setErrorMessage] = React.useState("")
   const navigate = useNavigate()

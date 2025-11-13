@@ -122,7 +122,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
         };
 
         return (
-            <div className="inline-flex items-stretch h-10">
+            <div className="inline-flex items-stretch h-9 w-full">
                 <NumericFormat
                     value={value}
                     onValueChange={handleChange}
@@ -139,12 +139,12 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
                     prefix={prefix}
                     customInput={Input}
                     placeholder={placeholder}
-                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-r-none relative h-10"
+                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-r-none relative h-9"
                     getInputRef={ref}
                     {...props}
                 />
 
-                <div className="flex flex-col h-10">
+                <div className="flex flex-col h-9">
                     <Button
                         aria-label="Increase value"
                         className="px-2 h-1/2 rounded-l-none rounded-b-none border-input border-l-0 border-b focus-visible:relative"
@@ -161,7 +161,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
                         onClick={handleDecrement}
                         disabled={value !== undefined && value <= min}
                     >
-                        <ChevronDown size={15} />
+                        <ChevronDown size={12} />
                     </Button>
                 </div>
             </div>

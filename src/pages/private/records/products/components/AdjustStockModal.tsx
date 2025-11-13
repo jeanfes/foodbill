@@ -28,6 +28,9 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
 
     const form = useForm<FormValues>({
         resolver: zodResolver(schema) as any,
+        mode: 'onBlur',
+        reValidateMode: 'onBlur',
+        criteriaMode: 'firstError',
         defaultValues: {
             warehouseId: '',
             quantity: 0,
@@ -99,7 +102,7 @@ export function AdjustStockModal({ product, open, onClose, onAdjust }: AdjustSto
                                 name="quantity"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Cantidad (+ agregar / - restar)</FormLabel>
+                                        <FormLabel>Cantidad </FormLabel>
                                         <FormControl>
                                             <NumberInput
                                                 value={Number(field.value) || 0}

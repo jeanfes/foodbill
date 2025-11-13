@@ -1,6 +1,6 @@
 import type { Product } from '@/interfaces/product';
 import { ProductCard } from './ProductCard';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface ProductGridProps {
     products: Product[];
@@ -23,7 +23,7 @@ export function ProductGrid({ products, onView, onEdit, onAdjustStock }: Product
     return (
         <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 items-stretch"
-            initial="hidden"
+            initial={false}
             animate="visible"
             variants={{
                 visible: {
@@ -33,23 +33,27 @@ export function ProductGrid({ products, onView, onEdit, onAdjustStock }: Product
                 }
             }}
         >
-            {products.map((product) => (
-                <motion.div
-                    key={product.id}
-                    variants={{
-                        hidden: { opacity: 0, y: 20 },
-                        visible: { opacity: 1, y: 0 }
-                    }}
-                    className="h-full"
-                >
-                    <ProductCard
-                        product={product}
-                        onView={onView}
-                        onEdit={onEdit}
-                        onAdjustStock={onAdjustStock}
-                    />
-                </motion.div>
-            ))}
+            <AnimatePresence mode="popLayout">
+                {products.map((product) => (
+                    <motion.div
+                        key={product.id}
+                        layout
+                        variants={{
+                            hidden: { opacity: 0, y: 20 },
+                            visible: { opacity: 1, y: 0 }
+                        }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="h-full"
+                    >
+                        <ProductCard
+                            product={product}
+                            onView={onView}
+                            onEdit={onEdit}
+                            onAdjustStock={onAdjustStock}
+                        />
+                    </motion.div>
+                ))}
+            </AnimatePresence>
         </motion.div>
     );
 }

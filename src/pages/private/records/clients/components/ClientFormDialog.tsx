@@ -75,6 +75,9 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
     const form = useForm<FormData>({
         resolver: zodResolver(schema) as any,
+        mode: "onBlur",
+        reValidateMode: "onBlur",
+        criteriaMode: "firstError",
         defaultValues: {
             documentType: "",
             document: "",
