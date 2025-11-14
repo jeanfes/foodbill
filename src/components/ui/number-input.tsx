@@ -7,10 +7,6 @@ import { Input } from './input';
 
 export interface NumberInputProps
     extends Omit<NumericFormatProps, 'value' | 'onValueChange'> {
-    /**
-     * Tamaño del paso al incrementar/decrementar.
-     * Alias: step. Si ambos se proveen, tiene prioridad `step`.
-     */
     stepper?: number;
     step?: number;
     thousandSeparator?: string;
@@ -19,7 +15,7 @@ export interface NumberInputProps
     defaultValue?: number;
     min?: number;
     max?: number;
-    value?: number; // Controlled value
+    value?: number;
     suffix?: string;
     prefix?: string;
     onValueChange?: (value: number | undefined) => void;
@@ -121,6 +117,45 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             }
         };
 
+        const [incTimeout, setIncTimeout] = useState<NodeJS.Timeout | null>(null);
+        const [incInterval, setIncInterval] = useState<NodeJS.Timeout | null>(null);
+        const [decTimeout, setDecTimeout] = useState<NodeJS.Timeout | null>(null);
+        const [decInterval, setDecInterval] = useState<NodeJS.Timeout | null>(null);
+
+        const startInc = () => {
+            handleIncrement();
+            const timeout = setTimeout(() => {
+                const interval = setInterval(handleIncrement, 80);
+                setIncInterval(interval);
+            }, 200);
+            setIncTimeout(timeout);
+        };
+        const stopInc = () => {
+            if (incTimeout) clearTimeout(incTimeout);
+            setIncTimeout(null);
+            if (incInterval) clearInterval(incInterval);
+            setIncInterval(null);
+        };
+        const startDec = () => {
+            handleDecrement();
+            const timeout = setTimeout(() => {
+                const interval = setInterval(handleDecrement, 80);
+                setDecInterval(interval);
+            }, 200);
+            setDecTimeout(timeout);
+        };
+        const stopDec = () => {
+            if (decTimeout) clearTimeout(decTimeout);
+            setDecTimeout(null);
+            if (decInterval) clearInterval(decInterval);
+            setDecInterval(null);
+        };
+
+        useEffect(() => () => {
+            stopInc();
+            stopDec();
+        }, []);
+
         return (
             <div className="inline-flex items-stretch h-9 w-full">
                 <NumericFormat
@@ -139,17 +174,23 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
                     prefix={prefix}
                     customInput={Input}
                     placeholder={placeholder}
-                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-r-none relative h-9"
+                    className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none rounded-r-none relative h-9 border-r-0"
                     getInputRef={ref}
+                    style={{
+                        borderTopRightRadius: 0,
+                        borderBottomRightRadius: 0,
+                    }}
                     {...props}
                 />
 
-                <div className="flex flex-col h-9">
+                <div className="flex flex-col h-10">
                     <Button
                         aria-label="Increase value"
                         className="px-2 h-1/2 rounded-l-none rounded-b-none border-input border-l-0 border-b focus-visible:relative"
                         variant="outline"
-                        onClick={handleIncrement}
+                        onMouseDown={startInc}
+                        onMouseUp={stopInc}
+                        onMouseLeave={stopInc}
                         disabled={value !== undefined && value >= max}
                     >
                         <ChevronUp size={15} />
@@ -158,7 +199,9 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
                         aria-label="Decrease value"
                         className="px-2 h-1/2 rounded-l-none rounded-t-none border-input border-l-0 border-t focus-visible:relative"
                         variant="outline"
-                        onClick={handleDecrement}
+                        onMouseDown={startDec}
+                        onMouseUp={stopDec}
+                        onMouseLeave={stopDec}
                         disabled={value !== undefined && value <= min}
                     >
                         <ChevronDown size={12} />
