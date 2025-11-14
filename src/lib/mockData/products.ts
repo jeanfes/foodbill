@@ -1,27 +1,6 @@
-/**
- * @file products.ts
- * Mock dataset y helpers para el modelo Product.
- * Incluye persistencia en localStorage y datos de ejemplo variados.
- */
-
-
-
 import type { Product } from "@/interfaces/product";
 import { STORAGE_KEYS } from "@/lib/storageKeys";
 
-/**
- * Validaciones básicas:
- * - name: requerido, min 2 chars
- * - price: requerido, >= 0.01
- * - sku: único si existe
- * - stock inputs: enteros >= 0
- * - isComposite === true => recipe requerido
- */
-
-/**
- * Devuelve un array de productos mock variados (~30), cubriendo edge cases.
- * Incluye productos con stock bajo, inactivos, tags, isComposite, etc.
- */
 export function getInitialMockProducts(): Product[] {
   const now = new Date().toISOString();
   const tagForCategory = (name?: string) => {
@@ -138,9 +117,6 @@ export function getInitialMockProducts(): Product[] {
   return base;
 }
 
-/**
- * Helpers para persistencia en localStorage
- */
 const STORAGE_KEY = STORAGE_KEYS.PRODUCTS;
 
 export function loadProductsFromStorage(): Product[] {

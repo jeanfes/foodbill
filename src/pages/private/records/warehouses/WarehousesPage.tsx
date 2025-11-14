@@ -158,7 +158,6 @@ export default function WarehousesPage() {
                         />
                     ) : loading ? (
                         <Card className="p-0 flex flex-col h-full">
-                            {/* Header skeleton */}
                             <div className="p-3 border-b space-y-2">
                                 <div className="flex items-center justify-between gap-2">
                                     <Skeleton className="h-6 w-48" />
@@ -169,14 +168,10 @@ export default function WarehousesPage() {
                                 </div>
                                 <Skeleton className="h-4 w-full max-w-md" />
                             </div>
-
-                            {/* Tabs skeleton */}
                             <div className="px-4 py-2 border-b flex items-center justify-between gap-3">
                                 <Skeleton className="h-9 w-72" />
                                 <Skeleton className="h-4 w-32" />
                             </div>
-
-                            {/* Content skeleton - igual que el panel izquierdo */}
                             <div className="flex-1 overflow-auto">
                                 <div className="divide-y">
                                     {Array.from({ length: 6 }).map((_, i) => (

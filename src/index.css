@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Mansfield font faces (local in src/assets/fonts/mansfield) */
 @font-face {
   font-family: "Mansfield";
   src: url("./assets/fonts/mansfield/Mansfield-Extra-Light.ttf") format("truetype");
@@ -183,10 +182,7 @@
   }
 }
 
-/* Utilidades de contraste: cuando el fondo en hover usa accent/secondary, forzar contenido blanco */
 @layer utilities {
-  /* En modo claro: usar foreground blanco (ya definido en *_foreground) para contrastar.
-     En modo oscuro: cuando accent/secondary son tonos medios, ponemos texto en foreground general (var(--foreground)) si el color base es claro, y blanco si es medio. */
   .hover\:bg-accent:hover,
   .hover\:bg-secondary:hover {
     color: var(--accent-foreground) !important;
@@ -200,7 +196,6 @@
     color: var(--accent-foreground) !important;
   }
 
-  /* Soporte para variantes group-hover si se usan bg-accent/bg-secondary dentro de grupos */
   .group:hover .group-hover\:bg-accent,
   .group:hover .group-hover\:bg-secondary {
     color: var(--accent-foreground) !important;

@@ -232,7 +232,6 @@ const ImportCsvDialog = ({ open, onOpenChange }: Props) => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {/* Paso 1: Cargar archivo */}
                         {step === 1 && (
                             <>
                                 <div className="border-2 border-dashed rounded-lg p-8 text-center space-y-4">
@@ -277,8 +276,6 @@ const ImportCsvDialog = ({ open, onOpenChange }: Props) => {
                                 </div>
                             </>
                         )}
-
-                        {/* Paso 2: Mapeo de columnas */}
                         {step === 2 && (
                             <>
                                 <div className="space-y-3">
@@ -368,8 +365,6 @@ const ImportCsvDialog = ({ open, onOpenChange }: Props) => {
                                 </div>
                             </>
                         )}
-
-                        {/* Paso 3: Preview y confirmación */}
                         {step === 3 && (
                             <>
                                 <div className="space-y-3">
