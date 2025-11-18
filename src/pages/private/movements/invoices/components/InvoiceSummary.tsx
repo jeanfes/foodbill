@@ -74,11 +74,10 @@ export function InvoiceSummary({
                                     status === 'cancelled' ? 'destructive' :
                                         'outline'
                         }>
-                            {status === 'draft' ? 'Borrador' :
-                                status === 'issued' ? 'Emitida' :
-                                    status === 'paid' ? 'Pagada' :
-                                        status === 'partially_paid' ? 'Pago parcial' :
-                                            status === 'cancelled' ? 'Anulada' : status}
+                            {status === 'issued' ? 'Emitida' :
+                                status === 'paid' ? 'Pagada' :
+                                    status === 'partially_paid' ? 'Pago parcial' :
+                                        status === 'cancelled' ? 'Anulada' : status}
                         </Badge>
                     </div>
                 )}
@@ -189,7 +188,7 @@ export function InvoiceSummary({
                     <Button
                         onClick={onRegisterPayment}
                         className="w-full"
-                        variant="secondary"
+                        variant="default"
                     >
                         <Banknote className="h-4 w-4 mr-2" />
                         Registrar pago

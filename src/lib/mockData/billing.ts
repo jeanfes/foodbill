@@ -128,12 +128,12 @@ export function getInitialInvoices(customers: Customer[]): Invoice[] {
   [inv1, inv2, inv3].forEach(recompute);
 
   // pagos para estados
-  const pay1: Payment = { id: 'pay-1', invoiceId: inv1.id, amount: inv1.total, method: 'cash', date: nowIso(-15), receivedBy: 'admin' };
+  const pay1: Payment = { id: 'pay-1', invoiceId: inv1.id, amount: inv1.total, method: 'cash', date: nowIso(-15), receivedBy: 'admin', status: 'confirmed' };
   inv1.payments.push(pay1);
   inv1.balance = 0; // Totalmente pagada
 
   const partialAmount = +(inv3.total / 2).toFixed(2);
-  const pay3: Payment = { id: 'pay-2', invoiceId: inv3.id, amount: partialAmount, method: 'card', date: nowIso(-2), receivedBy: 'admin' };
+  const pay3: Payment = { id: 'pay-2', invoiceId: inv3.id, amount: partialAmount, method: 'card', date: nowIso(-2), receivedBy: 'admin', status: 'confirmed' };
   inv3.payments.push(pay3);
   inv3.balance = inv3.total - partialAmount; // Saldo parcial
 

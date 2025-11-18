@@ -3,7 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInvoicesMock } from '@/hooks/useInvoicesMock';
 import { useProductsMock } from '@/hooks/useProductsMock';
-import type { InvoiceLine, Customer, PaymentType } from '@/interfaces/billing';
+import { useToast } from '@/components/ui/toast';
+import type { InvoiceLine, Customer, PaymentType, Payment } from '@/interfaces/billing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -19,6 +20,9 @@ import { CustomerTypeahead } from './components/CustomerTypeahead';
 import { InvoiceLineRow } from './components/InvoiceLineRow';
 import { InvoiceSummary } from './components/InvoiceSummary';
 import { InvoicePrintView } from './components/InvoicePrintView';
+import { PaymentModal } from './components/PaymentModal';
+import { PaymentHistoryList } from './components/PaymentHistoryList';
+import { PaymentReceipt } from './components/PaymentReceipt';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -27,8 +31,9 @@ import { es } from 'date-fns/locale';
 export default function InvoiceFormPage() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    const { invoices, customers, settings, createInvoice, updateInvoice, issueInvoice, importCustomers, getNextInvoiceNumber } = useInvoicesMock();
+    const { invoices, customers, settings, createInvoice, updateInvoice, issueInvoice, registerPayment, importCustomers, getNextInvoiceNumber } = useInvoicesMock();
     const { products } = useProductsMock();
+    const { show: showToast } = useToast();
 
     const editing = useMemo(() => id ? invoices.find(i => i.id === id) || null : null, [invoices, id]);
 
@@ -44,8 +49,12 @@ export default function InvoiceFormPage() {
     const [showNewCustomerModal, setShowNewCustomerModal] = useState(false);
     const [showIssueModal, setShowIssueModal] = useState(false);
     const [showPrintView, setShowPrintView] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
+    const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
     const isDraft = !editing || editing.status === 'draft';
+    const canRegisterPayment = !!(editing && (editing.status === 'issued' || editing.status === 'partially_paid') && editing.balance > 0);
 
     useEffect(() => {
         if (editing) {
@@ -210,6 +219,41 @@ export default function InvoiceFormPage() {
             setShowIssueModal(false);
             navigate('/movements/invoices');
         }
+    };
+
+    const handleRegisterPayment = async (paymentData: any) => {
+        if (!editing) return;
+
+        try {
+            registerPayment({
+                invoiceId: editing.id,
+                userId: 'admin', // TODO: usar usuario actual del auth
+                ...paymentData
+            });
+
+            const newBalance = editing.balance - paymentData.amount;
+            const fmt = (n: number) => new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                maximumFractionDigits: 2
+            }).format(n);
+
+            showToast(
+                `Pago registrado: ${fmt(paymentData.amount)} — Saldo restante: ${fmt(Math.max(0, newBalance))}`,
+                'success'
+            );
+        } catch (error) {
+            showToast(
+                (error as Error).message || 'Error al registrar el pago',
+                'error'
+            );
+            throw error;
+        }
+    };
+
+    const handlePrintReceipt = (payment: Payment) => {
+        setSelectedPayment(payment);
+        setShowReceiptModal(true);
     };
 
     const [newCustomer, setNewCustomer] = useState({
@@ -449,7 +493,7 @@ export default function InvoiceFormPage() {
                     </div>
 
                     {/* Sidebar - 1/3 */}
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-1 space-y-6">
                         <InvoiceSummary
                             subtotal={subtotal}
                             taxTotal={taxTotal}
@@ -465,11 +509,22 @@ export default function InvoiceFormPage() {
                             onSaveDraft={isDraft ? onSaveDraft : undefined}
                             onIssue={editing && editing.status === 'draft' ? handleIssueInvoice : undefined}
                             onPrint={editing && editing.status !== 'draft' ? () => setShowPrintView(true) : undefined}
+                            onRegisterPayment={canRegisterPayment ? () => setShowPaymentModal(true) : undefined}
                             saving={saving}
                             canIssue={!editing || editing.status === 'draft'}
                             canPrint={!!editing && editing.status !== 'draft'}
+                            canRegisterPayment={canRegisterPayment}
                             status={editing?.status}
                         />
+
+                        {/* Historial de pagos */}
+                        {editing && editing.payments.length > 0 && (
+                            <PaymentHistoryList
+                                payments={editing.payments}
+                                invoice={editing}
+                                onPrintReceipt={handlePrintReceipt}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
@@ -537,6 +592,17 @@ export default function InvoiceFormPage() {
                 </DialogContent>
             </Dialog>
 
+            {/* Modal: Registrar Pago */}
+            {editing && (
+                <PaymentModal
+                    open={showPaymentModal}
+                    onOpenChange={setShowPaymentModal}
+                    invoice={editing}
+                    onConfirm={handleRegisterPayment}
+                    userId="admin"
+                />
+            )}
+
             {/* Modal: Confirmar Emisión */}
             <Dialog open={showIssueModal} onOpenChange={setShowIssueModal}>
                 <DialogContent className="max-w-md">
@@ -580,6 +646,18 @@ export default function InvoiceFormPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            {/* Modal: Recibo de pago */}
+            {showReceiptModal && selectedPayment && editing && (
+                <PaymentReceipt
+                    invoice={editing}
+                    payment={selectedPayment}
+                    onClose={() => {
+                        setShowReceiptModal(false);
+                        setSelectedPayment(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

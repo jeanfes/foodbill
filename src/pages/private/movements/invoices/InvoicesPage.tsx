@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoicesMock } from '@/hooks/useInvoicesMock';
+import { useToast } from '@/components/ui/toast';
 import type { InvoiceStatus } from '@/interfaces/billing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,15 +26,15 @@ function statusBadge(s: InvoiceStatus) {
         partially_paid: 'bg-amber-600 text-white',
         paid: 'bg-green-600 text-white',
         cancelled: 'bg-red-600 text-white',
-        refunded: 'bg-purple-600 text-white',
     };
     return map[s];
 }
 
 export default function InvoicesPage() {
     const navigate = useNavigate();
-    const { invoices, series, exportInvoicesCSV, exportInvoicePDF, issueInvoice, deleteInvoice } = useInvoicesMock();
+    const { invoices, series, exportInvoicesCSV, exportInvoicePDF, issueInvoice, deleteInvoice, registerPayment } = useInvoicesMock();
     const { hasPermission } = usePermissions();
+    const { show: showToast } = useToast();
 
     const flags = {
         canCreateInvoice: hasPermission(Permission.VIEW_CASHBOXES),
@@ -84,6 +85,34 @@ export default function InvoicesPage() {
 
     const fmt = (n: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 2 }).format(n);
 
+    const handleRegisterPayment = async (paymentData: any) => {
+        if (!payId) return;
+
+        try {
+            registerPayment({
+                invoiceId: payId,
+                userId: 'admin',
+                ...paymentData
+            });
+
+            const invoice = invoices.find(i => i.id === payId);
+            if (invoice) {
+                const newBalance = invoice.balance - paymentData.amount;
+                showToast(
+                    `Pago registrado: ${fmt(paymentData.amount)} — Saldo restante: ${fmt(Math.max(0, newBalance))}`,
+                    'success'
+                );
+            }
+            setPayId(null);
+        } catch (error) {
+            showToast(
+                (error as Error).message || 'Error al registrar el pago',
+                'error'
+            );
+            throw error;
+        }
+    };
+
     return (
         <div className="space-y-4">
             <motion.div
@@ -133,7 +162,6 @@ export default function InvoicesPage() {
                             <SelectItem value="partially_paid">Parcial</SelectItem>
                             <SelectItem value="paid">Pagada</SelectItem>
                             <SelectItem value="cancelled">Anulada</SelectItem>
-                            <SelectItem value="refunded">Reembolsada</SelectItem>
                         </SelectContent>
                     </Select>
                     <Select value={seriesCode} onValueChange={(v) => { setSeriesCode(v as any); setPage(1); }}>
@@ -182,9 +210,9 @@ export default function InvoicesPage() {
                                 <TableCell>
                                     <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={() => setDetailId(i.id)}><Eye className="h-4 w-4" /></Button>
-                                        <Button variant="outline" size="sm" onClick={() => navigate(`/movements/invoices/${i.id}/edit`)} disabled={!flags.canEditInvoice || i.status === 'cancelled' || i.status === 'refunded'}><Pencil className="h-4 w-4" /></Button>
+                                        <Button variant="outline" size="sm" onClick={() => navigate(`/movements/invoices/${i.id}/edit`)} disabled={!flags.canEditInvoice || i.status === 'cancelled'}><Pencil className="h-4 w-4" /></Button>
                                         <Button variant="outline" size="sm" onClick={() => exportInvoicePDF(i.id)}><Printer className="h-4 w-4" /></Button>
-                                        <Button variant="default" size="sm" onClick={() => setPayId(i.id)} disabled={!flags.canRegisterPayment || i.status === 'cancelled' || i.status === 'refunded' || i.status === 'paid'}>
+                                        <Button variant="default" size="sm" onClick={() => setPayId(i.id)} disabled={!flags.canRegisterPayment || i.status === 'cancelled' || i.status === 'paid' || i.status === 'draft'}>
                                             <Banknote className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -222,7 +250,15 @@ export default function InvoicesPage() {
             <InvoiceDetail id={detailId} onClose={() => setDetailId(null)}
                 onIssue={(id) => issueInvoice(id)} onCancel={(id) => deleteInvoice(id)} onPay={(id) => setPayId(id)} />
 
-            <PaymentModal invoiceId={payId} onClose={() => setPayId(null)} />
+            {payId && invoices.find(i => i.id === payId) && (
+                <PaymentModal
+                    open={true}
+                    onOpenChange={(open) => !open && setPayId(null)}
+                    invoice={invoices.find(i => i.id === payId)!}
+                    onConfirm={handleRegisterPayment}
+                    userId="admin"
+                />
+            )}
 
             <ImportCustomersModal open={showImport} onOpenChange={setShowImport} />
         </div>

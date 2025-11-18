@@ -15,7 +15,6 @@ function statusBadge(s: InvoiceStatus) {
         partially_paid: 'bg-amber-600 text-white',
         paid: 'bg-green-600 text-white',
         cancelled: 'bg-red-600 text-white',
-        refunded: 'bg-purple-600 text-white',
     };
     return map[s];
 }
@@ -43,7 +42,7 @@ export function InvoiceDetail({ id, onClose, onIssue, onCancel, onPay }: { id: s
                                 </div>
                                 <div className="flex gap-2">
                                     <Button variant="outline" onClick={() => exportInvoicePDF(inv.id)}><Printer className="h-4 w-4 mr-2" /> Imprimir</Button>
-                                    <Button variant="default" onClick={() => onPay(inv.id)} disabled={inv.status === 'paid' || inv.status === 'cancelled' || inv.status === 'refunded'}><Banknote className="h-4 w-4 mr-2" /> Pagar</Button>
+                                    <Button variant="default" onClick={() => onPay(inv.id)} disabled={inv.status === 'paid' || inv.status === 'cancelled' || inv.status === 'draft'}><Banknote className="h-4 w-4 mr-2" /> Pagar</Button>
                                 </div>
                             </div>
                         </SheetHeader>
@@ -91,7 +90,7 @@ export function InvoiceDetail({ id, onClose, onIssue, onCancel, onPay }: { id: s
 
                             <div className="flex gap-2">
                                 <Button variant="outline" onClick={() => onIssue(inv.id)} disabled={inv.status !== 'draft'}><FileText className="h-4 w-4 mr-2" /> Emitir</Button>
-                                <Button variant="destructive" onClick={() => setConfirmOpen(true)} disabled={inv.status === 'cancelled' || inv.status === 'refunded'}><Ban className="h-4 w-4 mr-2" /> Anular</Button>
+                                <Button variant="destructive" onClick={() => setConfirmOpen(true)} disabled={inv.status === 'cancelled'}><Ban className="h-4 w-4 mr-2" /> Anular</Button>
                             </div>
 
                             {inv.payments.length > 0 && (

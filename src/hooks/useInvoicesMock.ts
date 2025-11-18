@@ -9,7 +9,6 @@ import type {
   InvoiceSeries,
   Payment,
   RegisterPaymentInput,
-  RefundInput,
 } from '@/interfaces/billing';
 import { STORAGE_KEYS } from '@/lib/storageKeys';
 import { loadOrInitBillingData } from '@/lib/mockData/billing';
@@ -157,42 +156,103 @@ export function useInvoicesMock() {
     pushEvent({ userId: 'admin', action: 'INVOICE_ISSUED', payload: { id } });
   }, [reserveInvoiceNumber, settings.defaultSeriesCode, pushEvent]);
 
+  /**
+   * Registra un pago para una factura.
+   * 
+   * Validaciones:
+   * - La factura debe estar en estado 'issued' o 'partially_paid'
+   * - El monto debe ser mayor a 0
+   * - El monto no debe exceder el saldo pendiente (se permite con confirmación)
+   * 
+   * Comportamiento:
+   * - Crea un registro de pago con id único
+   * - Actualiza el balance de la factura
+   * - Cambia el estado: issued → partially_paid → paid
+   * - Persiste en localStorage
+   * - Registra evento de auditoría
+   * 
+   * @param input - Datos del pago a registrar
+   * @returns El payment registrado
+   * @throws Error si la validación falla
+   * 
+   * Preparado para backend: la firma es compatible con POST /invoices/:id/payments
+   * Añadir idempotencyKey en headers cuando se migre a backend.
+   */
   const registerPayment = useCallback((input: RegisterPaymentInput) => {
+    const invoice = invoices.find(i => i.id === input.invoiceId);
+    
+    if (!invoice) {
+      throw new Error('Factura no encontrada');
+    }
+    
+    // Validación: solo facturas emitidas o parcialmente pagadas pueden recibir pagos
+    if (invoice.status !== 'issued' && invoice.status !== 'partially_paid') {
+      throw new Error(`No se puede registrar pago: la factura está en estado "${invoice.status}"`);
+    }
+    
+    // Validación: monto debe ser positivo
+    if (input.amount <= 0) {
+      throw new Error('El monto del pago debe ser mayor a cero');
+    }
+    
+    // Validación: monto no debe exceder saldo (warning, no error - permitir con confirmación)
+    if (input.amount > invoice.balance) {
+      console.warn(`Sobrepago detectado: monto ${input.amount} excede saldo ${invoice.balance}`);
+    }
+    
+    // Crear el pago
+    const payment: Payment = {
+      id: 'pay-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9),
+      invoiceId: invoice.id,
+      amount: input.amount,
+      method: input.method,
+      reference: input.reference,
+      cashboxId: input.cashboxId,
+      date: input.date || new Date().toISOString(),
+      receivedBy: input.userId,
+      notes: input.notes,
+      status: 'confirmed', // Hoy: confirmado inmediatamente. Futuro: puede ser 'pending' si procesa gateway
+    };
+    
     setInvoices(prev => prev.map(i => {
       if (i.id !== input.invoiceId) return i;
-      const payment: Payment = {
-        id: 'pay-' + Date.now(),
-        invoiceId: i.id,
-        amount: input.amount,
-        method: input.method,
-        reference: input.reference,
-        date: input.date || new Date().toISOString(),
-        receivedBy: input.userId,
-        notes: input.notes,
-      };
-      const totalPaid = i.payments.reduce((s, p) => s + p.amount, 0) + input.amount;
-      let status: InvoiceStatus = i.status;
-      const total = i.total;
-      if (totalPaid >= total - 1e-6) status = 'paid';
-      else if (totalPaid > 0) status = 'partially_paid';
       
-      const balance = total - totalPaid;
+      const updatedPayments = [...i.payments, payment];
+      const totalPaid = updatedPayments.reduce((s, p) => s + p.amount, 0);
+      const newBalance = Math.max(0, i.total - totalPaid);
+      
+      // Determinar nuevo estado
+      let newStatus: InvoiceStatus = i.status;
+      if (newBalance < 0.01) { // Tolerancia para redondeos
+        newStatus = 'paid';
+      } else if (totalPaid > 0) {
+        newStatus = 'partially_paid';
+      }
       
       return { 
         ...i, 
-        payments: [...i.payments, payment], 
-        status, 
-        balance,
+        payments: updatedPayments, 
+        balance: newBalance,
+        status: newStatus, 
         updatedAt: new Date().toISOString() 
       };
     }));
-    pushEvent({ userId: input.userId, action: 'PAYMENT_REGISTERED', payload: { invoiceId: input.invoiceId, amount: input.amount } });
-  }, [pushEvent]);
-
-  const refundInvoice = useCallback((input: RefundInput) => {
-    setInvoices(prev => prev.map(i => i.id === input.invoiceId ? { ...i, status: 'refunded', updatedAt: new Date().toISOString() } : i));
-    pushEvent({ userId: 'admin', action: 'INVOICE_REFUNDED', payload: input });
-  }, [pushEvent]);
+    
+    // Registrar evento de auditoría
+    pushEvent({ 
+      userId: input.userId, 
+      action: 'PAYMENT_REGISTERED', 
+      payload: { 
+        invoiceId: input.invoiceId, 
+        paymentId: payment.id,
+        amount: input.amount,
+        method: input.method,
+        newBalance: Math.max(0, invoice.total - (invoice.payments.reduce((s, p) => s + p.amount, 0) + input.amount))
+      } 
+    });
+    
+    return payment;
+  }, [invoices, pushEvent]);
 
   const createCreditNote = useCallback((input: CreateCreditNoteInput) => {
     const original = invoices.find(i => i.id === input.invoiceId);
@@ -270,10 +330,14 @@ export function useInvoicesMock() {
     invoices, customers, series, settings,
     // getters
     getInvoice,
+    getPayments: useCallback((invoiceId: string) => {
+      const invoice = invoices.find(i => i.id === invoiceId);
+      return invoice?.payments || [];
+    }, [invoices]),
     // create/update/delete
     createInvoice, updateInvoice, deleteInvoice,
     // lifecycle
-    issueInvoice, registerPayment, refundInvoice, createCreditNote,
+    issueInvoice, registerPayment, createCreditNote,
     // exports
     exportInvoicePDF, exportInvoicesCSV,
     // series helpers

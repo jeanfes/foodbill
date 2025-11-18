@@ -34,15 +34,20 @@ export interface InvoiceLine {
   lineTotal: number; // calculado
 }
 
+export type PaymentMethod = 'cash' | 'card' | 'transfer' | 'other';
+export type PaymentStatus = 'pending' | 'confirmed' | 'failed';
+
 export interface Payment {
   id: string;
   invoiceId: string;
   amount: number;
-  method: 'cash' | 'card' | 'transfer' | 'mixed';
+  method: PaymentMethod;
   reference?: string;
+  cashboxId?: string;
   date: string;
   receivedBy: string;
   notes?: string;
+  status: PaymentStatus;
 }
 
 export interface InvoiceSeries {
@@ -114,11 +119,13 @@ export interface InvoiceSettings {
 export interface RegisterPaymentInput {
   invoiceId: string;
   amount: number;
-  method: Payment['method'];
+  method: PaymentMethod;
   reference?: string;
+  cashboxId?: string;
   notes?: string;
   userId: string;
   date?: string; // Opcional, por defecto hoy
+  idempotencyKey?: string; // Para backend futuro
 }
 
 export interface RefundInput {

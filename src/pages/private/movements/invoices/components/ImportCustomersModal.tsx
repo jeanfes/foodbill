@@ -135,12 +135,12 @@ export function ImportCustomersModal({ open, onOpenChange }: Props) {
 
         const rows = csvData.map(row => ({
             name: row[mapping.name] || '',
-            documentType: mapping.documentType ? row[mapping.documentType] : 'CC',
+            documentType: (mapping.documentType ? row[mapping.documentType] : 'CC') as 'CC' | 'NIT' | 'CE' | 'PAS',
             documentNumber: mapping.documentNumber ? row[mapping.documentNumber] : '',
             email: mapping.email ? row[mapping.email] : undefined,
             phone: mapping.phone ? row[mapping.phone] : undefined,
             address: mapping.address ? row[mapping.address] : undefined,
-            type: mapping.type ? row[mapping.type] : 'individual',
+            type: (mapping.type ? row[mapping.type] : 'individual') as 'individual' | 'company',
         }));
 
         const result = importCustomers(rows);
