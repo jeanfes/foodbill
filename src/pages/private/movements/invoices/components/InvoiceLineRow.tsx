@@ -10,9 +10,10 @@ interface Props {
     line: InvoiceLine;
     onUpdate: (id: string, patch: Partial<InvoiceLine>) => void;
     onRemove: (id: string) => void;
+    disabled?: boolean;
 }
 
-export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
+export function InvoiceLineRow({ line, onUpdate, onRemove, disabled = false }: Props) {
     const fmt = (n: number) => new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
@@ -32,6 +33,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                     onChange={(e) => onUpdate(line.id, { description: e.target.value })}
                     placeholder="Descripción del producto"
                     className="mb-3"
+                    disabled={disabled}
                 />
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
@@ -47,6 +49,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                                 discountAmount: undefined
                             })}
                             className="h-9"
+                            disabled={disabled}
                         />
                     </div>
                     <div className="space-y-1">
@@ -60,6 +63,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                                 discountPercent: undefined
                             })}
                             className="h-9"
+                            disabled={disabled}
                         />
                     </div>
                 </div>
@@ -70,6 +74,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                     min={0.0001}
                     step={1}
                     onChange={(v) => onUpdate(line.id, { qty: Number(v || 1) })}
+                    disabled={disabled}
                 />
             </TableCell>
             <TableCell className="align-top">
@@ -78,6 +83,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                     min={0}
                     step={100}
                     onChange={(v) => onUpdate(line.id, { unitPrice: Number(v || 0) })}
+                    disabled={disabled}
                 />
             </TableCell>
             <TableCell className="align-top">
@@ -87,6 +93,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                     max={30}
                     step={1}
                     onChange={(v) => onUpdate(line.id, { taxRate: Number(v || 0) })}
+                    disabled={disabled}
                 />
             </TableCell>
             <TableCell className="align-top font-medium">
@@ -98,6 +105,7 @@ export function InvoiceLineRow({ line, onUpdate, onRemove }: Props) {
                     size="icon"
                     onClick={() => onRemove(line.id)}
                     className="h-9 w-9"
+                    disabled={disabled}
                 >
                     <Trash2 className="h-4 w-4" />
                 </Button>

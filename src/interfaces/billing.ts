@@ -17,6 +17,8 @@ export interface Customer {
   updatedAt?: string;
 }
 
+export type PaymentType = 'cash' | 'credit';
+
 export interface InvoiceLine {
   id: string;
   productId?: string;
@@ -36,10 +38,11 @@ export interface Payment {
   id: string;
   invoiceId: string;
   amount: number;
-  method: 'cash' | 'card' | 'transfer' | 'other';
+  method: 'cash' | 'card' | 'transfer' | 'mixed';
   reference?: string;
   date: string;
   receivedBy: string;
+  notes?: string;
 }
 
 export interface InvoiceSeries {
@@ -49,13 +52,15 @@ export interface InvoiceSeries {
   formatPattern: string; // ej: "{series}-{seq:6}"
 }
 
-export type InvoiceStatus = 'draft' | 'issued' | 'partially_paid' | 'paid' | 'cancelled' | 'refunded';
+export type InvoiceStatus = 'draft' | 'issued' | 'partially_paid' | 'paid' | 'cancelled';
 
 export interface InvoiceCustomerSnapshot {
   id: string;
   name: string;
   documentType?: string;
   documentNumber?: string;
+  address?: string;
+  phone?: string;
   email?: string;
 }
 
@@ -64,7 +69,8 @@ export interface Invoice {
   number?: string; // serie + seq
   status: InvoiceStatus;
   date: string;
-  dueDate?: string;
+  dueDate: string; // Obligatoria según requerimientos
+  paymentType: PaymentType; // 'cash' | 'credit'
   customerId: string;
   customerSnapshot: InvoiceCustomerSnapshot;
   currency: CurrencyCode;
@@ -75,12 +81,17 @@ export interface Invoice {
   discountTotal: number;
   rounding: number;
   total: number;
+  balance: number; // Saldo pendiente
   payments: Payment[];
   references?: { relatedInvoiceId?: string; reason?: string };
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  issuedAt?: string; // Fecha de emisión
+  cancelledAt?: string; // Fecha de anulación
+  cancelledBy?: string; // Usuario que anuló
   notes?: string;
+  internalNotes?: string; // Notas internas (solo borrador)
 }
 
 export interface CreditNote extends Invoice {
@@ -105,7 +116,9 @@ export interface RegisterPaymentInput {
   amount: number;
   method: Payment['method'];
   reference?: string;
+  notes?: string;
   userId: string;
+  date?: string; // Opcional, por defecto hoy
 }
 
 export interface RefundInput {

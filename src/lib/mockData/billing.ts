@@ -56,18 +56,21 @@ export function getInitialInvoices(customers: Customer[]): Invoice[] {
     number: 'FV-000101',
     status: 'paid',
     date: nowIso(-15),
+    dueDate: nowIso(-10),
+    paymentType: 'cash',
     customerId: c1.id,
-    customerSnapshot: { id: c1.id, name: c1.name, documentType: c1.documentType, documentNumber: c1.documentNumber, email: c1.email },
+    customerSnapshot: { id: c1.id, name: c1.name, documentType: c1.documentType, documentNumber: c1.documentNumber, address: c1.address, phone: c1.phone, email: c1.email },
     currency: 'COP',
     lines: [
       line('l-1', { desc: 'Hamburguesa Clásica', qty: 2, unit: 'u', price: 18000, taxRate: 5 }),
       line('l-2', { desc: 'Gaseosa 500ml', qty: 2, unit: 'u', price: 3500, taxRate: 19 }),
     ],
-    subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: 0, total: 0,
+    subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: 0, total: 0, balance: 0,
     payments: [],
     createdBy: 'admin',
     createdAt: nowIso(-15),
     updatedAt: nowIso(-15),
+    issuedAt: nowIso(-15),
   };
 
   const inv2: Invoice = {
@@ -75,30 +78,35 @@ export function getInitialInvoices(customers: Customer[]): Invoice[] {
     number: 'FV-000102',
     status: 'issued',
     date: nowIso(-5),
+    dueDate: nowIso(+25),
+    paymentType: 'credit',
     customerId: c2.id,
-    customerSnapshot: { id: c2.id, name: c2.name, documentType: c2.documentType, documentNumber: c2.documentNumber },
+    customerSnapshot: { id: c2.id, name: c2.name, documentType: c2.documentType, documentNumber: c2.documentNumber, address: c2.address, phone: c2.phone },
     currency: 'COP',
     lines: [
       line('l-3', { desc: 'Servicio de Catering', qty: 1, unit: 'serv', price: 150000, taxRate: 19, disc: 10000 }),
     ],
-    subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: 0, total: 0,
+    subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: 0, total: 0, balance: 0,
     payments: [],
     createdBy: 'admin',
     createdAt: nowIso(-5),
     updatedAt: nowIso(-5),
+    issuedAt: nowIso(-5),
   };
 
   const inv3: Invoice = {
     id: 'inv-3',
     status: 'partially_paid',
     date: nowIso(-2),
+    dueDate: nowIso(+15),
+    paymentType: 'credit',
     customerId: c3.id,
-    customerSnapshot: { id: c3.id, name: c3.name },
+    customerSnapshot: { id: c3.id, name: c3.name, address: c3.address, phone: c3.phone },
     currency: 'COP',
     lines: [
       line('l-4', { desc: 'Postre de chocolate', qty: 3, unit: 'u', price: 6000, taxRate: 5 }),
     ],
-    subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: 0, total: 0,
+    subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: 0, total: 0, balance: 0,
     payments: [],
     createdBy: 'admin',
     createdAt: nowIso(-2),
@@ -114,6 +122,7 @@ export function getInitialInvoices(customers: Customer[]): Invoice[] {
     inv.taxTotal = +taxTotal.toFixed(2);
     inv.discountTotal = +discountTotal.toFixed(2);
     inv.total = total;
+    inv.balance = total; // Inicialmente, el saldo es el total
   };
 
   [inv1, inv2, inv3].forEach(recompute);
@@ -121,10 +130,12 @@ export function getInitialInvoices(customers: Customer[]): Invoice[] {
   // pagos para estados
   const pay1: Payment = { id: 'pay-1', invoiceId: inv1.id, amount: inv1.total, method: 'cash', date: nowIso(-15), receivedBy: 'admin' };
   inv1.payments.push(pay1);
+  inv1.balance = 0; // Totalmente pagada
 
   const partialAmount = +(inv3.total / 2).toFixed(2);
   const pay3: Payment = { id: 'pay-2', invoiceId: inv3.id, amount: partialAmount, method: 'card', date: nowIso(-2), receivedBy: 'admin' };
   inv3.payments.push(pay3);
+  inv3.balance = inv3.total - partialAmount; // Saldo parcial
 
   return [inv1, inv2, inv3];
 }

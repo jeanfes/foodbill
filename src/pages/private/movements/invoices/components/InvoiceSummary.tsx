@@ -3,7 +3,10 @@ import { Button } from '@/components/ui/button';
 import { NumberInput } from '@/components/ui/number-input';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Save, Send, Printer, Banknote, Loader2 } from 'lucide-react';
+import { Save, Send, Printer, Banknote, Loader2, CreditCard, Calendar } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import type { PaymentType } from '@/interfaces/billing';
 
 interface Props {
     subtotal: number;
@@ -14,8 +17,10 @@ interface Props {
     balance?: number;
     payments?: { amount: number }[];
     roundingStep?: number;
-    onRoundingChange: (value: number) => void;
-    onSaveDraft: () => void;
+    paymentType?: PaymentType;
+    dueDate?: Date;
+    onRoundingChange?: (value: number) => void;
+    onSaveDraft?: () => void;
     onIssue?: () => void;
     onPrint?: () => void;
     onRegisterPayment?: () => void;
@@ -23,7 +28,7 @@ interface Props {
     canIssue?: boolean;
     canPrint?: boolean;
     canRegisterPayment?: boolean;
-    status?: 'draft' | 'issued' | 'paid' | 'partially_paid' | 'cancelled' | 'refunded';
+    status?: 'draft' | 'issued' | 'paid' | 'partially_paid' | 'cancelled';
 }
 
 export function InvoiceSummary({
@@ -35,6 +40,8 @@ export function InvoiceSummary({
     balance,
     payments = [],
     roundingStep = 1,
+    paymentType,
+    dueDate,
     onRoundingChange,
     onSaveDraft,
     onIssue,
@@ -71,9 +78,30 @@ export function InvoiceSummary({
                                 status === 'issued' ? 'Emitida' :
                                     status === 'paid' ? 'Pagada' :
                                         status === 'partially_paid' ? 'Pago parcial' :
-                                            status === 'cancelled' ? 'Anulada' :
-                                                status === 'refunded' ? 'Reembolsada' : status}
+                                            status === 'cancelled' ? 'Anulada' : status}
                         </Badge>
+                    </div>
+                )}
+
+                {/* Tipo de pago y vencimiento */}
+                {(paymentType || dueDate) && (
+                    <div className="space-y-2 mb-4 pb-4 border-b">
+                        {paymentType && (
+                            <div className="flex items-center gap-2 text-sm">
+                                <CreditCard className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Tipo:</span>
+                                <Badge variant="outline">
+                                    {paymentType === 'cash' ? 'Contado' : 'Crédito'}
+                                </Badge>
+                            </div>
+                        )}
+                        {dueDate && (
+                            <div className="flex items-center gap-2 text-sm">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Vence:</span>
+                                <span className="font-medium">{format(dueDate, "PPP", { locale: es })}</span>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -95,16 +123,18 @@ export function InvoiceSummary({
                         <span className="font-medium">{fmt(taxTotal)}</span>
                     </div>
 
-                    <div className="space-y-1">
-                        <label className="text-xs text-muted-foreground">Redondeo</label>
-                        <NumberInput
-                            value={rounding}
-                            onChange={(v) => onRoundingChange(Number(v || 0))}
-                            step={roundingStep}
-                            decimalScale={2}
-                            fixedDecimalScale
-                        />
-                    </div>
+                    {onRoundingChange && (
+                        <div className="space-y-1">
+                            <label className="text-xs text-muted-foreground">Redondeo</label>
+                            <NumberInput
+                                value={rounding}
+                                onChange={(v) => onRoundingChange(Number(v || 0))}
+                                step={roundingStep}
+                                decimalScale={2}
+                                fixedDecimalScale
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <Separator className="my-4" />
@@ -133,15 +163,17 @@ export function InvoiceSummary({
             <Separator />
 
             <div className="space-y-2">
-                <Button
-                    onClick={onSaveDraft}
-                    disabled={saving}
-                    className="w-full"
-                    variant="outline"
-                >
-                    {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-                    Guardar borrador
-                </Button>
+                {onSaveDraft && (
+                    <Button
+                        onClick={onSaveDraft}
+                        disabled={saving}
+                        className="w-full"
+                        variant="outline"
+                    >
+                        {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                        Guardar borrador
+                    </Button>
+                )}
 
                 {onIssue && canIssue && status === 'draft' && (
                     <Button

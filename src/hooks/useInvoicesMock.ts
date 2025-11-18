@@ -77,10 +77,15 @@ export function useInvoicesMock() {
     if (!payload.customerId || !payload.lines || payload.lines.length === 0) {
       throw new Error('Factura inválida: requiere cliente y al menos una línea.');
     }
+    if (!payload.dueDate) {
+      throw new Error('Factura inválida: la fecha de vencimiento es obligatoria.');
+    }
     const base: Invoice = calculate({
       id: 'inv-' + Date.now(),
       status: 'draft',
       date: new Date().toISOString(),
+      dueDate: payload.dueDate!,
+      paymentType: payload.paymentType || 'cash',
       customerId: payload.customerId!,
       customerSnapshot: payload.customerSnapshot!,
       currency: payload.currency || 'COP',
@@ -88,35 +93,66 @@ export function useInvoicesMock() {
       lines: payload.lines!,
       subtotal: 0, taxTotal: 0, discountTotal: 0, rounding: payload.rounding || 0,
       total: 0,
+      balance: 0,
       payments: [],
       references: payload.references,
       createdBy: payload.createdBy || 'admin',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       notes: payload.notes,
+      internalNotes: payload.internalNotes,
     });
-    setInvoices(prev => [base, ...prev]);
+    const withBalance = { ...base, balance: base.total };
+    setInvoices(prev => [withBalance, ...prev]);
     pushEvent({ userId: base.createdBy, action: 'INVOICE_CREATED', payload: { id: base.id } });
-    return base;
+    return withBalance;
   }, [calculate, pushEvent]);
 
   const updateInvoice = useCallback((id: string, payload: Partial<Invoice>) => {
-    setInvoices(prev => prev.map(i => i.id === id ? calculate({ ...i, ...payload, updatedAt: new Date().toISOString() }) : i));
+    setInvoices(prev => prev.map(i => {
+      if (i.id !== id) return i;
+      const updated = calculate({ ...i, ...payload, updatedAt: new Date().toISOString() });
+      // Recalcular balance al actualizar
+      const totalPaid = updated.payments.reduce((s, p) => s + p.amount, 0);
+      return { ...updated, balance: updated.total - totalPaid };
+    }));
     pushEvent({ userId: payload.createdBy || 'admin', action: 'INVOICE_UPDATED', payload: { id } });
   }, [calculate, pushEvent]);
 
-  const deleteInvoice = useCallback((id: string) => {
+  const deleteInvoice = useCallback((id: string, userId = 'admin') => {
+    const invoice = invoices.find(i => i.id === id);
+    if (!invoice) return;
+    
+    // Solo se puede anular si no tiene pagos registrados
+    if (invoice.payments.length > 0) {
+      throw new Error('No se puede anular una factura con pagos registrados. Debe reembolsar los pagos primero.');
+    }
+    
     // Soft cancel
-    setInvoices(prev => prev.map(i => i.id === id ? { ...i, status: 'cancelled', updatedAt: new Date().toISOString() } : i));
-    pushEvent({ userId: 'admin', action: 'INVOICE_CANCELLED', payload: { id } });
-  }, [pushEvent]);
+    setInvoices(prev => prev.map(i => i.id === id ? { 
+      ...i, 
+      status: 'cancelled', 
+      cancelledAt: new Date().toISOString(),
+      cancelledBy: userId,
+      updatedAt: new Date().toISOString() 
+    } : i));
+    pushEvent({ userId, action: 'INVOICE_CANCELLED', payload: { id } });
+  }, [invoices, pushEvent]);
 
   const issueInvoice = useCallback((id: string) => {
     setInvoices(prev => prev.map(i => {
       if (i.id !== id) return i;
       if (i.status !== 'draft') return i;
       const number = reserveInvoiceNumber(settings.defaultSeriesCode);
-      return { ...i, status: 'issued', number, updatedAt: new Date().toISOString() };
+      // Al emitir, se eliminan las notas internas y se congela
+      return { 
+        ...i, 
+        status: 'issued', 
+        number, 
+        issuedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        internalNotes: undefined, // Eliminar notas internas al emitir
+      };
     }));
     pushEvent({ userId: 'admin', action: 'INVOICE_ISSUED', payload: { id } });
   }, [reserveInvoiceNumber, settings.defaultSeriesCode, pushEvent]);
@@ -130,15 +166,25 @@ export function useInvoicesMock() {
         amount: input.amount,
         method: input.method,
         reference: input.reference,
-        date: new Date().toISOString(),
+        date: input.date || new Date().toISOString(),
         receivedBy: input.userId,
+        notes: input.notes,
       };
       const totalPaid = i.payments.reduce((s, p) => s + p.amount, 0) + input.amount;
       let status: InvoiceStatus = i.status;
       const total = i.total;
       if (totalPaid >= total - 1e-6) status = 'paid';
       else if (totalPaid > 0) status = 'partially_paid';
-      return { ...i, payments: [...i.payments, payment], status, updatedAt: new Date().toISOString() };
+      
+      const balance = total - totalPaid;
+      
+      return { 
+        ...i, 
+        payments: [...i.payments, payment], 
+        status, 
+        balance,
+        updatedAt: new Date().toISOString() 
+      };
     }));
     pushEvent({ userId: input.userId, action: 'PAYMENT_REGISTERED', payload: { invoiceId: input.invoiceId, amount: input.amount } });
   }, [pushEvent]);

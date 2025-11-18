@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInvoicesMock } from '@/hooks/useInvoicesMock';
 import { useProductsMock } from '@/hooks/useProductsMock';
-import type { InvoiceLine, Customer } from '@/interfaces/billing';
+import type { InvoiceLine, Customer, PaymentType } from '@/interfaces/billing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -11,12 +11,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, CheckCircle2, Plus, ArrowLeft, FileText, User } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AlertTriangle, CheckCircle2, Plus, ArrowLeft, FileText, User, CalendarIcon } from 'lucide-react';
 import { CustomerTypeahead } from './components/CustomerTypeahead';
 import { InvoiceLineRow } from './components/InvoiceLineRow';
 import { InvoiceSummary } from './components/InvoiceSummary';
 import { InvoicePrintView } from './components/InvoicePrintView';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function InvoiceFormPage() {
     const navigate = useNavigate();
@@ -28,20 +34,28 @@ export default function InvoiceFormPage() {
 
     const [customerId, setCustomerId] = useState(editing?.customerId || customers[0]?.id || '');
     const customer = useMemo(() => customers.find(c => c.id === customerId), [customers, customerId]);
+    const [paymentType, setPaymentType] = useState<PaymentType>(editing?.paymentType || 'cash');
+    const [dueDate, setDueDate] = useState<Date | undefined>(editing?.dueDate ? new Date(editing.dueDate) : undefined);
     const [lines, setLines] = useState<InvoiceLine[]>(editing?.lines || []);
     const [rounding, setRounding] = useState<number>(editing?.rounding || 0);
     const [notes, setNotes] = useState(editing?.notes || '');
+    const [internalNotes, setInternalNotes] = useState(editing?.internalNotes || '');
     const [saving, setSaving] = useState(false);
     const [showNewCustomerModal, setShowNewCustomerModal] = useState(false);
     const [showIssueModal, setShowIssueModal] = useState(false);
     const [showPrintView, setShowPrintView] = useState(false);
 
+    const isDraft = !editing || editing.status === 'draft';
+
     useEffect(() => {
         if (editing) {
             setCustomerId(editing.customerId);
+            setPaymentType(editing.paymentType);
+            setDueDate(editing.dueDate ? new Date(editing.dueDate) : undefined);
             setLines(editing.lines);
             setRounding(editing.rounding || 0);
             setNotes(editing.notes || '');
+            setInternalNotes(editing.internalNotes || '');
         }
     }, [editing]);
 
@@ -115,6 +129,11 @@ export default function InvoiceFormPage() {
             return;
         }
 
+        if (!dueDate) {
+            alert('Debe especificar la fecha de vencimiento');
+            return;
+        }
+
         const validLines = lines.filter(l => l.description.trim() && l.qty > 0);
         if (validLines.length === 0) {
             alert('Debe agregar al menos una línea válida');
@@ -131,15 +150,27 @@ export default function InvoiceFormPage() {
                         name: customer.name,
                         documentType: customer.documentType,
                         documentNumber: customer.documentNumber,
+                        address: customer.address,
+                        phone: customer.phone,
                         email: customer.email
                     },
                     currency: 'COP',
+                    paymentType,
+                    dueDate: dueDate.toISOString(),
                     lines: validLines,
                     rounding,
                     notes,
+                    internalNotes,
                 });
             } else {
-                updateInvoice(editing.id, { lines: validLines, notes, rounding });
+                updateInvoice(editing.id, {
+                    lines: validLines,
+                    notes,
+                    internalNotes,
+                    rounding,
+                    paymentType,
+                    dueDate: dueDate.toISOString()
+                });
             }
             navigate('/movements/invoices');
         } finally {
@@ -153,9 +184,20 @@ export default function InvoiceFormPage() {
             return;
         }
 
-        const validLines = lines.filter(l => l.description.trim() && l.qty > 0);
+        if (!dueDate) {
+            alert('Debe especificar la fecha de vencimiento');
+            return;
+        }
+
+        const validLines = lines.filter(l => l.description.trim() && l.qty > 0 && l.unitPrice > 0);
         if (validLines.length === 0) {
-            alert('Debe agregar al menos una línea válida');
+            alert('Debe agregar al menos una línea válida con cantidad y precio mayor a cero');
+            return;
+        }
+
+        const invoiceDate = new Date(editing?.date || new Date());
+        if (dueDate < invoiceDate) {
+            alert('La fecha de vencimiento no puede ser anterior a la fecha de factura');
             return;
         }
 
@@ -247,7 +289,7 @@ export default function InvoiceFormPage() {
                                 selectedCustomerId={customerId}
                                 onSelect={setCustomerId}
                                 onCreateNew={() => setShowNewCustomerModal(true)}
-                                disabled={!!editing && editing.status !== 'draft'}
+                                disabled={!isDraft}
                             />
 
                             {customer && (
@@ -270,15 +312,70 @@ export default function InvoiceFormPage() {
                             )}
                         </Card>
 
+                        {/* Tipo de pago y fecha de vencimiento */}
+                        <Card className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="paymentType">Tipo de pago *</Label>
+                                    <Select
+                                        value={paymentType}
+                                        onValueChange={(v: PaymentType) => setPaymentType(v)}
+                                        disabled={!isDraft}
+                                    >
+                                        <SelectTrigger id="paymentType">
+                                            <SelectValue placeholder="Seleccionar tipo de pago" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="cash">Contado</SelectItem>
+                                            <SelectItem value="credit">Crédito</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>Fecha de vencimiento *</Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                disabled={!isDraft}
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal",
+                                                    !dueDate && "text-muted-foreground"
+                                                )}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {dueDate ? format(dueDate, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={dueDate}
+                                                onSelect={setDueDate}
+                                                initialFocus
+                                                locale={es}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    {paymentType === 'cash' && dueDate && (
+                                        <p className="text-xs text-muted-foreground">
+                                            Para pago de contado, la fecha de vencimiento es informativa
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </Card>
+
                         {/* Líneas */}
                         <Card className="p-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
                                     <FileText className="h-5 w-5 text-muted-foreground" />
                                     <h2 className="text-lg font-semibold">Líneas de factura</h2>
                                     <Badge variant="secondary">{lines.length}</Badge>
                                 </div>
-                                <Button onClick={addLine} size="sm">
+                                <Button onClick={addLine} size="sm" disabled={!isDraft}>
                                     <Plus className="h-4 w-4 mr-2" /> Agregar línea
                                 </Button>
                             </div>
@@ -304,6 +401,7 @@ export default function InvoiceFormPage() {
                                                         line={line}
                                                         onUpdate={updateLine}
                                                         onRemove={removeLine}
+                                                        disabled={!isDraft}
                                                     />
                                                 ))}
                                             </AnimatePresence>
@@ -321,14 +419,32 @@ export default function InvoiceFormPage() {
                         </Card>
 
                         {/* Notas */}
-                        <Card className="p-6">
-                            <h2 className="text-lg font-semibold">Notas</h2>
-                            <Textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Observaciones, condiciones de pago, etc..."
-                                className="min-h-24"
-                            />
+                        <Card className="p-6 space-y-4">
+                            <div className="mb-0">
+                                <h2 className="text-lg font-semibold mb-2">Notas (visibles para el cliente)</h2>
+                                <Textarea
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    placeholder="Observaciones, condiciones de pago, etc..."
+                                    className="min-h-24"
+                                    disabled={!isDraft}
+                                />
+                            </div>
+
+                            {isDraft && (
+                                <div>
+                                    <h2 className="text-lg font-semibold mb-2">Notas internas (solo borrador)</h2>
+                                    <Textarea
+                                        value={internalNotes}
+                                        onChange={(e) => setInternalNotes(e.target.value)}
+                                        placeholder="Notas internas que no se mostrarán al cliente ni en la factura emitida..."
+                                        className="min-h-20"
+                                    />
+                                    <p className="text-xs text-muted-foreground mt-2">
+                                        Estas notas se eliminan automáticamente al emitir la factura
+                                    </p>
+                                </div>
+                            )}
                         </Card>
                     </div>
 
@@ -340,11 +456,13 @@ export default function InvoiceFormPage() {
                             discountTotal={discountTotal}
                             rounding={rounding}
                             total={total}
-                            balance={editing ? editing.total - editing.payments.reduce((s, p) => s + p.amount, 0) : total}
+                            balance={editing ? editing.balance : total}
                             payments={editing?.payments || []}
                             roundingStep={settings.roundingStep ?? 1}
-                            onRoundingChange={setRounding}
-                            onSaveDraft={onSaveDraft}
+                            paymentType={paymentType}
+                            dueDate={dueDate}
+                            onRoundingChange={isDraft ? setRounding : undefined}
+                            onSaveDraft={isDraft ? onSaveDraft : undefined}
                             onIssue={editing && editing.status === 'draft' ? handleIssueInvoice : undefined}
                             onPrint={editing && editing.status !== 'draft' ? () => setShowPrintView(true) : undefined}
                             saving={saving}
