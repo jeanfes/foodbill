@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { Plus, Search } from 'lucide-react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTablesMock } from '@/hooks/useTablesMock';
 import type { TableStatus } from '@/interfaces/table';
 import { TableCard } from './components/TableCard';
@@ -13,22 +12,32 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { Permission } from '@/interfaces/role';
 import { TableFormDialog } from './components/TableFormDialog';
 
-export default function TablesPage() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const params = useParams();
+export default function Tables() {
     const { filtered, remove, findById } = useTablesMock();
     const { hasPermission } = usePermissions();
 
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState<'todas' | TableStatus>('todas');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const items = useMemo(() => filtered({ search, status }), [filtered, search, status]);
+    const editing = useMemo(() => (editingId ? findById(editingId) : null), [editingId, findById]);
 
-    const isCreate = location.pathname.endsWith('/crear');
-    const editId = (params as any).id as string | undefined;
-    const editing = useMemo(() => (editId ? findById(editId) : null), [editId, findById]);
-    const dialogOpen = isCreate || !!editId;
+    const handleCreate = () => {
+        setEditingId(null);
+        setDialogOpen(true);
+    };
+
+    const handleEdit = (id: string) => {
+        setEditingId(id);
+        setDialogOpen(true);
+    };
+
+    const handleClose = () => {
+        setDialogOpen(false);
+        setEditingId(null);
+    };
 
     return (
         <div className="space-y-4">
@@ -39,7 +48,7 @@ export default function TablesPage() {
                 </div>
                 <div className="flex gap-2">
                     {hasPermission(Permission.CREATE_TABLES) && (
-                        <Button onClick={() => navigate('/mesas/crear')}>
+                        <Button onClick={handleCreate}>
                             <Plus className="h-4 w-4 mr-2" /> Nueva mesa
                         </Button>
                     )}
@@ -69,7 +78,7 @@ export default function TablesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {items.map(t => (
-                    <TableCard key={t.id} table={t} onEdit={(id) => navigate(`/mesas/${id}`)} onDelete={remove} />
+                    <TableCard key={t.id} table={t} onEdit={handleEdit} onDelete={remove} />
                 ))}
                 {items.length === 0 && (
                     <div className="col-span-full text-center text-sm text-muted-foreground py-16 border rounded-md">
@@ -81,7 +90,7 @@ export default function TablesPage() {
             <TableFormDialog
                 open={dialogOpen}
                 editing={editing}
-                onClose={() => navigate('/mesas')}
+                onClose={handleClose}
             />
         </div>
     );

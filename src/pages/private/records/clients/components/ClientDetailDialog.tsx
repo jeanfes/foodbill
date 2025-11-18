@@ -8,7 +8,7 @@ import { es } from "date-fns/locale";
 import { Can } from "@/components/Can";
 import { Permission } from "@/interfaces/role";
 import { useEffect, useState } from "react";
-import type { Client } from "../ClientsPage";
+import type { Client } from "../Clients";
 import { clientsService } from "@/services/clientsService";
 
 interface Props {

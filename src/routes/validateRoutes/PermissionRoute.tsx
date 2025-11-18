@@ -15,7 +15,7 @@ const PermissionRoute = ({
     requiredPermission,
     requiredPermissions,
     requireAll = false,
-    fallbackPath = "/not-found",
+    fallbackPath = "/unauthorized",
 }: PermissionRouteProps) => {
     const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermissions();
 

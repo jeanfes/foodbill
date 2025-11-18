@@ -55,7 +55,7 @@ const navigationItems: NavigationItem[] = [
         icon: Boxes,
         hasDropdown: true,
         children: [
-            { name: "Inventario", href: "/movements/inventory" },
+            { name: "Inventario", href: "/movements/inventory", requiredPermission: Permission.VIEW_INVENTORY },
             { name: "Facturación (POS)", href: "/movements/pos" },
             { name: "Gastos", href: "/movements/expenses" },
             { name: "Anulaciones", href: "/movements/voids" },
@@ -135,19 +135,19 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     return (
         <aside
             className={cn(
-                "fixed left-0 top-0 h-screen bg-card border-r border-border transition-all duration-300 ease-in-out will-change-[width] z-40",
+                "fixed left-0 top-0 h-screen bg-card border-r border-border transition-all duration-150 ease-in-out will-change-[width] z-40",
                 isOpen ? "w-64" : "w-20",
             )}
             style={{ overflow: 'hidden' }}
         >
-            <div className={cn("h-16 flex items-center px-4 transition-all duration-300", isOpen ? "justify-between" : "justify-center")}>
+            <div className={cn("h-16 flex items-center px-4 transition-all duration-150", isOpen ? "justify-between" : "justify-center")}>
                 <Link to="/home" className="flex items-center gap-3">
                     <div>
                         <img src={LogoTransparent} alt="logo" className="authLogoSmall w-8 h-8 object-contain" />
                     </div>
                 </Link>
 
-                <div className={cn("transition-all duration-300 overflow-hidden", isOpen ? "opacity-100 w-10" : "opacity-0 w-0")}>
+                <div className={cn("transition-all duration-150 overflow-hidden", isOpen ? "opacity-100 w-10" : "opacity-0 w-0")}>
                     <Button variant="ghost" size="icon" onClick={onToggle} className="h-10 w-10">
                         <LayoutPanelLeft className="h-4 w-4" />
                     </Button>
@@ -167,7 +167,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                         <div key={item.name} className="relative">
                             <div
                                 className={cn(
-                                    "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-300",
+                                    "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-150",
                                     isSectionActive && isOpen && !hasChildren ? "opacity-100" : "opacity-0",
                                 )}
                             />
@@ -175,7 +175,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             <Link
                                 to={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 px-2.5 py-3.5 rounded-2xl transition-all duration-300 relative group",
+                                    "flex items-center gap-3 px-2.5 py-3.5 rounded-2xl transition-all duration-150 relative group",
                                     isSectionActive
                                         ? isOpen
                                             ? "bg-primary/10 text-primary"
@@ -192,7 +192,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             >
                                 <Icon
                                     className={cn(
-                                        "w-5 h-5 shrink-0 transition-colors duration-300",
+                                        "w-5 h-5 shrink-0 transition-colors duration-150",
                                         !isSectionActive && "group-hover:text-white",
                                         isSectionActive ? (isOpen ? "text-primary" : "text-white") : undefined,
                                     )}
@@ -212,7 +212,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                         {item.hasDropdown && (
                                             <ChevronDown
                                                 className={cn(
-                                                    "w-4 h-4 transition-transform duration-300",
+                                                    "w-4 h-4 transition-transform duration-150",
                                                     !isSectionActive && "group-hover:text-white",
                                                     isExpanded && "rotate-180",
                                                 )}
@@ -230,7 +230,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             {isOpen && hasChildren && (
                                 <div
                                     className={cn(
-                                        "pl-9 pr-2 grid transition-all duration-300",
+                                        "pl-9 pr-2 grid transition-all duration-150",
                                         isExpanded ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0",
                                     )}
                                 >
@@ -241,7 +241,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                                 <div key={child.name} className="relative">
                                                     <div
                                                         className={cn(
-                                                            "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-300",
+                                                            "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-150",
                                                             childActive ? "opacity-100" : "opacity-0",
                                                         )}
                                                     />

@@ -17,7 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import type { Client } from "../ClientsPage";
+import type { Client } from "../Clients";
 import { Can } from "@/components/Can";
 import { Permission } from "@/interfaces/role";
 import { formatDistanceToNow } from "date-fns";

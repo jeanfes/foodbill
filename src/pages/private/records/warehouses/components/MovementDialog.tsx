@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -138,7 +139,7 @@ export function MovementDialog({ open, onOpenChange, onSubmit, typeDefault = "IN
                                 control={control}
                                 name="quantity"
                                 render={({ field }) => (
-                                    <Input className="h-10" type="number" min={0.01} step={0.01} value={field.value} onChange={e => field.onChange(Number(e.target.value))} />
+                                    <NumberInput className="h-10" min={0.01} step={0.01} value={field.value} onChange={field.onChange} />
                                 )}
                             />
                             {errors.quantity && <p className="text-xs text-destructive mt-1">{errors.quantity.message}</p>}

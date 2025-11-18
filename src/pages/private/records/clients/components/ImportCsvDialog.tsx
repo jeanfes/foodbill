@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Loader2 } from "lucide-react";
 import { clientsService } from "@/services/clientsService";
-import type { ClientType } from "../ClientsPage";
+import type { ClientType } from "../Clients";
 
 interface Props {
     open: boolean;

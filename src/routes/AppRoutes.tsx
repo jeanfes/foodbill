@@ -10,13 +10,13 @@ import NotFound from "@/pages/public/notFound/NotFound";
 import FullLayout from "../layouts/fullLayout/FullLayout";
 import Home from "@/pages/private/home/Home";
 import { Permission } from "@/interfaces/role";
-import ClientsPage from "@/pages/private/records/clients/ClientsPage.tsx";
-import ProductsPage from "@/pages/private/records/products/ProductsPage.tsx";
 import CategoriesPage from "@/pages/private/records/categories/CategoriesPage.tsx";
 import WarehousesPage from "@/pages/private/records/warehouses/WarehousesPage.tsx";
 import CashBoxesPage from "@/pages/private/records/cashboxes/CashBoxesPageNew.tsx";
-import TablesPage from "@/pages/private/records/tables/TablesPage.tsx";
-// Dialog-based form now handled inside TablesPage
+import Inventory from "@/pages/private/movements/inventory/Inventory";
+import Tables from "@/pages/private/records/tables/Tables";
+import Products from "@/pages/private/records/products/Products";
+import Clients from "@/pages/private/records/clients/Clients";
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -68,7 +68,7 @@ const AppRoutes = () => {
           path: "/records/clients",
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_CLIENTS}>
-              <ClientsPage />
+              <Clients />
             </PermissionRoute>
           ),
         },
@@ -76,7 +76,7 @@ const AppRoutes = () => {
           path: "/records/products",
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_PRODUCTS}>
-              <ProductsPage />
+              <Products />
             </PermissionRoute>
           ),
         },
@@ -108,23 +108,7 @@ const AppRoutes = () => {
           path: "/mesas",
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_TABLES}>
-              <TablesPage />
-            </PermissionRoute>
-          ),
-        },
-        {
-          path: "/mesas/crear",
-          element: (
-            <PermissionRoute requiredPermission={Permission.CREATE_TABLES}>
-              <TablesPage />
-            </PermissionRoute>
-          ),
-        },
-        {
-          path: "/mesas/:id",
-          element: (
-            <PermissionRoute requiredPermission={Permission.UPDATE_TABLES}>
-              <TablesPage />
+              <Tables />
             </PermissionRoute>
           ),
         },
@@ -153,10 +137,10 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/inventory",
+          path: "/movements/inventory",
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_INVENTORY}>
-              <div>Inventory Page - En desarrollo</div>
+              <Inventory />
             </PermissionRoute>
           ),
         },
@@ -178,10 +162,22 @@ const AppRoutes = () => {
       path: "/unauthorized",
       element: (
         <div className="min-h-screen flex items-center justify-center bg-background">
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 max-w-md mx-auto p-6">
             <h1 className="text-4xl font-bold text-destructive">Acceso Denegado</h1>
-            <p className="text-muted-foreground">No tienes permisos para acceder a este recurso</p>
-            <Navigate to="/home" />
+            <p className="text-muted-foreground">
+              No tienes los permisos necesarios para acceder a este recurso.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Si crees que deberías tener acceso, contacta con el administrador del sistema.
+            </p>
+            <div className="pt-4">
+              <a
+                href="/home"
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              >
+                Volver al inicio
+              </a>
+            </div>
           </div>
         </div>
       ),

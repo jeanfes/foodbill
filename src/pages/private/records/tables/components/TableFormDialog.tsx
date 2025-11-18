@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { NumberInput } from '@/components/ui/number-input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Table, TableFormData, TableStatus } from '@/interfaces/table';
@@ -78,7 +79,7 @@ export function TableFormDialog({ open, onClose, editing }: TableFormDialogProps
                                 <FormItem>
                                     <FormLabel className="text-sm mb-1.5 block">Capacidad *</FormLabel>
                                     <FormControl>
-                                        <Input type="number" min={1} className="h-10" placeholder="4" value={field.value} onChange={e => field.onChange(Number(e.target.value))} />
+                                        <NumberInput min={1} className="h-10" placeholder="4" value={field.value} onChange={field.onChange} />
                                     </FormControl>
                                     <FormMessage className="text-xs" />
                                 </FormItem>

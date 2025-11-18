@@ -10,7 +10,7 @@ import { Permission } from "@/interfaces/role";
 import { Can } from "@/components/Can";
 import { clientsService } from "@/services/clientsService";
 import { Loader2, AlertTriangle } from "lucide-react";
-import type { Client, ClientType } from "../ClientsPage";
+import type { Client, ClientType } from "../Clients";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

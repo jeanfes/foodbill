@@ -28,7 +28,7 @@ interface FiltersState {
     tags: string[];
 }
 
-export default function ProductsPage() {
+export default function Products() {
     const {
         filteredProducts,
         createProduct,

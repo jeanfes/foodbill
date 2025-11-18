@@ -45,7 +45,7 @@ export interface Client {
     audit: ClientAudit;
 }
 
-const ClientsPage = () => {
+export default function Clients() {
     const [query, setQuery] = useState("");
     const [showDetailId, setShowDetailId] = useState<string | null>(null);
     const [showFormOpen, setShowFormOpen] = useState(false);
@@ -112,5 +112,3 @@ const ClientsPage = () => {
         </div>
     );
 };
-
-export default ClientsPage;

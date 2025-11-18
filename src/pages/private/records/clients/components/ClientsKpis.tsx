@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { clientsService } from "@/services/clientsService";
 import { Users, TrendingUp, Star, Clock, DollarSign } from "lucide-react";
-import type { Client } from "../ClientsPage";
+import type { Client } from "../Clients";
 
 interface KpiData {
     total: number;
@@ -38,8 +38,8 @@ const KPI = ({
             </div>
             {Icon && (
                 <div className={`p-2 rounded-lg ${trend === "up" ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200" :
-                        trend === "down" ? "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200" :
-                            "bg-primary/10 text-primary"
+                    trend === "down" ? "bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200" :
+                        "bg-primary/10 text-primary"
                     }`}>
                     <Icon className="h-5 w-5" />
                 </div>
