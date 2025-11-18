@@ -15,7 +15,6 @@ interface ProductDetailDrawerProps {
 export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerProps) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-    // Simular múltiples imágenes (en la realidad vendrían del producto)
     const images = product?.imageUrl
         ? [product.imageUrl]
         : ['https://placehold.co/600x400?text=Sin+Imagen'];
@@ -40,7 +39,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                 <DialogTitle className="text-2xl">{product.name}</DialogTitle>
                                 <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
                             </DialogHeader>
-
                             <div className="space-y-6 mt-4">
                                 <div className="space-y-2">
                                     <motion.div
@@ -82,10 +80,7 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                         </div>
                                     )}
                                 </div>
-
                                 <Separator />
-
-                                {/* Información principal */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -99,7 +94,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                             </p>
                                         )}
                                     </div>
-
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-muted-foreground">
                                             <Package2 className="w-4 h-4" />
@@ -113,10 +107,7 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                         )}
                                     </div>
                                 </div>
-
                                 <Separator />
-
-                                {/* Categoría y Estado */}
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2 text-muted-foreground">
                                         <BarChart3 className="w-4 h-4" />
@@ -130,7 +121,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                         {product.isComposite && <Badge variant="outline">Compuesto</Badge>}
                                     </div>
                                 </div>
-
                                 {product.tags && product.tags.length > 0 && (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-muted-foreground">
@@ -146,15 +136,12 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                         </div>
                                     </div>
                                 )}
-
                                 {product.description && (
                                     <div className="space-y-2">
                                         <h4 className="font-semibold">Descripción</h4>
                                         <p className="text-sm text-muted-foreground">{product.description}</p>
                                     </div>
                                 )}
-
-                                {/* Inventario por almacén */}
                                 {product.trackInventory && product.stockByWarehouse && (
                                     <div className="space-y-2">
                                         <h4 className="font-semibold">Inventario por Almacén</h4>
@@ -168,7 +155,6 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                         </div>
                                     </div>
                                 )}
-
                                 {product.isComposite && product.recipe && product.recipe.length > 0 && (
                                     <div className="space-y-2">
                                         <h4 className="font-semibold">Receta / Ingredientes</h4>
@@ -182,16 +168,11 @@ export function ProductDetailDrawer({ product, onClose }: ProductDetailDrawerPro
                                         </ul>
                                     </div>
                                 )}
-
                                 <Separator />
-
-                                {/* Botón de ubicación */}
                                 <Button variant="outline" className="w-full" disabled>
                                     <MapPin className="w-4 h-4 mr-2" />
                                     Ver Ubicación (Próximamente)
                                 </Button>
-
-                                {/* Información de auditoría */}
                                 {(product.createdAt || product.updatedAt) && (
                                     <div className="text-xs text-muted-foreground space-y-1">
                                         {product.createdAt && <p>Creado: {new Date(product.createdAt).toLocaleString('es-ES')}</p>}

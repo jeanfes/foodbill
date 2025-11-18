@@ -44,8 +44,8 @@ const navigationItems: NavigationItem[] = [
             { name: "Productos", href: "/records/products", requiredPermission: Permission.VIEW_PRODUCTS },
             { name: "Categorías", href: "/records/categories", requiredPermission: Permission.VIEW_CATEGORIES },
             { name: "Bodegas", href: "/records/warehouses" },
-            { name: "Cajas", href: "/records/registers" },
-            { name: "Mesas", href: "/records/tables" },
+            { name: "Cajas", href: "/records/cashboxes" },
+            { name: "Mesas", href: "/mesas", requiredPermission: Permission.VIEW_TABLES },
         ],
     },
 

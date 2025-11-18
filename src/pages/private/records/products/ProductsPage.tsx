@@ -3,6 +3,7 @@ import { useProductsMock } from '@/hooks/useProductsMock';
 import type { Product } from '@/interfaces/product';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 import { ProductList } from './components/ProductList';
 import { ProductGrid } from './components/ProductGrid';
 import { ProductDetailDrawer } from './components/ProductDetailDrawer';
@@ -149,21 +150,23 @@ export default function ProductsPage() {
                     <ProductExportButton products={filtered} onExport={exportProductsCSV} />
                 </div>
             </motion.div>
-            <div className="flex gap-2">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                        className="pl-10"
-                        placeholder="Buscar por nombre, SKU o categoría..."
-                        value={filters.search}
-                        onChange={e => setFilters({ ...filters, search: e.target.value })}
-                        aria-label="Buscar producto"
-                    />
+            <Card className="p-3">
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                            className="pl-10 h-10"
+                            placeholder="Buscar por nombre, SKU o categoría..."
+                            value={filters.search}
+                            onChange={e => setFilters({ ...filters, search: e.target.value })}
+                            aria-label="Buscar producto"
+                        />
+                    </div>
+                    <Button className="h-10" onClick={() => setPreferences({ ...preferences, lastFilters: { ...filters } })}>
+                        Buscar
+                    </Button>
                 </div>
-                <Button onClick={() => setPreferences({ ...preferences, lastFilters: { ...filters } })}>
-                    Buscar
-                </Button>
-            </div>
+            </Card>
             <AdvancedFiltersPanel
                 filters={filters}
                 onFiltersChange={handleFiltersChange}

@@ -82,15 +82,17 @@ const ClientsPage = () => {
                     </Can>
                 </div>
             </motion.div>
-            <div className="flex gap-2">
-                <Input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Buscar por nombre, documento o teléfono..."
-                    className="flex-1"
-                />
-                <Button>Buscar</Button>
-            </div>
+            <Card className="p-3">
+                <div className="flex gap-2">
+                    <Input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Buscar por nombre, documento o teléfono..."
+                        className="flex-1 h-10"
+                    />
+                    <Button className="h-10">Buscar</Button>
+                </div>
+            </Card>
             <ClientsFilters />
             <ClientsKpis />
             <Card className="p-0 overflow-hidden">

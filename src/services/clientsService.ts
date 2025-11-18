@@ -99,7 +99,7 @@ export const clientsService = {
       createdAt: new Date().toISOString(),
       active: true,
       audit: {
-        createdBy: "admin", // TODO: obtener del authStore
+        createdBy: "admin",
         createdAt: new Date().toISOString(),
       },
     };
@@ -115,7 +115,7 @@ export const clientsService = {
         ...payload,
         audit: {
           ...mock[idx].audit,
-          lastModifiedBy: "admin", // TODO: obtener del authStore
+          lastModifiedBy: "admin",
           lastModifiedAt: new Date().toISOString(),
         },
       } as Client;

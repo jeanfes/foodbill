@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { Search, Plus, FolderOpen } from "lucide-react";
 import { CategoryCard } from "./components/CategoryCard";
 import { CategoryFormDialog } from "./components/CategoryFormDialog";
@@ -89,6 +90,8 @@ export default function CategoriesPage() {
                         Organiza y clasifica tus productos en categorías
                     </p>
                 </div>
+            </motion.div>
+            <Card className="p-3">
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -106,7 +109,7 @@ export default function CategoriesPage() {
                         </Button>
                     </Can>
                 </div>
-            </motion.div>
+            </Card>
             {filteredCategories.length > 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}

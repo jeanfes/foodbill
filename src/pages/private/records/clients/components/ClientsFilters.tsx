@@ -42,7 +42,6 @@ const ClientsFilters = () => {
     };
 
     const handleApply = () => {
-        // TODO: aplicar filtros al servicio
         console.log("Aplicando filtros:", filters);
     };
 

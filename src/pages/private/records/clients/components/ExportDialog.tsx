@@ -14,7 +14,6 @@ const ExportDialog = ({ open, onOpenChange }: Props) => {
     const [scope, setScope] = useState<string>("all");
 
     const handleExport = () => {
-        // TODO: integrar servicio de exportación
         console.log("Exportando:", { format, scope });
         onOpenChange(false);
     };

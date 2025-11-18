@@ -189,7 +189,6 @@ const ClientsTable = ({ onOpenDetail, onEdit }: ClientsTableProps) => {
                 </TableBody>
             </Table>
 
-            {/* Paginación */}
             <div className="flex items-center justify-between px-2 py-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span>Mostrar</span>

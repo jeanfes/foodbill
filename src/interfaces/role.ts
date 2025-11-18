@@ -51,6 +51,14 @@ export const Permission = {
   UPDATE_SETTINGS: "UPDATE_SETTINGS",
   VIEW_REPORTS: "VIEW_REPORTS",
   EXPORT_REPORTS: "EXPORT_REPORTS",
+  VIEW_CASHBOXES: "VIEW_CASHBOXES",
+  CREATE_CASHBOXES: "CREATE_CASHBOXES",
+  UPDATE_CASHBOXES: "UPDATE_CASHBOXES",
+  DELETE_CASHBOXES: "DELETE_CASHBOXES",
+  VIEW_TABLES: "VIEW_TABLES",
+  CREATE_TABLES: "CREATE_TABLES",
+  UPDATE_TABLES: "UPDATE_TABLES",
+  DELETE_TABLES: "DELETE_TABLES",
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];
@@ -97,6 +105,16 @@ export const rolePermissionsConfig: RolePermissions[] = [
       Permission.VIEW_REPORTS,
       Permission.EXPORT_REPORTS,
       Permission.VIEW_SETTINGS,
+      // CashBoxes
+      Permission.VIEW_CASHBOXES,
+      Permission.CREATE_CASHBOXES,
+      Permission.UPDATE_CASHBOXES,
+      Permission.DELETE_CASHBOXES,
+      // Tables
+      Permission.VIEW_TABLES,
+      Permission.CREATE_TABLES,
+      Permission.UPDATE_TABLES,
+      Permission.DELETE_TABLES,
     ],
   },
   {
@@ -114,6 +132,14 @@ export const rolePermissionsConfig: RolePermissions[] = [
       Permission.VIEW_CLIENTS,
       Permission.CREATE_CLIENTS,
       Permission.VIEW_REVIEWS,
+      // CashBoxes
+      Permission.VIEW_CASHBOXES,
+      Permission.CREATE_CASHBOXES,
+      Permission.UPDATE_CASHBOXES,
+      // Tables
+      Permission.VIEW_TABLES,
+      Permission.CREATE_TABLES,
+      Permission.UPDATE_TABLES,
     ],
   },
   {
@@ -124,6 +150,9 @@ export const rolePermissionsConfig: RolePermissions[] = [
       Permission.UPDATE_ORDERS,
       Permission.VIEW_MENU,
       Permission.VIEW_CALENDAR,
+      // Tables
+      Permission.VIEW_TABLES,
+      Permission.UPDATE_TABLES,
     ],
   },
   {

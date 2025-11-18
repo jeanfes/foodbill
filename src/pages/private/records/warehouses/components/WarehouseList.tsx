@@ -70,7 +70,7 @@ export function WarehouseList({ warehouses, stocks, selectedId, onSelect, onCrea
     return (
         <Card className="p-0 flex flex-col h-full">
             <div className="p-3 border-b space-y-2">
-                <div className="flex items-start sm:items-center justify-between gap-2 flex-col sm:flex-row">
+                <div className="flex items-start sm:items-center justify-between gap-2 flex-col sm:flex-row mb-4">
                     <h2 className="font-semibold text-lg">Bodegas</h2>
                     <div className="flex items-center gap-1">
                         <Button

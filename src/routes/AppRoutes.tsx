@@ -14,6 +14,9 @@ import ClientsPage from "@/pages/private/records/clients/ClientsPage.tsx";
 import ProductsPage from "@/pages/private/records/products/ProductsPage.tsx";
 import CategoriesPage from "@/pages/private/records/categories/CategoriesPage.tsx";
 import WarehousesPage from "@/pages/private/records/warehouses/WarehousesPage.tsx";
+import CashBoxesPage from "@/pages/private/records/cashboxes/CashBoxesPageNew.tsx";
+import TablesPage from "@/pages/private/records/tables/TablesPage.tsx";
+// Dialog-based form now handled inside TablesPage
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -90,6 +93,38 @@ const AppRoutes = () => {
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_INVENTORY}>
               <WarehousesPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/records/cashboxes",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_CASHBOXES}>
+              <CashBoxesPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/mesas",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_TABLES}>
+              <TablesPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/mesas/crear",
+          element: (
+            <PermissionRoute requiredPermission={Permission.CREATE_TABLES}>
+              <TablesPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/mesas/:id",
+          element: (
+            <PermissionRoute requiredPermission={Permission.UPDATE_TABLES}>
+              <TablesPage />
             </PermissionRoute>
           ),
         },
