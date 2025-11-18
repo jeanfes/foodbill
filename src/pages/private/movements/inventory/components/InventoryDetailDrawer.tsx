@@ -129,7 +129,7 @@ export function InventoryDetailDrawer({
             </div>
           </SheetHeader>
 
-          <div className="px-6 py-6 space-y-8">
+          <div className="px-6 py-6 space-y-8 h-full">
             <div className="flex flex-wrap gap-3">
               <Can permission={Permission.ADJUST_INVENTORY}>
                 <Button

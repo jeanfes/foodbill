@@ -56,7 +56,7 @@ const navigationItems: NavigationItem[] = [
         hasDropdown: true,
         children: [
             { name: "Inventario", href: "/movements/inventory", requiredPermission: Permission.VIEW_INVENTORY },
-            { name: "Facturación (POS)", href: "/movements/pos" },
+            { name: "Facturación", href: "/movements/invoices" },
             { name: "Gastos", href: "/movements/expenses" },
             { name: "Anulaciones", href: "/movements/voids" },
         ],

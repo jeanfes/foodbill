@@ -17,6 +17,8 @@ import Inventory from "@/pages/private/movements/inventory/Inventory";
 import Tables from "@/pages/private/records/tables/Tables";
 import Products from "@/pages/private/records/products/Products";
 import Clients from "@/pages/private/records/clients/Clients";
+import InvoicesPage from "@/pages/private/movements/invoices/InvoicesPage";
+import InvoiceFormPage from "@/pages/private/movements/invoices/InvoiceFormPage";
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -141,6 +143,30 @@ const AppRoutes = () => {
           element: (
             <PermissionRoute requiredPermission={Permission.VIEW_INVENTORY}>
               <Inventory />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/movements/invoices",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_CASHBOXES}>
+              <InvoicesPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/movements/invoices/new",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_CASHBOXES}>
+              <InvoiceFormPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/movements/invoices/:id/edit",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VIEW_CASHBOXES}>
+              <InvoiceFormPage />
             </PermissionRoute>
           ),
         },
