@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { useInvoicesMock } from '@/hooks/useInvoicesMock';
 import { useProductsMock } from '@/hooks/useProductsMock';
 import { useToast } from '@/components/ui/toast';
@@ -11,13 +11,11 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertTriangle, CheckCircle2, Plus, ArrowLeft, FileText, User, CalendarIcon } from 'lucide-react';
 import { CustomerTypeahead } from './components/CustomerTypeahead';
-import { InvoiceLineRow } from './components/InvoiceLineRow';
 import { InvoiceSummary } from './components/InvoiceSummary';
 import { InvoicePrintView } from './components/InvoicePrintView';
 import { PaymentModal } from './components/PaymentModal';
@@ -27,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { InvoiceLineRow } from './components/InvoiceLineRow';
 
 export default function InvoiceFormPage() {
     const navigate = useNavigate();
@@ -125,6 +124,23 @@ export default function InvoiceFormPage() {
         if (lines.length > 1) {
             setLines(prev => prev.filter(l => l.id !== lineId));
         }
+    };
+
+    const duplicateLine = (lineId: string) => {
+        const lineToDuplicate = lines.find(l => l.id === lineId);
+        if (!lineToDuplicate) return;
+
+        const newLine: InvoiceLine = {
+            ...lineToDuplicate,
+            id: 'l-' + Date.now() + '-' + Math.random().toString(36).slice(2, 5),
+        };
+
+        setLines(prev => {
+            const index = prev.findIndex(l => l.id === lineId);
+            const newLines = [...prev];
+            newLines.splice(index + 1, 0, newLine);
+            return newLines;
+        });
     };
 
     const subtotal = lines.reduce((s, l) => s + l.lineBase, 0);
@@ -413,7 +429,7 @@ export default function InvoiceFormPage() {
 
                         {/* Líneas */}
                         <Card className="p-6">
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <FileText className="h-5 w-5 text-muted-foreground" />
                                     <h2 className="text-lg font-semibold">Líneas de factura</h2>
@@ -424,42 +440,26 @@ export default function InvoiceFormPage() {
                                 </Button>
                             </div>
 
-                            <div className="border rounded-lg overflow-hidden">
-                                <div className="overflow-x-auto">
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-[35%] min-w-[300px]">Descripción</TableHead>
-                                                <TableHead className="w-[8%] min-w-[100px]">Cantidad</TableHead>
-                                                <TableHead className="w-[12%] min-w-[120px]">Precio</TableHead>
-                                                <TableHead className="w-[8%] min-w-[90px]">IVA %</TableHead>
-                                                <TableHead className="w-[12%] min-w-[120px]">Total</TableHead>
-                                                <TableHead className="w-[5%] min-w-[50px]"></TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            <AnimatePresence initial={false}>
-                                                {lines.map((line) => (
-                                                    <InvoiceLineRow
-                                                        key={line.id}
-                                                        line={line}
-                                                        onUpdate={updateLine}
-                                                        onRemove={removeLine}
-                                                        disabled={!isDraft}
-                                                    />
-                                                ))}
-                                            </AnimatePresence>
-                                            {lines.length === 0 && (
-                                                <TableRow>
-                                                    <td colSpan={6} className="text-center py-8 text-muted-foreground">
-                                                        Sin líneas. Usa el botón "Agregar línea" para añadir productos.
-                                                    </td>
-                                                </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </div>
-                            </div>
+                            <Reorder.Group axis="y" values={lines} onReorder={setLines} className="space-y-3">
+                                <AnimatePresence initial={false}>
+                                    {lines.map((line, index) => (
+                                        <InvoiceLineRow
+                                            key={line.id}
+                                            line={line}
+                                            index={index}
+                                            onUpdate={updateLine}
+                                            onRemove={removeLine}
+                                            onDuplicate={duplicateLine}
+                                            disabled={!isDraft}
+                                        />
+                                    ))}
+                                </AnimatePresence>
+                                {lines.length === 0 && (
+                                    <div className="border border-dashed rounded-lg p-8 text-center text-muted-foreground">
+                                        Sin líneas. Usa el botón "Agregar línea" para añadir productos.
+                                    </div>
+                                )}
+                            </Reorder.Group>
                         </Card>
 
                         {/* Notas */}

@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Reorder, useDragControls } from 'framer-motion';
+import { motion } from 'framer-motion';
 import type { InvoiceLine } from '@/interfaces/billing';
 import type { Product } from '@/interfaces/product';
 import { Input } from '@/components/ui/input';
@@ -37,7 +37,7 @@ interface Props {
     products?: Product[];
 }
 
-export function InvoiceLineRow({
+export function InvoiceLineRowEnhanced({
     line,
     onUpdate,
     onRemove,
@@ -45,13 +45,13 @@ export function InvoiceLineRow({
     disabled = false,
     selected = false,
     onSelect,
+    dragHandleProps,
 }: Props) {
-    const dragControls = useDragControls();
     const [discountMode, setDiscountMode] = useState<'percent' | 'amount'>(
         line.discountPercent !== undefined ? 'percent' : 'amount'
     );
     const [hasChanges, setHasChanges] = useState(false);
-    const rowRef = useRef<HTMLLIElement>(null);
+    const rowRef = useRef<HTMLDivElement>(null);
 
     const fmt = (n: number) =>
         new Intl.NumberFormat('es-CO', {
@@ -138,15 +138,12 @@ export function InvoiceLineRow({
     const showTooltip = line.discountPercent || line.discountAmount || line.taxRate > 0;
 
     return (
-        <Reorder.Item
+        <motion.div
             ref={rowRef}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -20, height: 0 }}
             transition={{ duration: 0.2 }}
-            value={line}
-            dragListener={false}
-            dragControls={dragControls}
             className={cn(
                 "group relative border rounded-lg p-4 bg-background hover:bg-accent/5 transition-colors",
                 selected && "ring-2 ring-primary bg-accent/10",
@@ -158,15 +155,11 @@ export function InvoiceLineRow({
             {/* Header: Drag handle + Product selector + Actions */}
             <div className="flex items-start gap-3 mb-3">
                 <div
-                    className="touch-none cursor-grab active:cursor-grabbing pt-2 opacity-30 group-hover:opacity-100 transition-opacity"
+                    {...dragHandleProps}
+                    className="touch-none cursor-grab active:cursor-grabbing pt-2 opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-label="Arrastrar para reordenar"
-                    onPointerDown={(e) => {
-                        if (disabled) return;
-                        e.preventDefault();
-                        dragControls.start(e);
-                    }}
                 >
-                    <GripVertical className="h-5 w-5 text-foreground/60" />
+                    <GripVertical className="h-5 w-5 text-muted-foreground" />
                 </div>
 
                 {/* Product selector */}
@@ -240,7 +233,7 @@ export function InvoiceLineRow({
             )}
 
             {/* Fields grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 items-end">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
                 {/* Quantity */}
                 <div className="space-y-1">
                     <label className="text-xs font-medium text-muted-foreground">
@@ -303,9 +296,9 @@ export function InvoiceLineRow({
                             aria-label={`Cambiar a ${discountMode === 'percent' ? 'monto' : 'porcentaje'}`}
                         >
                             {discountMode === 'percent' ? (
-                                <Percent className="h-2.5 w-2.5" size={10} />
+                                <Percent className="h-2 w-2" />
                             ) : (
-                                <DollarSign className="h-2.5 w-2.5" size={10} />
+                                <DollarSign className="h-2 w-2" />
                             )}
                         </Button>
                     </div>
@@ -400,7 +393,7 @@ export function InvoiceLineRow({
             <div className="flex items-center gap-2 mt-3 flex-wrap">
                 {line.productId && (
                     <Badge variant="secondary" className="text-xs">
-                        <Package className="h-3 w-3 mr-1 opacity-70" />
+                        <Package className="h-3 w-3 mr-1" />
                         {line.productId.slice(0, 8)}
                     </Badge>
                 )}
@@ -429,6 +422,6 @@ export function InvoiceLineRow({
                     </TooltipProvider>
                 )}
             </div>
-        </Reorder.Item>
+        </motion.div>
     );
 }
