@@ -1,4 +1,4 @@
-import type { Client } from "@/pages/private/records/clients/Clients";
+import type { Client } from "@/pages/private/masters/clients/Clients";
 
 const mock: Client[] = [
   {

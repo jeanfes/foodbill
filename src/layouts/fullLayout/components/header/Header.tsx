@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/store/authStore"
-import { SettingsDialog } from "@/pages/private/settings/Settings"
+import { SettingsDialog } from "./Settings"
 import { useState } from "react"
 
 interface HeaderProps {

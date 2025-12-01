@@ -4,11 +4,12 @@ import {
     ChevronDown,
     Home,
     LayoutPanelLeft,
-    Settings,
     BarChart3,
-    Boxes,
-    Archive,
+    ShoppingCart,
     Shield,
+    Package,
+    Users,
+    Building2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useLocation } from "react-router-dom"
@@ -33,68 +34,110 @@ interface NavigationItem {
 
 
 const navigationItems: NavigationItem[] = [
-    { name: "Home", href: "/home", icon: Home, requiredPermission: Permission.VIEW_DASHBOARD },
     {
-        name: "Registros",
-        href: "/records/clients",
-        icon: Archive,
+        name: "Inicio",
+        href: "/home",
+        icon: Home,
+        requiredPermission: Permission.VIEW_DASHBOARD
+    },
+
+    // === MAESTROS ===
+    {
+        name: "Maestros",
+        href: "/maestros/clientes",
+        icon: Users,
         hasDropdown: true,
+        requiredPermission: Permission.MAE_CLIENTES_VIEW,
         children: [
-            { name: "Clientes", href: "/records/clients" },
-            { name: "Productos", href: "/records/products", requiredPermission: Permission.VIEW_PRODUCTS },
-            { name: "Categorías", href: "/records/categories", requiredPermission: Permission.VIEW_CATEGORIES },
-            { name: "Bodegas", href: "/records/warehouses" },
-            { name: "Cajas", href: "/records/cashboxes" },
-            { name: "Mesas", href: "/mesas", requiredPermission: Permission.VIEW_TABLES },
+            { name: "Cajas", href: "/maestros/cajas", requiredPermission: Permission.MAE_CAJAS_VIEW },
+            { name: "Clientes", href: "/maestros/clientes", requiredPermission: Permission.MAE_CLIENTES_VIEW },
+            { name: "Terceros", href: "/maestros/terceros", requiredPermission: Permission.MAE_PROVEEDORES_VIEW },
+            { name: "Mesas", href: "/maestros/mesas", requiredPermission: Permission.MAE_MESAS_VIEW },
+            { name: "Bodegas", href: "/maestros/bodegas", requiredPermission: Permission.MAE_BODEGAS_VIEW },
         ],
     },
 
+    // === INVENTARIO ===
     {
-        name: "Movimientos",
-        href: "/movements/inventory",
-        icon: Boxes,
+        name: "Inventario",
+        href: "/inventario/stock",
+        icon: Package,
         hasDropdown: true,
+        requiredPermission: Permission.INV_VIEW,
         children: [
-            { name: "Inventario", href: "/movements/inventory", requiredPermission: Permission.VIEW_INVENTORY },
-            { name: "Facturación", href: "/movements/invoices" },
-            { name: "Gastos", href: "/movements/expenses" },
-            { name: "Anulaciones", href: "/movements/voids" },
+            { name: "Categorías", href: "/inventario/categorias", requiredPermission: Permission.CAT_CATEGORIAS_VIEW },
+            { name: "Movimientos", href: "/inventario/movimientos", requiredPermission: Permission.INV_VIEW_MOVIMIENTOS },
+            { name: "Menú", href: "/inventario/menu", requiredPermission: Permission.CAT_MENU_VIEW },
+            { name: "Productos", href: "/inventario/productos", requiredPermission: Permission.CAT_PRODUCTOS_VIEW },
+            { name: "Stock", href: "/inventario/stock", requiredPermission: Permission.INV_VIEW },
         ],
     },
+
+    // === VENTAS ===
     {
-        name: "Informes",
-        href: "/reports/sales",
+        name: "Ventas",
+        href: "/ventas/puntos-de-ventas",
+        icon: ShoppingCart,
+        hasDropdown: true,
+        requiredPermission: Permission.VENTA_VIEW,
+        children: [
+            { name: "Movimientos de Venta", href: "/ventas/puntos-de-ventas", requiredPermission: Permission.VENTA_FLUJO },
+            { name: "Facturas", href: "/ventas/facturas", requiredPermission: Permission.VENTA_FACTURAR },
+            { name: "Cocina", href: "/ventas/cocina", requiredPermission: Permission.VENTA_VIEW_KITCHEN },
+            { name: "Barra", href: "/ventas/bar", requiredPermission: Permission.VENTA_VIEW_BAR },
+            { name: "Gastos", href: "/ventas/gastos", requiredPermission: Permission.FIN_GASTOS_VIEW },
+            { name: "Cuentas por Cobrar", href: "/ventas/cuentas-por-cobrar", requiredPermission: Permission.FIN_RECEIVABLES_VIEW },
+            { name: "Notas de Crédito", href: "/ventas/notas-credito", requiredPermission: Permission.FIN_CREDIT_NOTES_VIEW },
+        ],
+    },
+
+    // === REPORTES ===
+    {
+        name: "Reportes",
+        href: "/reportes/ventas",
         icon: BarChart3,
         hasDropdown: true,
+        requiredPermission: Permission.REP_VENTAS,
         children: [
-            { name: "Ventas", href: "/reports/sales" },
-            { name: "Cuadre de caja", href: "/reports/cash-closing" },
-            { name: "Gastos", href: "/reports/expenses" },
+            { name: "Ventas", href: "/reportes/ventas", requiredPermission: Permission.REP_VENTAS },
+            { name: "Inventario", href: "/reportes/inventario", requiredPermission: Permission.REP_INVENTARIO },
+            { name: "Cuadre de Caja", href: "/reportes/caja", requiredPermission: Permission.REP_CAJA },
+            { name: "Gastos", href: "/reportes/gastos", requiredPermission: Permission.REP_GASTOS },
         ],
     },
+
+    // === ADMINISTRACIÓN ===
     {
-        name: "Configuración",
-        href: "/settings/tables",
-        icon: Settings,
+        name: "Administración",
+        href: "/administracion/empresa",
+        icon: Building2,
         hasDropdown: true,
+        requiredPermission: Permission.ADM_EMPRESA_VIEW,
         children: [
-            { name: "Mesas", href: "/settings/tables" },
-            { name: "Caja", href: "/settings/cash-register" },
-            { name: "Menú", href: "/settings/menu" },
-            { name: "Roles", href: "/settings/roles" },
+            { name: "Empresa", href: "/administracion/empresa", requiredPermission: Permission.ADM_EMPRESA_VIEW },
+            { name: "Locales", href: "/administracion/locales", requiredPermission: Permission.ADM_LOCALES_VIEW },
+            { name: "Series", href: "/administracion/series", requiredPermission: Permission.ADM_SERIES_VIEW },
+            { name: "Configuración", href: "/administracion/configuracion", requiredPermission: Permission.ADM_SETTINGS_VIEW },
         ],
     },
+
+    // === SEGURIDAD ===
     {
         name: "Seguridad",
-        href: "/security/users",
+        href: "/seguridad/usuarios",
         icon: Shield,
         hasDropdown: true,
+        requiredPermission: Permission.SEG_USUARIOS_VIEW,
         children: [
-            { name: "Usuarios", href: "/security/users" },
-            { name: "Cambiar contraseña", href: "/security/change-password" },
+            { name: "Usuarios", href: "/seguridad/usuarios", requiredPermission: Permission.SEG_USUARIOS_VIEW },
+            { name: "Roles", href: "/seguridad/roles", requiredPermission: Permission.SEG_ROLES_VIEW },
+            { name: "Auditoría", href: "/seguridad/auditoria", requiredPermission: Permission.SEG_AUDIT_VIEW },
+            { name: "Cambiar Contraseña", href: "/seguridad/cambiar-contrasena", requiredPermission: Permission.SEG_CHANGE_PASSWORD },
         ],
     },
-]
+
+
+];
 
 interface SidebarProps {
     isOpen: boolean
@@ -135,12 +178,11 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     return (
         <aside
             className={cn(
-                "fixed left-0 top-0 h-screen bg-card border-r border-border transition-all duration-150 ease-in-out will-change-[width] z-40",
+                "fixed left-0 top-0 h-screen bg-card border-r border-border transition-all duration-150 ease-in-out will-change-[width] z-40 overflow-hidden",
                 isOpen ? "w-64" : "w-20",
             )}
-            style={{ overflow: 'hidden' }}
         >
-            <div className={cn("h-16 flex items-center px-4 transition-all duration-150", isOpen ? "justify-between" : "justify-center")}>
+            <div className={cn("h-16 flex items-center px-4 transition-all duration-150 sticky top-0 bg-card z-10", isOpen ? "justify-between" : "justify-center")}>
                 <Link to="/home" className="flex items-center gap-3">
                     <div>
                         <img src={LogoTransparent} alt="logo" className="authLogoSmall w-8 h-8 object-contain" />
@@ -154,7 +196,10 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                 </div>
             </div>
 
-            <nav className="p-4 space-y-2">
+            <nav className={cn(
+                "p-4 pb-12 space-y-2 pr-2.5 overflow-y-auto overflow-x-hidden sidebar-scroll",
+                "h-[calc(100vh-4rem)]"
+            )}>
                 {filteredNavigationItems.map((item) => {
                     const Icon = item.icon
                     const hasChildren = !!item.children && item.children.length > 0
@@ -277,7 +322,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             </nav>
 
             {!isOpen && (
-                <div className="absolute bottom-4 left-0 right-0 px-4" onClick={onToggle}>
+                <div className="sticky bottom-4 left-0 right-0 px-4 bg-card" onClick={onToggle}>
                     <Button variant="default" size="icon" onClick={onToggle} className="h-[47px] w-[47px] bg-primary text-white rounded-2xl">
                         <LayoutPanelLeft className="h-4 w-4" />
                     </Button>
