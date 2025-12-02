@@ -19,23 +19,17 @@ import Warehouses from "@/pages/private/masters/warehouses/Warehouses";
 
 import CategoriesPage from "@/pages/private/inventory/categories/CategoriesPage";
 import MovementsPage from "@/pages/private/inventory/movements/MovementsPage";
-import MenuPage from "@/pages/private/inventory/menu/MenuPage";
+import MenuPage from "@/pages/private/masters/menu/MenuPage";
 import Products from "@/pages/private/inventory/products/Products";
 import Inventory from "@/pages/private/inventory/stock/Inventory";
 
 import PointOfSalePage from "@/pages/private/movements/pos/PointOfSalePage";
-import InvoicesPage from "@/pages/private/movements/invoices/InvoicesPage";
-import InvoiceFormPage from "@/pages/private/movements/invoices/InvoiceFormPage";
 import KitchenPage from "@/pages/private/movements/kitchen/KitchenPage";
 import BarPage from "@/pages/private/movements/bar/BarPage";
+import CashboxPage from "@/pages/private/movements/cashbox/CashboxPage";
 import ExpensesPage from "@/pages/private/movements/expenses/ExpensesPage";
-import ReceivablesPage from "@/pages/private/movements/receivables/ReceivablesPage";
-import CreditNotesPage from "@/pages/private/movements/credit-notes/CreditNotesPage";
-
-import SalesReportPage from "@/pages/private/reports/sales/SalesReportPage";
-import InventoryReportPage from "@/pages/private/reports/inventory/InventoryReportPage";
-import CashboxReportPage from "@/pages/private/reports/cashbox/CashboxReportPage";
-import ExpensesReportPage from "@/pages/private/reports/expenses/ExpensesReportPage";
+import InvoicesPage from "@/pages/private/movements/invoices/InvoicesPage";
+import InvoiceFormPage from "@/pages/private/movements/invoices/InvoiceFormPage";
 
 import CompanyPage from "@/pages/private/administration/company/CompanyPage";
 import LocationsPage from "@/pages/private/administration/locations/LocationsPage";
@@ -45,6 +39,8 @@ import UsersPage from "@/pages/private/security/users/UsersPage";
 import RolesPage from "@/pages/private/security/roles/RolesPage";
 import AuditPage from "@/pages/private/security/audit/AuditPage";
 import ChangePasswordPage from "@/pages/private/security/change-password/ChangePasswordPage";
+import CancelationsPage from "@/pages/private/administration/cancellations/CancelationsPage";
+import NotesPage from "@/pages/private/movements/notes/NotesPage";
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -94,7 +90,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/movimientos/puntos-de-ventas",
+          path: "/movimientos/pos",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW}>
               <PointOfSalePage />
@@ -118,30 +114,29 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/facturas",
+          path: "/movimientos/caja",
           element: (
-            <PermissionRoute requiredPermission={Permission.VENTA_FACTURAR}>
-              <InvoicesPage />
+            <PermissionRoute requiredPermission={Permission.FIN_CAJA_VIEW}>
+              <CashboxPage />
             </PermissionRoute>
           ),
         },
         {
-          path: "/movimientos/facturas/nueva",
+          path: "/movimientos/caja/apertura-cierre",
           element: (
-            <PermissionRoute requiredPermission={Permission.VENTA_FACTURAR}>
-              <InvoiceFormPage />
+            <PermissionRoute requiredPermission={Permission.CAJA_VIEW_SESIONES}>
+              <div className="p-6"><h1 className="text-2xl font-bold mb-2">Apertura y cierre de caja</h1><p className="text-muted-foreground">Gestiona sesiones de caja: abrir, cerrar, arqueo.</p></div>
             </PermissionRoute>
           ),
         },
         {
-          path: "/movimientos/facturas/:id/editar",
+          path: "/movimientos/caja/movimientos",
           element: (
-            <PermissionRoute requiredPermission={Permission.VENTA_FACTURAR}>
-              <InvoiceFormPage />
+            <PermissionRoute requiredPermission={Permission.CAJA_VIEW_MOVIMIENTOS}>
+              <div className="p-6"><h1 className="text-2xl font-bold mb-2">Movimientos de caja</h1><p className="text-muted-foreground">Ingresos/Egresos, transferencias, ajustes.</p></div>
             </PermissionRoute>
           ),
         },
-
         {
           path: "/movimientos/gastos",
           element: (
@@ -150,19 +145,28 @@ const AppRoutes = () => {
             </PermissionRoute>
           ),
         },
+
         {
-          path: "/movimientos/cuentas-por-cobrar",
+          path: "/movimientos/facturacion",
           element: (
-            <PermissionRoute requiredPermission={Permission.FIN_RECEIVABLES_VIEW}>
-              <ReceivablesPage />
+            <PermissionRoute requiredPermission={Permission.FAC_VIEW}>
+              <InvoicesPage />
             </PermissionRoute>
           ),
         },
         {
-          path: "/movimientos/notas-credito",
+          path: "/movimientos/facturacion/nueva",
           element: (
-            <PermissionRoute requiredPermission={Permission.FIN_CREDIT_NOTES_VIEW}>
-              <CreditNotesPage />
+            <PermissionRoute requiredPermission={Permission.FAC_EDIT}>
+              <InvoiceFormPage />
+            </PermissionRoute>
+          ),
+        },
+        {
+          path: "/movimientos/facturacion/:id/editar",
+          element: (
+            <PermissionRoute requiredPermission={Permission.FAC_EDIT}>
+              <InvoiceFormPage />
             </PermissionRoute>
           ),
         },
@@ -200,7 +204,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/inventario/menu",
+          path: "/maestros/menu",
           element: (
             <PermissionRoute requiredPermission={Permission.CAT_MENU_VIEW}>
               <MenuPage />
@@ -306,45 +310,22 @@ const AppRoutes = () => {
             </PermissionRoute>
           ),
         },
-
-        // === REPORTES ===
         {
-          path: "/reportes/ventas",
+          path: "/movimientos/notas",
           element: (
-            <PermissionRoute requiredPermission={Permission.REP_VENTAS}>
-              <SalesReportPage />
+            <PermissionRoute requiredPermission={Permission.FIN_CREDIT_NOTES_VIEW}>
+              <NotesPage />
             </PermissionRoute>
           ),
         },
         {
-          path: "/reportes/inventario",
+          path: "/administracion/anulaciones",
           element: (
-            <PermissionRoute requiredPermission={Permission.REP_INVENTARIO}>
-              <InventoryReportPage />
+            <PermissionRoute requiredPermission={Permission.ADM_ANULACIONES_VIEW}>
+              <CancelationsPage />
             </PermissionRoute>
           ),
         },
-        {
-          path: "/reportes/caja",
-          element: (
-            <PermissionRoute requiredPermission={Permission.REP_CAJA}>
-              <CashboxReportPage />
-            </PermissionRoute>
-          ),
-        },
-        {
-          path: "/reportes/gastos",
-          element: (
-            <PermissionRoute requiredPermission={Permission.REP_GASTOS}>
-              <ExpensesReportPage />
-            </PermissionRoute>
-          ),
-        },
-
-
-
-
-
       ],
     },
     {

@@ -4,7 +4,6 @@ import {
     ChevronDown,
     Home,
     LayoutPanelLeft,
-    BarChart3,
     RefreshCw,
     Shield,
     Package,
@@ -52,6 +51,7 @@ const navigationItems: NavigationItem[] = [
             { name: "Terceros", href: "/maestros/terceros", requiredPermission: Permission.MAE_PROVEEDORES_VIEW },
             { name: "Mesas", href: "/maestros/mesas", requiredPermission: Permission.MAE_MESAS_VIEW },
             { name: "Bodegas", href: "/maestros/bodegas", requiredPermission: Permission.MAE_BODEGAS_VIEW },
+            { name: "Menú", href: "/maestros/menu", requiredPermission: Permission.CAT_MENU_VIEW },
         ],
     },
     {
@@ -61,40 +61,27 @@ const navigationItems: NavigationItem[] = [
         hasDropdown: true,
         requiredPermission: Permission.INV_VIEW,
         children: [
-            { name: "Categorías", href: "/inventario/categorias", requiredPermission: Permission.CAT_CATEGORIAS_VIEW },
             { name: "Movimientos", href: "/inventario/movimientos", requiredPermission: Permission.INV_VIEW_MOVIMIENTOS },
-            { name: "Menú", href: "/inventario/menu", requiredPermission: Permission.CAT_MENU_VIEW },
-            { name: "Productos", href: "/inventario/productos", requiredPermission: Permission.CAT_PRODUCTOS_VIEW },
             { name: "Stock", href: "/inventario/stock", requiredPermission: Permission.INV_VIEW },
-        ],
+            { name: "Categorías", href: "/inventario/categorias", requiredPermission: Permission.CAT_CATEGORIAS_VIEW },
+            { name: "Productos", href: "/inventario/productos", requiredPermission: Permission.CAT_PRODUCTOS_VIEW },
+        ]
     },
     {
         name: "Movimientos",
-        href: "/movimientos/puntos-de-ventas",
+        href: "/movimientos/pos",
         icon: RefreshCw,
         hasDropdown: true,
         requiredPermission: Permission.VENTA_VIEW,
         children: [
-            { name: "Flujo de Ventas", href: "/movimientos/puntos-de-ventas", requiredPermission: Permission.VENTA_FLUJO },
-            { name: "Facturas", href: "/movimientos/facturas", requiredPermission: Permission.VENTA_FACTURAR },
+            { name: "POS", href: "/movimientos/pos", requiredPermission: Permission.VENTA_VIEW },
             { name: "Cocina", href: "/movimientos/cocina", requiredPermission: Permission.VENTA_VIEW_KITCHEN },
             { name: "Barra", href: "/movimientos/bar", requiredPermission: Permission.VENTA_VIEW_BAR },
+            { name: "Facturación", href: "/movimientos/facturacion", requiredPermission: Permission.FAC_VIEW },
+            { name: "Notas", href: "/movimientos/notas", requiredPermission: Permission.FIN_CREDIT_NOTES_VIEW },
             { name: "Gastos", href: "/movimientos/gastos", requiredPermission: Permission.FIN_GASTOS_VIEW },
-            { name: "Cuentas por Cobrar", href: "/movimientos/cuentas-por-cobrar", requiredPermission: Permission.FIN_RECEIVABLES_VIEW },
-            { name: "Notas de Crédito", href: "/movimientos/notas-credito", requiredPermission: Permission.FIN_CREDIT_NOTES_VIEW },
-        ],
-    },
-    {
-        name: "Reportes",
-        href: "/reportes/ventas",
-        icon: BarChart3,
-        hasDropdown: true,
-        requiredPermission: Permission.REP_VENTAS,
-        children: [
-            { name: "Ventas", href: "/reportes/ventas", requiredPermission: Permission.REP_VENTAS },
-            { name: "Inventario", href: "/reportes/inventario", requiredPermission: Permission.REP_INVENTARIO },
-            { name: "Cuadre de Caja", href: "/reportes/caja", requiredPermission: Permission.REP_CAJA },
-            { name: "Gastos", href: "/reportes/gastos", requiredPermission: Permission.REP_GASTOS },
+            // ...eliminar Anulaciones de Movimientos
+            { name: "Caja", href: "/movimientos/caja", requiredPermission: Permission.FIN_CAJA_VIEW },
         ],
     },
     {
@@ -107,6 +94,7 @@ const navigationItems: NavigationItem[] = [
             { name: "Empresa", href: "/administracion/empresa", requiredPermission: Permission.ADM_EMPRESA_VIEW },
             { name: "Locales", href: "/administracion/locales", requiredPermission: Permission.ADM_LOCALES_VIEW },
             { name: "Configuración", href: "/administracion/configuracion", requiredPermission: Permission.ADM_SETTINGS_VIEW },
+            { name: "Anulaciones", href: "/administracion/anulaciones", requiredPermission: Permission.ADM_ANULACIONES_VIEW },
         ],
     },
     {
@@ -122,8 +110,6 @@ const navigationItems: NavigationItem[] = [
             { name: "Cambiar Contraseña", href: "/seguridad/cambiar-contrasena", requiredPermission: Permission.SEG_CHANGE_PASSWORD },
         ],
     },
-
-
 ];
 
 interface SidebarProps {

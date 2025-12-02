@@ -142,7 +142,7 @@ export default function InvoicesPage() {
                     <Button variant="outline" onClick={() => setShowImport(true)}>
                         <FileUp className="h-4 w-4 mr-2" /> Importar clientes
                     </Button>
-                    <Button onClick={() => navigate('/movements/invoices/new')} disabled={!flags.canCreateInvoice}>
+                    <Button onClick={() => navigate('/movimientos/facturacion/nueva')} disabled={!flags.canCreateInvoice}>
                         <Plus className="h-4 w-4 mr-2" /> Nueva factura
                     </Button>
                 </div>
@@ -210,7 +210,7 @@ export default function InvoicesPage() {
                                 <TableCell>
                                     <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={() => setDetailId(i.id)}><Eye className="h-4 w-4" /></Button>
-                                        <Button variant="outline" size="sm" onClick={() => navigate(`/movements/invoices/${i.id}/edit`)} disabled={!flags.canEditInvoice || i.status === 'cancelled'}><Pencil className="h-4 w-4" /></Button>
+                                        <Button variant="outline" size="sm" onClick={() => navigate(`/movimientos/facturacion/${i.id}/editar`)} disabled={!flags.canEditInvoice || i.status === 'cancelled'}><Pencil className="h-4 w-4" /></Button>
                                         <Button variant="outline" size="sm" onClick={() => exportInvoicePDF(i.id)}><Printer className="h-4 w-4" /></Button>
                                         <Button variant="default" size="sm" onClick={() => setPayId(i.id)} disabled={!flags.canRegisterPayment || i.status === 'cancelled' || i.status === 'paid' || i.status === 'draft'}>
                                             <Banknote className="h-4 w-4" />

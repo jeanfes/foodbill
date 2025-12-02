@@ -197,7 +197,7 @@ export default function InvoiceFormPage() {
                     dueDate: dueDate.toISOString()
                 });
             }
-            navigate('/movements/invoices');
+            navigate('/movimientos/pos/invoices');
         } finally {
             setSaving(false);
         }
@@ -233,7 +233,7 @@ export default function InvoiceFormPage() {
         if (editing) {
             issueInvoice(editing.id);
             setShowIssueModal(false);
-            navigate('/movements/invoices');
+            navigate('/movimientos/pos/invoices');
         }
     };
 
@@ -312,7 +312,7 @@ export default function InvoiceFormPage() {
             >
                 <div className="py-4 flex items-center justify-between">
                     <div className="flex items-start gap-4">
-                        <Button variant="ghost" size="icon" onClick={() => navigate('/movements/invoices')}>
+                        <Button variant="ghost" size="icon" onClick={() => navigate('/movimientos/facturacion')}>
                             <ArrowLeft className="h-5 w-5" />
                         </Button>
                         <div>
@@ -325,7 +325,7 @@ export default function InvoiceFormPage() {
                         </div>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => navigate('/movements/invoices')}>
+                        <Button variant="outline" onClick={() => navigate('/movimientos/facturacion')}>
                             Cancelar
                         </Button>
                     </div>
