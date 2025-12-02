@@ -11,42 +11,36 @@ import FullLayout from "../layouts/fullLayout/FullLayout";
 import Home from "@/pages/private/home/Home";
 import { Permission } from "@/interfaces/role";
 
-// Masters
 import CashBoxesPage from "@/pages/private/masters/cashboxes/CashBoxesPage";
 import Clients from "@/pages/private/masters/clients/Clients";
 import ThirdPartiesPage from "@/pages/private/masters/third-parties/ThirdPartiesPage";
 import Tables from "@/pages/private/masters/tables/Tables";
 import Warehouses from "@/pages/private/masters/warehouses/Warehouses";
 
-// Inventory
 import CategoriesPage from "@/pages/private/inventory/categories/CategoriesPage";
 import MovementsPage from "@/pages/private/inventory/movements/MovementsPage";
 import MenuPage from "@/pages/private/inventory/menu/MenuPage";
 import Products from "@/pages/private/inventory/products/Products";
 import Inventory from "@/pages/private/inventory/stock/Inventory";
 
-// Sales
-import PointOfSalePage from "@/pages/private/sales/pos/PointOfSalePage";
-import InvoicesPage from "@/pages/private/sales/invoices/InvoicesPage";
-import InvoiceFormPage from "@/pages/private/sales/invoices/InvoiceFormPage";
-import KitchenPage from "@/pages/private/sales/kitchen/KitchenPage";
-import BarPage from "@/pages/private/sales/bar/BarPage";
-import ExpensesPage from "@/pages/private/sales/expenses/ExpensesPage";
-import ReceivablesPage from "@/pages/private/sales/receivables/ReceivablesPage";
-import CreditNotesPage from "@/pages/private/sales/credit-notes/CreditNotesPage";
+import PointOfSalePage from "@/pages/private/movements/pos/PointOfSalePage";
+import InvoicesPage from "@/pages/private/movements/invoices/InvoicesPage";
+import InvoiceFormPage from "@/pages/private/movements/invoices/InvoiceFormPage";
+import KitchenPage from "@/pages/private/movements/kitchen/KitchenPage";
+import BarPage from "@/pages/private/movements/bar/BarPage";
+import ExpensesPage from "@/pages/private/movements/expenses/ExpensesPage";
+import ReceivablesPage from "@/pages/private/movements/receivables/ReceivablesPage";
+import CreditNotesPage from "@/pages/private/movements/credit-notes/CreditNotesPage";
 
-// Reports
 import SalesReportPage from "@/pages/private/reports/sales/SalesReportPage";
 import InventoryReportPage from "@/pages/private/reports/inventory/InventoryReportPage";
 import CashboxReportPage from "@/pages/private/reports/cashbox/CashboxReportPage";
 import ExpensesReportPage from "@/pages/private/reports/expenses/ExpensesReportPage";
 
-// Administration
 import CompanyPage from "@/pages/private/administration/company/CompanyPage";
 import LocationsPage from "@/pages/private/administration/locations/LocationsPage";
 import ConfigurationPage from "@/pages/private/administration/configuration/ConfigurationPage";
 
-// Security
 import UsersPage from "@/pages/private/security/users/UsersPage";
 import RolesPage from "@/pages/private/security/roles/RolesPage";
 import AuditPage from "@/pages/private/security/audit/AuditPage";
@@ -99,9 +93,8 @@ const AppRoutes = () => {
           ),
         },
 
-        // === VENTAS ===
         {
-          path: "/ventas/puntos-de-ventas",
+          path: "/movimientos/puntos-de-ventas",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW}>
               <PointOfSalePage />
@@ -109,7 +102,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/cocina",
+          path: "/movimientos/cocina",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW_KITCHEN}>
               <KitchenPage />
@@ -117,7 +110,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/bar",
+          path: "/movimientos/bar",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW_BAR}>
               <BarPage />
@@ -125,7 +118,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/facturas",
+          path: "/movimientos/facturas",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_FACTURAR}>
               <InvoicesPage />
@@ -133,7 +126,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/facturas/nueva",
+          path: "/movimientos/facturas/nueva",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_FACTURAR}>
               <InvoiceFormPage />
@@ -141,7 +134,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/facturas/:id/editar",
+          path: "/movimientos/facturas/:id/editar",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_FACTURAR}>
               <InvoiceFormPage />
@@ -149,9 +142,8 @@ const AppRoutes = () => {
           ),
         },
 
-        // === VENTAS - FINANZAS ===
         {
-          path: "/ventas/gastos",
+          path: "/movimientos/gastos",
           element: (
             <PermissionRoute requiredPermission={Permission.FIN_GASTOS_VIEW}>
               <ExpensesPage />
@@ -159,7 +151,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/cuentas-por-cobrar",
+          path: "/movimientos/cuentas-por-cobrar",
           element: (
             <PermissionRoute requiredPermission={Permission.FIN_RECEIVABLES_VIEW}>
               <ReceivablesPage />
@@ -167,7 +159,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/ventas/notas-credito",
+          path: "/movimientos/notas-credito",
           element: (
             <PermissionRoute requiredPermission={Permission.FIN_CREDIT_NOTES_VIEW}>
               <CreditNotesPage />
@@ -175,7 +167,6 @@ const AppRoutes = () => {
           ),
         },
 
-        // === INVENTARIO ===
         {
           path: "/inventario/stock",
           element: (
@@ -217,7 +208,6 @@ const AppRoutes = () => {
           ),
         },
 
-        // === MAESTROS ===
         {
           path: "/maestros/clientes",
           element: (
@@ -259,7 +249,6 @@ const AppRoutes = () => {
           ),
         },
 
-        // === ADMINISTRACIÓN ===
         {
           path: "/administracion/empresa",
           element: (
@@ -285,7 +274,6 @@ const AppRoutes = () => {
           ),
         },
 
-        // === SEGURIDAD ===
         {
           path: "/seguridad/usuarios",
           element: (
@@ -356,99 +344,7 @@ const AppRoutes = () => {
 
 
 
-        // === LEGACY (mantener compatibilidad temporal) ===
-        {
-          path: "/records/clients",
-          element: <Navigate to="/maestros/clientes" replace />,
-        },
-        {
-          path: "/records/products",
-          element: <Navigate to="/inventario/productos" replace />,
-        },
-        {
-          path: "/records/categories",
-          element: <Navigate to="/inventario/categorias" replace />,
-        },
-        {
-          path: "/records/warehouses",
-          element: <Navigate to="/maestros/bodegas" replace />,
-        },
-        // Redirects desde Catálogo a Inventario
-        {
-          path: "/catalogo/productos",
-          element: <Navigate to="/inventario/productos" replace />,
-        },
-        {
-          path: "/catalogo/categorias",
-          element: <Navigate to="/inventario/categorias" replace />,
-        },
-        {
-          path: "/catalogo/menu",
-          element: <Navigate to="/inventario/menu" replace />,
-        },
-        {
-          path: "/records/cashboxes",
-          element: <Navigate to="/maestros/cajas" replace />,
-        },
-        // Redirects desde Finanzas a Ventas (fusión)
-        {
-          path: "/finanzas/gastos",
-          element: <Navigate to="/ventas/gastos" replace />,
-        },
-        {
-          path: "/finanzas/cuentas-por-cobrar",
-          element: <Navigate to="/ventas/cuentas-por-cobrar" replace />,
-        },
-        {
-          path: "/finanzas/notas-credito",
-          element: <Navigate to="/ventas/notas-credito" replace />,
-        },
-        {
-          path: "/mesas",
-          element: <Navigate to="/maestros/mesas" replace />,
-        },
-        {
-          path: "/movements/inventory",
-          element: <Navigate to="/inventario" replace />,
-        },
-        {
-          path: "/movements/invoices",
-          element: <Navigate to="/ventas/facturas" replace />,
-        },
-        {
-          path: "/movements/invoices/new",
-          element: <Navigate to="/ventas/facturas/nueva" replace />,
-        },
-        {
-          path: "/movements/invoices/:id/edit",
-          element: <Navigate to="/ventas/facturas/:id/editar" replace />,
-        },
 
-        // Placeholders legacy
-        {
-          path: "/orders",
-          element: (
-            <PermissionRoute requiredPermission={Permission.VIEW_ORDERS}>
-              <div>Pedidos - En desarrollo</div>
-            </PermissionRoute>
-          ),
-        },
-        {
-          path: "/calendar",
-          element: (
-            <PermissionRoute requiredPermission={Permission.VIEW_CALENDAR}>
-              <div>Calendario - En desarrollo</div>
-            </PermissionRoute>
-          ),
-        },
-        {
-          path: "/reviews",
-          element: (
-            <PermissionRoute requiredPermission={Permission.VIEW_REVIEWS}>
-              <div>Reseñas - En desarrollo</div>
-            </PermissionRoute>
-          ),
-        },
       ],
     },
     {

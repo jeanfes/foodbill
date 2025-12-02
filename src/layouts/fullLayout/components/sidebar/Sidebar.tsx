@@ -5,7 +5,7 @@ import {
     Home,
     LayoutPanelLeft,
     BarChart3,
-    ShoppingCart,
+    RefreshCw,
     Shield,
     Package,
     Users,
@@ -40,8 +40,6 @@ const navigationItems: NavigationItem[] = [
         icon: Home,
         requiredPermission: Permission.VIEW_DASHBOARD
     },
-
-    // === MAESTROS ===
     {
         name: "Maestros",
         href: "/maestros/clientes",
@@ -56,8 +54,6 @@ const navigationItems: NavigationItem[] = [
             { name: "Bodegas", href: "/maestros/bodegas", requiredPermission: Permission.MAE_BODEGAS_VIEW },
         ],
     },
-
-    // === INVENTARIO ===
     {
         name: "Inventario",
         href: "/inventario/stock",
@@ -72,26 +68,22 @@ const navigationItems: NavigationItem[] = [
             { name: "Stock", href: "/inventario/stock", requiredPermission: Permission.INV_VIEW },
         ],
     },
-
-    // === VENTAS ===
     {
-        name: "Ventas",
-        href: "/ventas/puntos-de-ventas",
-        icon: ShoppingCart,
+        name: "Movimientos",
+        href: "/movimientos/puntos-de-ventas",
+        icon: RefreshCw,
         hasDropdown: true,
         requiredPermission: Permission.VENTA_VIEW,
         children: [
-            { name: "Movimientos de Venta", href: "/ventas/puntos-de-ventas", requiredPermission: Permission.VENTA_FLUJO },
-            { name: "Facturas", href: "/ventas/facturas", requiredPermission: Permission.VENTA_FACTURAR },
-            { name: "Cocina", href: "/ventas/cocina", requiredPermission: Permission.VENTA_VIEW_KITCHEN },
-            { name: "Barra", href: "/ventas/bar", requiredPermission: Permission.VENTA_VIEW_BAR },
-            { name: "Gastos", href: "/ventas/gastos", requiredPermission: Permission.FIN_GASTOS_VIEW },
-            { name: "Cuentas por Cobrar", href: "/ventas/cuentas-por-cobrar", requiredPermission: Permission.FIN_RECEIVABLES_VIEW },
-            { name: "Notas de Crédito", href: "/ventas/notas-credito", requiredPermission: Permission.FIN_CREDIT_NOTES_VIEW },
+            { name: "Flujo de Ventas", href: "/movimientos/puntos-de-ventas", requiredPermission: Permission.VENTA_FLUJO },
+            { name: "Facturas", href: "/movimientos/facturas", requiredPermission: Permission.VENTA_FACTURAR },
+            { name: "Cocina", href: "/movimientos/cocina", requiredPermission: Permission.VENTA_VIEW_KITCHEN },
+            { name: "Barra", href: "/movimientos/bar", requiredPermission: Permission.VENTA_VIEW_BAR },
+            { name: "Gastos", href: "/movimientos/gastos", requiredPermission: Permission.FIN_GASTOS_VIEW },
+            { name: "Cuentas por Cobrar", href: "/movimientos/cuentas-por-cobrar", requiredPermission: Permission.FIN_RECEIVABLES_VIEW },
+            { name: "Notas de Crédito", href: "/movimientos/notas-credito", requiredPermission: Permission.FIN_CREDIT_NOTES_VIEW },
         ],
     },
-
-    // === REPORTES ===
     {
         name: "Reportes",
         href: "/reportes/ventas",
@@ -105,8 +97,6 @@ const navigationItems: NavigationItem[] = [
             { name: "Gastos", href: "/reportes/gastos", requiredPermission: Permission.REP_GASTOS },
         ],
     },
-
-    // === ADMINISTRACIÓN ===
     {
         name: "Administración",
         href: "/administracion/empresa",
@@ -119,8 +109,6 @@ const navigationItems: NavigationItem[] = [
             { name: "Configuración", href: "/administracion/configuracion", requiredPermission: Permission.ADM_SETTINGS_VIEW },
         ],
     },
-
-    // === SEGURIDAD ===
     {
         name: "Seguridad",
         href: "/seguridad/usuarios",
