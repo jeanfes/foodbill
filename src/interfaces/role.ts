@@ -119,9 +119,6 @@ export const Permission = {
   ADM_LOCALES_CREATE: "ADM_LOCALES_CREATE",
   ADM_LOCALES_UPDATE: "ADM_LOCALES_UPDATE",
   ADM_LOCALES_DELETE: "ADM_LOCALES_DELETE",
-  // Series de facturación
-  ADM_SERIES_VIEW: "ADM_SERIES_VIEW",
-  ADM_SERIES_MANAGE: "ADM_SERIES_MANAGE",
   // Configuración general
   ADM_SETTINGS_VIEW: "ADM_SETTINGS_VIEW",
   ADM_SETTINGS_UPDATE: "ADM_SETTINGS_UPDATE",
@@ -303,7 +300,6 @@ export const rolePermissionsConfig: RolePermissions[] = [
       // Administración
       Permission.ADM_EMPRESA_VIEW,
       Permission.ADM_LOCALES_VIEW,
-      Permission.ADM_SERIES_VIEW,
       Permission.ADM_SETTINGS_VIEW,
       Permission.ADM_SETTINGS_UPDATE,
       

@@ -44,7 +44,6 @@ import ExpensesReportPage from "@/pages/private/reports/expenses/ExpensesReportP
 // Administration
 import CompanyPage from "@/pages/private/administration/company/CompanyPage";
 import LocationsPage from "@/pages/private/administration/locations/LocationsPage";
-import SeriesPage from "@/pages/private/administration/series/SeriesPage";
 import ConfigurationPage from "@/pages/private/administration/configuration/ConfigurationPage";
 
 // Security
@@ -274,14 +273,6 @@ const AppRoutes = () => {
           element: (
             <PermissionRoute requiredPermission={Permission.ADM_LOCALES_VIEW}>
               <LocationsPage />
-            </PermissionRoute>
-          ),
-        },
-        {
-          path: "/administracion/series",
-          element: (
-            <PermissionRoute requiredPermission={Permission.ADM_SERIES_VIEW}>
-              <SeriesPage />
             </PermissionRoute>
           ),
         },

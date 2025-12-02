@@ -116,7 +116,6 @@ const navigationItems: NavigationItem[] = [
         children: [
             { name: "Empresa", href: "/administracion/empresa", requiredPermission: Permission.ADM_EMPRESA_VIEW },
             { name: "Locales", href: "/administracion/locales", requiredPermission: Permission.ADM_LOCALES_VIEW },
-            { name: "Series", href: "/administracion/series", requiredPermission: Permission.ADM_SERIES_VIEW },
             { name: "Configuración", href: "/administracion/configuracion", requiredPermission: Permission.ADM_SETTINGS_VIEW },
         ],
     },
