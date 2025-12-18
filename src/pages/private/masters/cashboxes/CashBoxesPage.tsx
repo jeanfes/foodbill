@@ -101,7 +101,7 @@ const CashBoxesPageNew = () => {
                         selectedId={selectedId}
                         onSelect={setSelectedId}
                         onCreateNew={handleCreateNew}
-                        canCreate={hasPermission(Permission.CREATE_CASHBOXES)}
+                        canCreate={hasPermission(Permission.MAE_CAJAS_CREATE)}
                     />
                 </div>
 
@@ -113,8 +113,8 @@ const CashBoxesPageNew = () => {
                             onOpen={() => setOpenBoxDialog(true)}
                             onClose={() => setCloseBoxDialog(true)}
                             onAddMovement={() => setAddMovementDialog(true)}
-                            canEdit={hasPermission(Permission.UPDATE_CASHBOXES)}
-                            canManage={hasPermission(Permission.UPDATE_CASHBOXES)}
+                            canEdit={hasPermission(Permission.MAE_CAJAS_UPDATE)}
+                            canManage={hasPermission(Permission.MAE_CAJAS_UPDATE)}
                         />
                     ) : (
                         <div className="flex items-center justify-center h-full">

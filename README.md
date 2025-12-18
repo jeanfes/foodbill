@@ -1,3 +1,30 @@
+# FoodBill – Estructura de Navegación
+
+- Prefijo de Operación: todas las páginas de operación viven bajo `/operacion/*` (antes `/movimientos/*`).
+  - `/operacion/pos`, `/operacion/cocina`, `/operacion/barra`, `/operacion/caja`, `/operacion/caja-sesiones`, `/operacion/caja-movimientos`, `/operacion/facturacion`, `/operacion/gastos`, `/operacion/notas`.
+- Inventario: `/inventario/stock`, `/inventario/movimientos`.
+- Maestros: `/maestros/productos`, `/maestros/categorias`, `/maestros/menu`, `/maestros/clientes`, `/maestros/terceros`, `/maestros/mesas`, `/maestros/bodegas`, `/maestros/cajas`.
+- Administración: `/administracion/configuracion`, `/administracion/empresa`, `/administracion/locales`, `/administracion/anulaciones`.
+- Seguridad: `/seguridad/usuarios`, `/seguridad/roles`, `/seguridad/auditoria`, `/seguridad/cambiar-contrasena`.
+
+Notas:
+- El sidebar se alimenta desde `src/layouts/fullLayout/components/sidebar/navigation.ts`.
+- Los grupos no requieren permiso “padre”; se muestran si al menos uno de sus hijos tiene permiso.
+- Las rutas seguirán actualizándose de `/movimientos/*` a `/operacion/*` cuando corresponda.
+
+## Mapeo antiguo → nuevo (para futuras rutas)
+- `/movimientos/pos` → `/operacion/pos`
+- `/movimientos/cocina` → `/operacion/cocina`
+- `/movimientos/bar` → `/operacion/barra`
+- `/movimientos/caja` → `/operacion/caja`
+- `/movimientos/caja/apertura-cierre` → `/operacion/caja-sesiones`
+- `/movimientos/caja/movimientos` → `/operacion/caja-movimientos`
+- `/movimientos/facturacion` → `/operacion/facturacion`
+- `/movimientos/facturacion/nueva` → `/operacion/facturacion-nueva`
+- `/movimientos/facturacion/:id/editar` → `/operacion/facturacion/:id/editar`
+- `/movimientos/gastos` → `/operacion/gastos`
+- `/movimientos/notas` → `/operacion/notas`
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

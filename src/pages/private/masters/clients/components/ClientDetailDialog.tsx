@@ -197,13 +197,13 @@ const ClientDetailDialog = ({ clientId, onOpenChange, onEdit }: Props) => {
 
                 <DialogFooter className="gap-2">
                     <Button variant="outline" onClick={() => onOpenChange(null)}>Cerrar</Button>
-                    <Can permission={Permission.UPDATE_CLIENTS}>
+                    <Can permission={Permission.MAE_CLIENTES_UPDATE}>
                         <Button variant="secondary" onClick={() => { onEdit(client.id); onOpenChange(null); }}>
                             <Edit className="h-4 w-4 mr-2" />
                             Editar
                         </Button>
                     </Can>
-                    <Can permission={Permission.UPDATE_CLIENTS}>
+                    <Can permission={Permission.MAE_CLIENTES_UPDATE}>
                         <Button variant="outline">
                             <Ban className="h-4 w-4 mr-2" />
                             {client.active ? "Inactivar" : "Activar"}

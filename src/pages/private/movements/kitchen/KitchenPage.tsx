@@ -4,7 +4,7 @@ const KitchenPage = () => {
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Pantalla de Cocina</h1>
         <p className="text-muted-foreground">
-          Visualización de pedidos para cocina - En desarrollo
+          Visualización de pedidos para cocina
         </p>
       </div>
     </div>

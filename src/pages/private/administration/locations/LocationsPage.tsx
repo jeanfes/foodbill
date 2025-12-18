@@ -4,7 +4,7 @@ const LocationsPage = () => {
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Locales</h1>
         <p className="text-muted-foreground">
-          Gestión de sucursales y locales - En desarrollo
+          Gestión de sucursales y locales
         </p>
       </div>
     </div>

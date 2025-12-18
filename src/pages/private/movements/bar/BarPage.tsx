@@ -4,7 +4,7 @@ const BarPage = () => {
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Pantalla de Bar</h1>
         <p className="text-muted-foreground">
-          Visualización de pedidos para bar - En desarrollo
+          Visualización de pedidos para bar
         </p>
       </div>
     </div>

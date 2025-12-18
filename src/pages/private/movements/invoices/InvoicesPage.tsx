@@ -37,13 +37,13 @@ export default function InvoicesPage() {
     const { show: showToast } = useToast();
 
     const flags = {
-        canCreateInvoice: hasPermission(Permission.VIEW_CASHBOXES),
-        canIssueInvoice: hasPermission(Permission.VIEW_CASHBOXES),
-        canEditInvoice: hasPermission(Permission.VIEW_CASHBOXES),
-        canRegisterPayment: hasPermission(Permission.VIEW_CASHBOXES),
-        canRefund: hasPermission(Permission.VIEW_CASHBOXES),
-        canCancelInvoice: hasPermission(Permission.VIEW_CASHBOXES),
-        canExportInvoice: hasPermission(Permission.VIEW_REPORTS) || hasPermission(Permission.VIEW_CASHBOXES),
+        canCreateInvoice: hasPermission(Permission.FAC_EDIT),
+        canIssueInvoice: hasPermission(Permission.FAC_EDIT),
+        canEditInvoice: hasPermission(Permission.FAC_EDIT),
+        canRegisterPayment: hasPermission(Permission.FAC_EDIT),
+        canRefund: hasPermission(Permission.FAC_EDIT),
+        canCancelInvoice: hasPermission(Permission.FAC_EDIT),
+        canExportInvoice: hasPermission(Permission.FAC_VIEW),
     };
 
     const [q, setQ] = useState('');

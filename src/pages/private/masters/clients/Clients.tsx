@@ -74,7 +74,7 @@ export default function Clients() {
                         <Upload className="h-4 w-4 mr-2" />
                         Importar
                     </Button>
-                    <Can permission={Permission.CREATE_CLIENTS}>
+                    <Can permission={Permission.MAE_CLIENTES_CREATE}>
                         <Button size="sm" onClick={() => { setEditClientId(undefined); setShowFormOpen(true); }}>
                             <UserPlus className="h-4 w-4 mr-2" />
                             Nuevo cliente

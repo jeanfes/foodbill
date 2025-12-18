@@ -4,7 +4,7 @@ const UsersPage = () => {
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Usuarios</h1>
         <p className="text-muted-foreground">
-          Gestión de usuarios del sistema - En desarrollo
+          Gestión de usuarios del sistema
         </p>
       </div>
     </div>

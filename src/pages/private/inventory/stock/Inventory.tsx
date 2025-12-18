@@ -60,13 +60,13 @@ export default function Inventory() {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Can permission={Permission.IMPORT_INVENTORY}>
+                    <Can permission={Permission.INV_IMPORT}>
                         <Button variant="outline" size="sm" onClick={() => setImportDialogOpen(true)}>
                             <Upload className="h-4 w-4 mr-2" />
                             Importar
                         </Button>
                     </Can>
-                    <Can permission={Permission.EXPORT_INVENTORY}>
+                    <Can permission={Permission.INV_EXPORT}>
                         <Button variant="outline" size="sm" onClick={() => exportInventoryToCSV(items)}>
                             <Download className="h-4 w-4 mr-2" />
                             Exportar

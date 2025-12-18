@@ -4,7 +4,7 @@ const ExpensesPage = () => {
             <div className="space-y-4">
                 <h1 className="text-3xl font-bold">Gastos</h1>
                 <p className="text-muted-foreground">
-                    Registro y gestión de gastos - En desarrollo
+                    Registro y gestión de gastos
                 </p>
             </div>
         </div>

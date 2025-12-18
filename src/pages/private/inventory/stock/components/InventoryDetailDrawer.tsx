@@ -131,7 +131,7 @@ export function InventoryDetailDrawer({
 
           <div className="px-6 py-6 space-y-8 h-full">
             <div className="flex flex-wrap gap-3">
-              <Can permission={Permission.ADJUST_INVENTORY}>
+              <Can permission={Permission.INV_AJUSTAR}>
                 <Button
                   variant="default"
                   size="default"
@@ -142,7 +142,7 @@ export function InventoryDetailDrawer({
                   Ajustar stock
                 </Button>
               </Can>
-              <Can permission={Permission.TRANSFER_INVENTORY}>
+              <Can permission={Permission.INV_TRANSFERIR}>
                 <Button
                   variant="outline"
                   size="default"

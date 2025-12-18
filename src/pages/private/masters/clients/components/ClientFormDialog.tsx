@@ -481,7 +481,7 @@ const ClientFormDialog = ({ open, onOpenChange, clientId }: Props) => {
                             Revisar
                         </Button>
                     )}
-                    <Can permission={isEdit ? Permission.UPDATE_CLIENTS : Permission.CREATE_CLIENTS}>
+                    <Can permission={isEdit ? Permission.MAE_CLIENTES_UPDATE : Permission.MAE_CLIENTES_CREATE}>
                         <Button onClick={form.handleSubmit(handleSubmit)} disabled={loading || saving} className="h-9">
                             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             {isEdit ? "Guardar cambios" : "Crear cliente"}

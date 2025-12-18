@@ -10,7 +10,8 @@ const PublicRoute = ({ children }: PublicRouteProps) => {
     const location = useLocation();
 
     if (isAuth) {
-        return <Navigate to="/inicio" state={{ from: location.pathname }} />;
+        // Usuario autenticado: dirigir al home real
+        return <Navigate to="/home" state={{ from: location.pathname }} replace />;
     } else {
         return children;
     }

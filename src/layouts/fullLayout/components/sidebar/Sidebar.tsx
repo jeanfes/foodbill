@@ -1,116 +1,14 @@
 import { useState, useMemo } from "react"
 import { cn } from "@/lib/utils"
-import {
-    ChevronDown,
-    Home,
-    LayoutPanelLeft,
-    RefreshCw,
-    Shield,
-    Package,
-    Users,
-    Building2,
-} from "lucide-react"
+import { ChevronDown, LayoutPanelLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link, useLocation } from "react-router-dom"
 import LogoTransparent from "../../../../assets/images/logoTransparent.png"
 import { usePermissions } from "@/hooks/usePermissions"
-import { Permission } from "@/interfaces/role"
+import navigationItems from "./navigation"
+import type { NavigationItem } from "./navigation"
 
-interface NavigationItem {
-    name: string
-    href: string
-    icon: any
-    hasDropdown?: boolean
-    badge?: string | number
-    requiredPermission?: Permission
-    children?: Array<{
-        name: string
-        href: string
-        badge?: string | number
-        requiredPermission?: Permission
-    }>
-}
-
-
-const navigationItems: NavigationItem[] = [
-    {
-        name: "Inicio",
-        href: "/home",
-        icon: Home,
-        requiredPermission: Permission.VIEW_DASHBOARD
-    },
-    {
-        name: "Maestros",
-        href: "/maestros/clientes",
-        icon: Users,
-        hasDropdown: true,
-        requiredPermission: Permission.MAE_CLIENTES_VIEW,
-        children: [
-            { name: "Cajas", href: "/maestros/cajas", requiredPermission: Permission.MAE_CAJAS_VIEW },
-            { name: "Clientes", href: "/maestros/clientes", requiredPermission: Permission.MAE_CLIENTES_VIEW },
-            { name: "Terceros", href: "/maestros/terceros", requiredPermission: Permission.MAE_PROVEEDORES_VIEW },
-            { name: "Mesas", href: "/maestros/mesas", requiredPermission: Permission.MAE_MESAS_VIEW },
-            { name: "Bodegas", href: "/maestros/bodegas", requiredPermission: Permission.MAE_BODEGAS_VIEW },
-            { name: "Menú", href: "/maestros/menu", requiredPermission: Permission.CAT_MENU_VIEW },
-        ],
-    },
-    {
-        name: "Inventario",
-        href: "/inventario/stock",
-        icon: Package,
-        hasDropdown: true,
-        requiredPermission: Permission.INV_VIEW,
-        children: [
-            { name: "Movimientos", href: "/inventario/movimientos", requiredPermission: Permission.INV_VIEW_MOVIMIENTOS },
-            { name: "Stock", href: "/inventario/stock", requiredPermission: Permission.INV_VIEW },
-            { name: "Categorías", href: "/inventario/categorias", requiredPermission: Permission.CAT_CATEGORIAS_VIEW },
-            { name: "Productos", href: "/inventario/productos", requiredPermission: Permission.CAT_PRODUCTOS_VIEW },
-        ]
-    },
-    {
-        name: "Movimientos",
-        href: "/movimientos/pos",
-        icon: RefreshCw,
-        hasDropdown: true,
-        requiredPermission: Permission.VENTA_VIEW,
-        children: [
-            { name: "POS", href: "/movimientos/pos", requiredPermission: Permission.VENTA_VIEW },
-            { name: "Cocina", href: "/movimientos/cocina", requiredPermission: Permission.VENTA_VIEW_KITCHEN },
-            { name: "Barra", href: "/movimientos/bar", requiredPermission: Permission.VENTA_VIEW_BAR },
-            { name: "Facturación", href: "/movimientos/facturacion", requiredPermission: Permission.FAC_VIEW },
-            { name: "Notas", href: "/movimientos/notas", requiredPermission: Permission.FIN_CREDIT_NOTES_VIEW },
-            { name: "Gastos", href: "/movimientos/gastos", requiredPermission: Permission.FIN_GASTOS_VIEW },
-            // ...eliminar Anulaciones de Movimientos
-            { name: "Caja", href: "/movimientos/caja", requiredPermission: Permission.FIN_CAJA_VIEW },
-        ],
-    },
-    {
-        name: "Administración",
-        href: "/administracion/empresa",
-        icon: Building2,
-        hasDropdown: true,
-        requiredPermission: Permission.ADM_EMPRESA_VIEW,
-        children: [
-            { name: "Empresa", href: "/administracion/empresa", requiredPermission: Permission.ADM_EMPRESA_VIEW },
-            { name: "Locales", href: "/administracion/locales", requiredPermission: Permission.ADM_LOCALES_VIEW },
-            { name: "Configuración", href: "/administracion/configuracion", requiredPermission: Permission.ADM_SETTINGS_VIEW },
-            { name: "Anulaciones", href: "/administracion/anulaciones", requiredPermission: Permission.ADM_ANULACIONES_VIEW },
-        ],
-    },
-    {
-        name: "Seguridad",
-        href: "/seguridad/usuarios",
-        icon: Shield,
-        hasDropdown: true,
-        requiredPermission: Permission.SEG_USUARIOS_VIEW,
-        children: [
-            { name: "Usuarios", href: "/seguridad/usuarios", requiredPermission: Permission.SEG_USUARIOS_VIEW },
-            { name: "Roles", href: "/seguridad/roles", requiredPermission: Permission.SEG_ROLES_VIEW },
-            { name: "Auditoría", href: "/seguridad/auditoria", requiredPermission: Permission.SEG_AUDIT_VIEW },
-            { name: "Cambiar Contraseña", href: "/seguridad/cambiar-contrasena", requiredPermission: Permission.SEG_CHANGE_PASSWORD },
-        ],
-    },
-];
+// Navegación centralizada
 
 interface SidebarProps {
     isOpen: boolean
@@ -123,22 +21,29 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     const [expandedItems, setExpandedItems] = useState<string[]>([])
     const { hasPermission } = usePermissions()
 
-    const filteredNavigationItems = useMemo(() => {
+    const filteredNavigationItems = useMemo<NavigationItem[]>(() => {
         return navigationItems
             .map((item) => {
-                if (item.requiredPermission && !hasPermission(item.requiredPermission)) return null
-
+                // Si el item tiene hijos, se muestra si existe al menos un hijo visible.
                 if (item.children && item.children.length > 0) {
                     const filteredChildren = item.children.filter((child) => {
                         if (!child.requiredPermission) return true
                         return hasPermission(child.requiredPermission)
                     })
 
-                    if (filteredChildren.length === 0) return null
+                    if (filteredChildren.length === 0) {
+                        // No hay hijos visibles; solo mostrar el padre si tiene permiso explícito.
+                        if (item.requiredPermission) {
+                            return hasPermission(item.requiredPermission) ? { ...item, children: [] } : null
+                        }
+                        return null
+                    }
                     return { ...item, children: filteredChildren }
                 }
 
-                return item
+                // Sin hijos: mostrar si no requiere permiso o si lo tiene.
+                if (!item.requiredPermission) return item
+                return hasPermission(item.requiredPermission) ? item : null
             })
             .filter(Boolean) as NavigationItem[]
     }, [hasPermission])

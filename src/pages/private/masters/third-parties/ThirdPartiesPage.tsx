@@ -4,7 +4,7 @@ const ThirdPartiesPage = () => {
             <div className="space-y-4">
                 <h1 className="text-3xl font-bold">Terceros</h1>
                 <p className="text-muted-foreground">
-                    Gestión de terceros (incluye proveedores) - En desarrollo
+                    Gestión de terceros (incluye proveedores)
                 </p>
             </div>
         </div>

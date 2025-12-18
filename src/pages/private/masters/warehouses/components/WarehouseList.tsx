@@ -91,7 +91,7 @@ export function WarehouseList({ warehouses, stocks, selectedId, onSelect, onCrea
                         >
                             <List className="w-4 h-4" />
                         </Button>
-                        <Can permission={Permission.CREATE_INVENTORY}>
+                        <Can permission={Permission.MAE_BODEGAS_VIEW}>
                             <Button size="sm" onClick={onCreate} className="ml-1 h-9">
                                 <Plus className="w-4 h-4 mr-1" />
                                 Nueva
@@ -194,7 +194,7 @@ export function WarehouseList({ warehouses, stocks, selectedId, onSelect, onCrea
                                         )}
                                     </div>
                                 </div>
-                                <Can permission={Permission.UPDATE_INVENTORY}>
+                                <Can permission={Permission.INV_UPDATE}>
                                     <Button
                                         size="icon"
                                         variant="ghost"
@@ -249,7 +249,7 @@ export function WarehouseList({ warehouses, stocks, selectedId, onSelect, onCrea
                                                 )}
                                             </td>
                                             <td className="py-2 px-2">
-                                                <Can permission={Permission.UPDATE_INVENTORY}>
+                                                <Can permission={Permission.INV_UPDATE}>
                                                     <Button
                                                         size="icon"
                                                         variant="ghost"
@@ -273,7 +273,7 @@ export function WarehouseList({ warehouses, stocks, selectedId, onSelect, onCrea
             <div className="p-2 border-t flex items-center justify-between text-xs text-muted-foreground">
                 <span>{filtered.length} bodega{filtered.length !== 1 ? 's' : ''}</span>
                 {onImportCSV && (
-                    <Can permission={Permission.UPDATE_INVENTORY}>
+                    <Can permission={Permission.INV_UPDATE}>
                         <Button
                             variant="outline"
                             size="sm"

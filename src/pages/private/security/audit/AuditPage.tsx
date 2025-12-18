@@ -4,7 +4,7 @@ const AuditPage = () => {
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">Auditoría</h1>
         <p className="text-muted-foreground">
-          Registro de eventos y actividad del sistema - En desarrollo
+          Registro de eventos y actividad del sistema
         </p>
       </div>
     </div>

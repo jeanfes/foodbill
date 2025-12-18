@@ -47,7 +47,7 @@ export default function Tables() {
                     <p className="text-sm text-muted-foreground">Gestiona tu plano de mesas y ocupación</p>
                 </div>
                 <div className="flex gap-2">
-                    {hasPermission(Permission.CREATE_TABLES) && (
+                    {hasPermission(Permission.MAE_MESAS_CREATE) && (
                         <Button onClick={handleCreate}>
                             <Plus className="h-4 w-4 mr-2" /> Nueva mesa
                         </Button>

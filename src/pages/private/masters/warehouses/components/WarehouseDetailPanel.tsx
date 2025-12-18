@@ -68,7 +68,7 @@ export function WarehouseDetailPanel({ warehouse, stocks, movements, onEdit, onT
                     <p className="text-xs text-muted-foreground">{warehouse.code} • {warehouse.location} • Responsable: {warehouse.manager}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                    <Can permission={Permission.UPDATE_INVENTORY}>
+                    <Can permission={Permission.INV_UPDATE}>
                         <Button
                             variant="outline"
                             size="sm"
@@ -78,7 +78,7 @@ export function WarehouseDetailPanel({ warehouse, stocks, movements, onEdit, onT
                             Configurar
                         </Button>
                     </Can>
-                    <Can permission={Permission.UPDATE_INVENTORY}>
+                    <Can permission={Permission.INV_UPDATE}>
                         <Button
                             variant={warehouse.status === "ACTIVE" ? "destructive" : "default"}
                             size="sm"
@@ -218,7 +218,7 @@ export function WarehouseDetailPanel({ warehouse, stocks, movements, onEdit, onT
                 <div className="flex-1 overflow-auto">
                     <div className="p-3 border-b flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">Historial de movimientos (más recientes primero)</div>
-                        <Can permission={Permission.UPDATE_INVENTORY}>
+                        <Can permission={Permission.INV_UPDATE}>
                             <Button
                                 size="sm"
                                 onClick={onNewMovement}
@@ -235,7 +235,7 @@ export function WarehouseDetailPanel({ warehouse, stocks, movements, onEdit, onT
                                 <p className="text-sm font-medium text-muted-foreground">Sin movimientos</p>
                                 <p className="text-xs text-muted-foreground">Registra el primer movimiento para esta bodega</p>
                             </div>
-                            <Can permission={Permission.UPDATE_INVENTORY}>
+                            <Can permission={Permission.INV_UPDATE}>
                                 <Button
                                     size="sm"
                                     onClick={onNewMovement}

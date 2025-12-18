@@ -161,7 +161,7 @@ export default function InvoiceFormPage() {
 
         const validLines = lines.filter(l => l.description.trim() && l.qty > 0);
         if (validLines.length === 0) {
-            alert('Debe agregar al menos una línea válida');
+            alert('Agrega al menos una línea válida');
             return;
         }
 
@@ -216,7 +216,7 @@ export default function InvoiceFormPage() {
 
         const validLines = lines.filter(l => l.description.trim() && l.qty > 0 && l.unitPrice > 0);
         if (validLines.length === 0) {
-            alert('Debe agregar al menos una línea válida con cantidad y precio mayor a cero');
+            alert('Agrega al menos una línea válida con cantidad y precio mayor a cero');
             return;
         }
 
@@ -243,7 +243,7 @@ export default function InvoiceFormPage() {
         try {
             registerPayment({
                 invoiceId: editing.id,
-                userId: 'admin', // TODO: usar usuario actual del auth
+                userId: 'admin',
                 ...paymentData
             });
 

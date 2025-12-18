@@ -17,30 +17,30 @@ import ThirdPartiesPage from "@/pages/private/masters/third-parties/ThirdParties
 import Tables from "@/pages/private/masters/tables/Tables";
 import Warehouses from "@/pages/private/masters/warehouses/Warehouses";
 
-import CategoriesPage from "@/pages/private/inventory/categories/CategoriesPage";
+import CategoriesPage from "@/pages/private/masters/categories/CategoriesPage";
 import MovementsPage from "@/pages/private/inventory/movements/MovementsPage";
 import MenuPage from "@/pages/private/masters/menu/MenuPage";
-import Products from "@/pages/private/inventory/products/Products";
+import Products from "@/pages/private/masters/products/Products";
 import Inventory from "@/pages/private/inventory/stock/Inventory";
 
-import PointOfSalePage from "@/pages/private/movements/pos/PointOfSalePage";
-import KitchenPage from "@/pages/private/movements/kitchen/KitchenPage";
-import BarPage from "@/pages/private/movements/bar/BarPage";
-import CashboxPage from "@/pages/private/movements/cashbox/CashboxPage";
-import ExpensesPage from "@/pages/private/movements/expenses/ExpensesPage";
-import InvoicesPage from "@/pages/private/movements/invoices/InvoicesPage";
-import InvoiceFormPage from "@/pages/private/movements/invoices/InvoiceFormPage";
-
+import PointOfSalePage from "@/pages/private/operation/pos/PointOfSalePage";
+import KitchenPage from "@/pages/private/operation/kitchen/KitchenPage";
+import BarPage from "@/pages/private/operation/bar/BarPage";
+import CashboxPage from "@/pages/private/operation/cashbox/CashboxPage";
+import ExpensesPage from "@/pages/private/operation/expenses/ExpensesPage";
+import InvoicesPage from "@/pages/private/operation/invoices/InvoicesPage";
+import InvoiceFormPage from "@/pages/private/operation/invoices-new/InvoiceFormPage";
+import NotesPage from "@/pages/private/operation/notes/NotesPage";
+import CashboxSessionsPage from "@/pages/private/operation/cashbox-sessions/CashboxSessionsPage";
+import CashboxMovementsPage from "@/pages/private/operation/cashbox-movements/CashboxMovementsPage";
 import CompanyPage from "@/pages/private/administration/company/CompanyPage";
 import LocationsPage from "@/pages/private/administration/locations/LocationsPage";
 import ConfigurationPage from "@/pages/private/administration/configuration/ConfigurationPage";
-
 import UsersPage from "@/pages/private/security/users/UsersPage";
 import RolesPage from "@/pages/private/security/roles/RolesPage";
 import AuditPage from "@/pages/private/security/audit/AuditPage";
 import ChangePasswordPage from "@/pages/private/security/change-password/ChangePasswordPage";
 import CancelationsPage from "@/pages/private/administration/cancellations/CancelationsPage";
-import NotesPage from "@/pages/private/movements/notes/NotesPage";
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -90,7 +90,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/movimientos/pos",
+          path: "/operation/pos",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW}>
               <PointOfSalePage />
@@ -98,7 +98,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/cocina",
+          path: "/operation/kitchen",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW_KITCHEN}>
               <KitchenPage />
@@ -106,7 +106,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/bar",
+          path: "/operation/bar",
           element: (
             <PermissionRoute requiredPermission={Permission.VENTA_VIEW_BAR}>
               <BarPage />
@@ -114,7 +114,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/caja",
+          path: "/operation/cashbox",
           element: (
             <PermissionRoute requiredPermission={Permission.FIN_CAJA_VIEW}>
               <CashboxPage />
@@ -122,23 +122,23 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/caja/apertura-cierre",
+          path: "/operation/cashbox-sessions",
           element: (
             <PermissionRoute requiredPermission={Permission.CAJA_VIEW_SESIONES}>
-              <div className="p-6"><h1 className="text-2xl font-bold mb-2">Apertura y cierre de caja</h1><p className="text-muted-foreground">Gestiona sesiones de caja: abrir, cerrar, arqueo.</p></div>
+              <CashboxSessionsPage />
             </PermissionRoute>
           ),
         },
         {
-          path: "/movimientos/caja/movimientos",
+          path: "/operation/cashbox-movements",
           element: (
             <PermissionRoute requiredPermission={Permission.CAJA_VIEW_MOVIMIENTOS}>
-              <div className="p-6"><h1 className="text-2xl font-bold mb-2">Movimientos de caja</h1><p className="text-muted-foreground">Ingresos/Egresos, transferencias, ajustes.</p></div>
+              <CashboxMovementsPage />
             </PermissionRoute>
           ),
         },
         {
-          path: "/movimientos/gastos",
+          path: "/operation/expenses",
           element: (
             <PermissionRoute requiredPermission={Permission.FIN_GASTOS_VIEW}>
               <ExpensesPage />
@@ -147,7 +147,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/movimientos/facturacion",
+          path: "/operation/invoices",
           element: (
             <PermissionRoute requiredPermission={Permission.FAC_VIEW}>
               <InvoicesPage />
@@ -155,7 +155,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/facturacion/nueva",
+          path: "/operation/invoices/new",
           element: (
             <PermissionRoute requiredPermission={Permission.FAC_EDIT}>
               <InvoiceFormPage />
@@ -163,7 +163,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/facturacion/:id/editar",
+          path: "/operation/invoices/:id/edit",
           element: (
             <PermissionRoute requiredPermission={Permission.FAC_EDIT}>
               <InvoiceFormPage />
@@ -172,7 +172,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/inventario/stock",
+          path: "/inventory/stock",
           element: (
             <PermissionRoute requiredPermission={Permission.INV_VIEW}>
               <Inventory />
@@ -180,7 +180,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/inventario/movimientos",
+          path: "/inventory/movements",
           element: (
             <PermissionRoute requiredPermission={Permission.INV_VIEW_MOVIMIENTOS}>
               <MovementsPage />
@@ -188,7 +188,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/inventario/productos",
+          path: "/masters/products",
           element: (
             <PermissionRoute requiredPermission={Permission.CAT_PRODUCTOS_VIEW}>
               <Products />
@@ -196,7 +196,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/inventario/categorias",
+          path: "/masters/categories",
           element: (
             <PermissionRoute requiredPermission={Permission.CAT_CATEGORIAS_VIEW}>
               <CategoriesPage />
@@ -204,7 +204,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/maestros/menu",
+          path: "/masters/menu",
           element: (
             <PermissionRoute requiredPermission={Permission.CAT_MENU_VIEW}>
               <MenuPage />
@@ -213,7 +213,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/maestros/clientes",
+          path: "/masters/clients",
           element: (
             <PermissionRoute requiredPermission={Permission.MAE_CLIENTES_VIEW}>
               <Clients />
@@ -221,7 +221,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/maestros/terceros",
+          path: "/masters/third-parties",
           element: (
             <PermissionRoute requiredPermission={Permission.MAE_PROVEEDORES_VIEW}>
               <ThirdPartiesPage />
@@ -229,7 +229,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/maestros/mesas",
+          path: "/masters/tables",
           element: (
             <PermissionRoute requiredPermission={Permission.MAE_MESAS_VIEW}>
               <Tables />
@@ -237,7 +237,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/maestros/bodegas",
+          path: "/masters/warehouses",
           element: (
             <PermissionRoute requiredPermission={Permission.MAE_BODEGAS_VIEW}>
               <Warehouses />
@@ -245,7 +245,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/maestros/cajas",
+          path: "/masters/cashboxes",
           element: (
             <PermissionRoute requiredPermission={Permission.MAE_CAJAS_VIEW}>
               <CashBoxesPage />
@@ -254,7 +254,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/administracion/empresa",
+          path: "/administration/company",
           element: (
             <PermissionRoute requiredPermission={Permission.ADM_EMPRESA_VIEW}>
               <CompanyPage />
@@ -262,7 +262,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/administracion/locales",
+          path: "/administration/locations",
           element: (
             <PermissionRoute requiredPermission={Permission.ADM_LOCALES_VIEW}>
               <LocationsPage />
@@ -270,7 +270,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/administracion/configuracion",
+          path: "/administration/settings",
           element: (
             <PermissionRoute requiredPermission={Permission.ADM_SETTINGS_VIEW}>
               <ConfigurationPage />
@@ -279,7 +279,7 @@ const AppRoutes = () => {
         },
 
         {
-          path: "/seguridad/usuarios",
+          path: "/security/users",
           element: (
             <PermissionRoute requiredPermission={Permission.SEG_USUARIOS_VIEW}>
               <UsersPage />
@@ -287,7 +287,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/seguridad/roles",
+          path: "/security/roles",
           element: (
             <PermissionRoute requiredPermission={Permission.SEG_ROLES_VIEW}>
               <RolesPage />
@@ -295,7 +295,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/seguridad/auditoria",
+          path: "/security/audit",
           element: (
             <PermissionRoute requiredPermission={Permission.SEG_AUDIT_VIEW}>
               <AuditPage />
@@ -303,7 +303,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/seguridad/cambiar-contrasena",
+          path: "/security/change-password",
           element: (
             <PermissionRoute requiredPermission={Permission.SEG_CHANGE_PASSWORD}>
               <ChangePasswordPage />
@@ -311,7 +311,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/movimientos/notas",
+          path: "/operation/notes",
           element: (
             <PermissionRoute requiredPermission={Permission.FIN_CREDIT_NOTES_VIEW}>
               <NotesPage />
@@ -319,7 +319,7 @@ const AppRoutes = () => {
           ),
         },
         {
-          path: "/administracion/anulaciones",
+          path: "/administration/cancellations",
           element: (
             <PermissionRoute requiredPermission={Permission.ADM_ANULACIONES_VIEW}>
               <CancelationsPage />
@@ -337,19 +337,19 @@ const AppRoutes = () => {
       element: (
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center space-y-4 max-w-md mx-auto p-6">
-            <h1 className="text-4xl font-bold text-destructive">Acceso Denegado</h1>
+            <h1 className="text-4xl font-bold text-destructive">Access Denied</h1>
             <p className="text-muted-foreground">
-              No tienes los permisos necesarios para acceder a este recurso.
+              You don't have the required permissions to access this resource.
             </p>
             <p className="text-sm text-muted-foreground">
-              Si crees que deberías tener acceso, contacta con el administrador del sistema.
+              If you believe you should have access, contact your system administrator.
             </p>
             <div className="pt-4">
               <a
                 href="/home"
                 className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
               >
-                Volver al inicio
+                Back to Home
               </a>
             </div>
           </div>

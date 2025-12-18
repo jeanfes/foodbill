@@ -178,7 +178,7 @@ const ClientsTable = ({ onOpenDetail, onEdit }: ClientsTableProps) => {
                                 <TableCell className="text-right">
                                     <div className="flex gap-2 justify-end">
                                         <Button size="sm" variant="outline" onClick={() => onOpenDetail(c.id)}>Ver</Button>
-                                        <Can permission={Permission.UPDATE_CLIENTS}>
+                                        <Can permission={Permission.MAE_CLIENTES_UPDATE}>
                                             <Button size="sm" variant="ghost" onClick={() => onEdit(c.id)}>Editar</Button>
                                         </Can>
                                     </div>
@@ -234,13 +234,13 @@ const ClientsTable = ({ onOpenDetail, onEdit }: ClientsTableProps) => {
             {selected.length > 0 && (
                 <div className="p-3 flex items-center gap-3 bg-muted rounded-md text-sm">
                     <div className="font-medium">{selected.length} seleccionados</div>
-                    <Can permission={Permission.UPDATE_CLIENTS}>
+                    <Can permission={Permission.MAE_CLIENTES_UPDATE}>
                         <Button size="sm" variant="secondary">Marcar frecuentes</Button>
                     </Can>
-                    <Can permission={Permission.UPDATE_CLIENTS}>
+                    <Can permission={Permission.MAE_CLIENTES_UPDATE}>
                         <Button size="sm" variant="outline">Activar/Inactivar</Button>
                     </Can>
-                    <Can permission={Permission.DELETE_CLIENTS}>
+                    <Can permission={Permission.MAE_CLIENTES_DELETE}>
                         <Button size="sm" variant="destructive">Eliminar</Button>
                     </Can>
                 </div>
