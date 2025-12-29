@@ -6,6 +6,8 @@ export const STORAGE_KEYS = {
   INVOICE_SERIES: 'billing_series_v1',
   INVOICE_EVENTS: 'billing_events_v1',
   INVOICE_SETTINGS: 'billing_settings_v1',
+  ORDERS: 'orders_v1',
+  ORDERS_EVENTS: 'orders_events_v1',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

@@ -56,27 +56,29 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
     return (
         <aside
             className={cn(
-                "fixed left-0 top-0 h-screen bg-card border-r border-border transition-all duration-150 ease-in-out will-change-[width] z-40 overflow-hidden",
-                isOpen ? "w-64" : "w-20",
+                "fixed left-0 top-0 h-screen bg-card border-r border-border transition-all duration-300 ease-out will-change-[width,transform] z-40 overflow-hidden flex flex-col origin-left transform-gpu",
+                isOpen ? "w-64 sidebar-open-animate" : "w-[90px] sidebar-close-animate",
             )}
         >
-            <div className={cn("h-16 flex items-center px-4 transition-all duration-150 sticky top-0 bg-card z-10", isOpen ? "justify-between" : "justify-center")}>
-                <Link to="/home" className="flex items-center gap-3">
-                    <div>
-                        <img src={LogoTransparent} alt="logo" className="authLogoSmall w-8 h-8 object-contain" />
-                    </div>
+            <div className={cn("h-20 flex items-center justify-between px-3 transition-all duration-300 sticky top-0 bg-card z-10 border-b border-border/50", isOpen ? "justify-between" : "justify-center")}>
+                <Link to="/home" className="flex items-center justify-center shrink-0">
+                    <img src={LogoTransparent} alt="logo" className="w-8 h-8 object-contain" />
                 </Link>
 
-                <div className={cn("transition-all duration-150 overflow-hidden", isOpen ? "opacity-100 w-10" : "opacity-0 w-0")}>
-                    <Button variant="ghost" size="icon" onClick={onToggle} className="h-10 w-10">
+                <div className={cn(
+                    "transition-all duration-300 overflow-hidden",
+                    isOpen ? "opacity-100 w-10" : "opacity-0 w-0"
+                )}>
+                    <Button variant="ghost" size="icon" onClick={onToggle} className="h-10 w-10 flex items-center justify-center">
                         <LayoutPanelLeft className="h-4 w-4" />
                     </Button>
                 </div>
             </div>
 
             <nav className={cn(
-                "p-4 pb-12 space-y-2 pr-2.5 overflow-y-auto overflow-x-hidden sidebar-scroll",
-                "h-[calc(100vh-4rem)]"
+                "flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll",
+                isOpen ? "px-3 py-4 space-y-2" : "px-2 py-3 space-y-2",
+                "transition-all duration-300"
             )}>
                 {filteredNavigationItems.map((item) => {
                     const Icon = item.icon
@@ -87,7 +89,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                     const isExpanded = expandedItems.includes(item.name)
 
                     return (
-                        <div key={item.name} className="relative">
+                        <div key={item.name} className={cn("relative", !isOpen && "flex justify-center")}>
                             <div
                                 className={cn(
                                     "absolute -left-2 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-full transition-opacity duration-150",
@@ -98,13 +100,14 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             <Link
                                 to={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 px-2.5 py-3.5 rounded-2xl transition-all duration-150 relative group",
+                                    "flex items-center rounded-2xl transition-all duration-300 ease-out relative group",
+                                    isOpen ? "gap-3 p-3.5" : "justify-center items-center p-3.5",
                                     isSectionActive
                                         ? isOpen
-                                            ? "bg-primary/10 text-primary"
-                                            : "bg-primary text-white"
+                                            ? "bg-primary/10 text-primary shadow-sm"
+                                            : "bg-primary text-white shadow-md"
                                         : "text-muted-foreground hover:bg-accent hover:text-white",
-                                    !isOpen && "justify-center",
+                                    isOpen && "sidebar-item-animate",
                                 )}
                                 onClick={(e) => {
                                     if (item.hasDropdown && isOpen) {
@@ -115,7 +118,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             >
                                 <Icon
                                     className={cn(
-                                        "w-5 h-5 shrink-0 transition-colors duration-150",
+                                        "w-5 h-5 shrink-0 transition-all duration-300",
                                         !isSectionActive && "group-hover:text-white",
                                         isSectionActive ? (isOpen ? "text-primary" : "text-white") : undefined,
                                     )}
@@ -123,19 +126,19 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                 {isOpen && (
                                     <>
                                         <span className={cn(
-                                            "flex-1 text-sm font-bold transition-colors",
+                                            "flex-1 text-sm font-bold transition-all duration-300",
                                             !isSectionActive && "group-hover:text-white"
                                         )}>{item.name}</span>
                                         {item.badge && (
                                             <span className={cn(
-                                                "bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full transition-colors",
+                                                "bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full transition-all duration-300",
                                                 !isSectionActive && "group-hover:text-white"
                                             )}>{item.badge}</span>
                                         )}
                                         {item.hasDropdown && (
                                             <ChevronDown
                                                 className={cn(
-                                                    "w-4 h-4 transition-transform duration-150",
+                                                    "w-4 h-4 transition-transform duration-300 ease-out",
                                                     !isSectionActive && "group-hover:text-white",
                                                     isExpanded && "rotate-180",
                                                 )}
@@ -144,7 +147,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                     </>
                                 )}
                                 {!isOpen && item.badge && (
-                                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center">
+                                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-semibold w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
                                         {item.badge}
                                     </span>
                                 )}
@@ -153,7 +156,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                             {isOpen && hasChildren && (
                                 <div
                                     className={cn(
-                                        "pl-9 pr-2 grid transition-all duration-150",
+                                        "pl-9 pr-2 grid transition-all duration-300 ease-out origin-left transform-gpu",
                                         isExpanded ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0",
                                     )}
                                 >
@@ -171,10 +174,11 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                                                     <Link
                                                         to={child.href}
                                                         className={cn(
-                                                            "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-colors group",
+                                                            "flex items-center justify-between gap-2 px-2 py-2 rounded-xl text-sm transition-all duration-300 ease-out group",
                                                             childActive
-                                                                ? "bg-primary/10 text-primary"
+                                                                ? "bg-primary/10 text-primary shadow-sm"
                                                                 : "text-muted-foreground hover:bg-accent hover:text-white",
+                                                            "sidebar-children-animate",
                                                         )}
                                                     >
                                                         <span className={cn(
@@ -200,9 +204,9 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
             </nav>
 
             {!isOpen && (
-                <div className="sticky bottom-4 left-0 right-0 px-4 bg-card" onClick={onToggle}>
-                    <Button variant="default" size="icon" onClick={onToggle} className="h-[47px] w-[47px] bg-primary text-white rounded-2xl">
-                        <LayoutPanelLeft className="h-4 w-4" />
+                <div className="mt-auto px-3 py-4 bg-gradient-to-t from-card via-card to-transparent border-t border-border/30 flex justify-center">
+                    <Button variant="default" size="icon" onClick={onToggle} className="h-14 w-14 bg-primary text-white rounded-2xl hover:bg-primary/90 shadow-lg transition-all duration-300 flex items-center justify-center">
+                        <LayoutPanelLeft className="h-5 w-5" />
                     </Button>
                 </div>
             )

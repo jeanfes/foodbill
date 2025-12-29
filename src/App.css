@@ -40,3 +40,80 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Sidebar scrollbar styles */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  margin-left: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--border) / 0.6);
+  border-radius: 2px;
+  transition: background 300ms ease-out;
+  margin-left: 1px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border) / 0.8);
+}
+
+.sidebar-scroll {
+  scrollbar-color: hsl(var(--border) / 0.6) transparent;
+  scrollbar-width: thin;
+}
+
+/* Sidebar slide-in animation from left */
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.sidebar-item-animate {
+  animation: slide-in-left 180ms ease-out both;
+}
+
+.sidebar-children-animate {
+  animation: slide-in-left 150ms ease-out both;
+}
+
+/* Sidebar panel open/close animation */
+@keyframes sidebar-open-left {
+  from {
+    transform: translateX(-10px);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes sidebar-close-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-10px);
+    opacity: 0.9;
+  }
+}
+
+.sidebar-open-animate {
+  animation: sidebar-open-left 220ms ease-out both;
+}
+
+.sidebar-close-animate {
+  animation: sidebar-close-left 160ms ease-in both;
+}

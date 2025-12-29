@@ -33,6 +33,7 @@ import InvoiceFormPage from "@/pages/private/operation/invoices-new/InvoiceFormP
 import NotesPage from "@/pages/private/operation/notes/NotesPage";
 import CashboxSessionsPage from "@/pages/private/operation/cashbox-sessions/CashboxSessionsPage";
 import CashboxMovementsPage from "@/pages/private/operation/cashbox-movements/CashboxMovementsPage";
+import OrdersBoard from "@/pages/private/operation/orders/OrdersBoard";
 import CompanyPage from "@/pages/private/administration/company/CompanyPage";
 import LocationsPage from "@/pages/private/administration/locations/LocationsPage";
 import ConfigurationPage from "@/pages/private/administration/configuration/ConfigurationPage";
@@ -89,6 +90,14 @@ const AppRoutes = () => {
           ),
         },
 
+        {
+          path: "/operation/orders",
+          element: (
+            <PermissionRoute requiredPermission={Permission.VENTA_VIEW}>
+              <OrdersBoard />
+            </PermissionRoute>
+          ),
+        },
         {
           path: "/operation/pos",
           element: (

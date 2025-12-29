@@ -17,9 +17,10 @@ function loadInitial(): CashBox[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const boxes = JSON.parse(raw);
-      // Enriquecer con nombres de usuario
+      // Enriquecer con nombres de usuario y asegurar propiedades necesarias
       return boxes.map((box: CashBox) => ({
         ...box,
+        sessions: box.sessions || [],
         assignedUserName: box.assignedUserId ? getUserName(box.assignedUserId) : undefined,
       }));
     }
@@ -153,7 +154,7 @@ export function useCashBoxesMock() {
         status: 'OPEN',
         currentAmount: data.initialAmount,
         currentSession: newSession,
-        sessions: [...box.sessions, newSession],
+        sessions: [...(box.sessions || []), newSession],
         updatedAt: new Date().toISOString(),
       };
     }));
@@ -186,7 +187,7 @@ export function useCashBoxesMock() {
       };
 
       // Actualizar la sesión en el array de sesiones
-      const updatedSessions = box.sessions.map(s => 
+      const updatedSessions = (box.sessions || []).map(s => 
         s.id === box.currentSession?.id ? closedSession : s
       );
 

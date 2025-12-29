@@ -49,7 +49,7 @@ export const navigationItems: NavigationItem[] = [
       { name: "Menú", href: "/masters/menu", requiredPermission: Permission.CAT_MENU_VIEW },
       { name: "Mesas", href: "/masters/tables", requiredPermission: Permission.MAE_MESAS_VIEW },
       { name: "Bodegas", href: "/masters/warehouses", requiredPermission: Permission.MAE_BODEGAS_VIEW },
-      { name: "Cajas", href: "/masters/cashboxes", requiredPermission: Permission.MAE_CAJAS_VIEW },
+      { name: "Caja", href: "/masters/cashboxes", requiredPermission: Permission.MAE_CAJAS_VIEW },
       { name: "Terceros / Proveedores", href: "/masters/third-parties", requiredPermission: Permission.MAE_PROVEEDORES_VIEW },
     ],
   },
@@ -73,6 +73,7 @@ export const navigationItems: NavigationItem[] = [
     icon: RefreshCw,
     hasDropdown: true,
     children: [
+      { name: "Órdenes", href: "/operation/orders", requiredPermission: Permission.VENTA_VIEW },
       { name: "POS / Ventas", href: "/operation/pos", requiredPermission: Permission.VENTA_VIEW },
       { name: "Cocina", href: "/operation/kitchen", requiredPermission: Permission.VENTA_VIEW_KITCHEN },
       { name: "Barra", href: "/operation/bar", requiredPermission: Permission.VENTA_VIEW_BAR },

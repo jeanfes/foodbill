@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import type { Category, CategoryFormValues } from '@/interfaces/category';
 
 interface CategoryFormDialogProps {
@@ -20,10 +21,14 @@ export function CategoryFormDialog({ open, onOpenChange, onSubmit, initial }: Ca
 		}
 	});
 
-	// hydrate
-	if (initial) {
-		reset({ name: initial.name, description: initial.description ?? '' });
-	}
+	// hydrate form when initial changes
+	useEffect(() => {
+		if (initial) {
+			reset({ name: initial.name, description: initial.description ?? '' });
+		} else {
+			reset({ name: '', description: '' });
+		}
+	}, [initial, reset]);
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
